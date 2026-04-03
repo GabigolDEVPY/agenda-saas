@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
+    <div>
+      <div class="logo-text">BarberBlack</div>
+      <div class="logo-sub">Est. 2018 · Premium</div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px;">
+    {% if user.is_staff %}
+    <a href="{% url 'servicos:home' %}" class="btn-admin">
+      <i class="fa-solid fa-shield-halved"></i>Admin
+    </a>
+    <form method="POST" action="{% url 'user:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-logout">
+        <i class="fa-solid fa-right-from-bracket"></i> 
+      </button>
+    </form>
+    {% else %}
+    <a href="{% url 'user:login' %}" class="btn-admin">
+      <i class="fa-solid fa-user"></i>Entrar 
+    </a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-label">Seu estilo, nossa arte</div>
+  <h1 class="hero-title">AGENDE SEU<br><span>HORÁRIO</span></h1>
+  <p class="hero-desc">Escolha o barbeiro, serviço e horário ideal para você</p>
+</div>
+
+<div class="main">
+  <div style="display:flex;flex-direction:column;gap:18px;">
+
+    <!-- BARBEIRO -->
+    <div class="card">
+      <div class="card-title">Barbeiro</div>
+      <div class="card-sub">Escolha o profissional de sua preferência</div>
+      <button class="select-trigger" id="btn-barber" type="button" onclick="openModal('modal-barber')">
+        <div class="trigger-left">
+          <i class="fa-solid fa-scissors trigger-icon"></i>
+          <span id="barber-display" class="trigger-placeholder">Selecionar barbeiro</span>
+        </div>
+        <i class="fa-solid fa-chevron-right trigger-arrow"></i>
+      </button>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <div class="card">
+      <div class="card-title">Serviços</div>
+      <div class="card-sub">Selecione um ou mais serviços</div>
+      <button class="select-trigger" id="btn-service" type="button" onclick="abrirModalServicos()">
+        <div class="trigger-left">
+          <i class="fa-solid fa-list trigger-icon"></i>
+          <span id="service-display" class="trigger-placeholder">Selecionar serviços</span>
+        </div>
+        <i class="fa-solid fa-chevron-right trigger-arrow"></i>
+      </button>
+    </div>
+
+    <!-- DATA & HORÁRIO — renderizado pelo Django -->
+    <div class="card">
+      <div class="card-title">Data & Horário</div>
+      <div class="card-sub">Selecione o dia e um horário disponível</div>
+
+      <div class="calendar-header">
+        <button class="cal-nav" type="button" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="cal-month" id="cal-month-label"></div>
+        <button class="cal-nav" type="button" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Dom</div><div class="cal-weekday">Seg</div>
+        <div class="cal-weekday">Ter</div><div class="cal-weekday">Qua</div>
+        <div class="cal-weekday">Qui</div><div class="cal-weekday">Sex</div>
+        <div class="cal-weekday">Sáb</div>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+
+      <div class="time-section">
+        <div class="time-section-label">Horários disponíveis</div>
+        <div id="time-container">
+          <p class="time-empty">Selecione uma data para ver os horários</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DADOS PESSOAIS -->
+    <div class="card">
+      <div class="card-title">Seus Dados</div>
+      <div class="card-sub">Preencha para confirmar o agendamento</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nome">Nome Completo</label>
+          <input type="text" id="nome" name="nome" placeholder="João da Silva" autocomplete="name" oninput="checkConfirm()"/>
+        </div>
+        <div class="form-group">
+          <label for="telefone">WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" placeholder="(99) 99999-9999" autocomplete="tel"oninput="maskTelefone(this); checkConfirm()"/>
+        </div>
+        <div class="form-group full">
+          <label for="obs">Observações (opcional)</label>
+          <textarea id="obs" name="observacoes" placeholder="Alguma preferência para o barbeiro..."></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /coluna esquerda -->
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="summary-card">
+      <div class="summary-header"><i class="fa-solid fa-receipt" style="margin-right:8px;"></i>Resumo</div>
+      <div class="summary-body">
+        <div class="summary-row">
+          <div class="summary-key">Barbeiro</div>
+          <div class="summary-val gold" id="sum-barber">—</div>
+        </div>
+        <div class="summary-row">
+          <div class="summary-key">Serviços</div>
+          <div class="summary-val" id="sum-service">—</div>
+        </div>
+        <div class="summary-row">
+          <div class="summary-key">Data</div>
+          <div class="summary-val" id="sum-date">—</div>
+        </div>
+        <div class="summary-row">
+          <div class="summary-key">Horário</div>
+          <div class="summary-val gold" id="sum-time">—</div>
+        </div>
+        <hr class="divider"/>
+        <div class="total-row">
+          <div class="total-label">Total</div>
+          <div class="total-value" id="sum-total">R$0</div>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" action="{% url 'servicos:agendar' %}" id="form-agendamento">
+      {% csrf_token %}
+      <input type="hidden" name="employee" id="h-barber-id">
+      <input type="hidden" name="service"    id="h-services">
+      <input type="hidden" name="date"        id="h-date">
+      <input type="hidden" name="time"     id="h-time">
+      <input type="hidden" name="client_name"        id="h-nome">
+      <input type="hidden" name="phone"    id="h-telefone">
+      <input type="hidden" name="observation" id="h-obs">
+      <input type="hidden" name="total"       id="h-total">
+      <input type="hidden" name="uid"    id="h-uid" value="{{ establishment.uid }}">
+
+      <button class="btn-confirm" id="btn-confirm" type="button" onclick="confirmar()" disabled>
+        <i class="fa-solid fa-calendar-check"></i>&nbsp; CONFIRMAR AGENDAMENTO
+      </button>
+    </form>
+
+    <p class="policy-note">
+      Ao confirmar você concorda com a<br>
+      <a href="#">Política de Cancelamento</a> · Aviso com 2h de antecedência
+    </p>
+
+    <div class="info-pills">
+      <div class="info-pill">
+        <div class="pill-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="pill-text"><strong>Localização</strong>Av. Principal, 123 — Centro</div>
+      </div>
+      <div class="info-pill">
+        <div class="pill-icon"><i class="fa-regular fa-clock"></i></div>
+        <div class="pill-text"><strong>Funcionamento</strong>Seg–Sáb: 9h às 20h</div>
+      </div>
+      <div class="info-pill">
+        <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
+        <div class="pill-text"><strong>Dúvidas?</strong>(99) 99999-9999</div>
+      </div>
+      <div class="info-pill">
+        <div class="pill-icon"><i class="fa-solid fa-credit-card"></i></div>
+        <div class="pill-text"><strong>Pagamento</strong>Pix · Cartão · Dinheiro</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+
+<!-- MODAL — BARBEIRO (itens gerados pelo Django) -->
+<div class="overlay" id="modal-barber" onclick="closeOnBg(event,'modal-barber')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title"><i class="fa-solid fa-scissors" style="margin-right:8px;font-size:15px;"></i>Barbeiro</div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-barber')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="barber-list">
+        {% for employee in employees %}
+        <div class="barber-option"
+             data-id="{{ employee.id }}"
+             data-name="{{ employee.name }}"
+             onclick="selectBarber(this)">
+          <div class="b-avatar"><i class="fa-solid fa-scissors"></i></div>
+          <div class="b-info">
+            <div class="b-name">{{ employee.name }}</div>
+          </div>
+          <div class="b-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="modal-btn" id="btn-ok-barber" type="button"
+              onclick="closeModal('modal-barber')" disabled>
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL — SERVIÇOS -->
+<div class="overlay" id="modal-service" onclick="closeOnBg(event,'modal-service')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title"><i class="fa-solid fa-list" style="margin-right:8px;font-size:15px;"></i>Serviços</div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-service')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="service-list">
+        <!-- populado via JS ao selecionar barbeiro -->
+      </div>
+      <button class="modal-btn" id="btn-ok-service" type="button"
+              onclick="closeModal('modal-service')" disabled>
+        Confirmar seleção
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL — SUCESSO -->
+<div class="overlay" id="modal-form-success">
+  <div class="success-sheet">
+    <div class="s-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <div id="title-id-form" class="s-title">Agendado!</div>
+    <p id="message-id-form" class="s-msg">Seu horário foi reservado com sucesso.</p>
+    <div class="s-code" id="horario-id-form">12:00</div><br>
+    <button class="btn-fechar" type="button" onclick="closeModal('modal-form-success')">Fechar</button>
+  </div>
+</div>
+
+<div class="overlay" id="modal-form-error">
+  <div class="success-sheet">
+    <div class="s-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+    <div id="title-id-form-error" class="s-title">Agendado!</div>
+    <p id="message-id-form-error" class="s-msg">Erro ao agendar.</p>
+    <button class="btn-fechar" type="button" onclick="closeModal('modal-form-error')">Fechar</button>
+  </div>
+</div>
+
+{% for msg in messages %}
+  {% if forloop.first %}
+    <script id="booking-success-data" type="application/json">"{{ msg|escapejs }}"</script>
+  {% endif %}
+{% endfor %}
+
+{# Dados do backend expostos como JSON para o JS mínimo #}
+<script>
+  var CONFIG_POR_BARBEIRO            = {{ config_json|safe }};
+  var AGENDAMENTOS_POR_BARBEIRO      = {{ agendamentos_json|safe }};
+  var MESES_DISPONIVEIS_POR_BARBEIRO = {{ meses_disponiveis_json|safe }};
+  var SERVICOS_POR_BARBEIRO          = {{ servicos_json|safe }};
+  var _bsEl = document.getElementById('booking-success-data');
+  var BOOKING_SUCCESS = _bsEl ? JSON.parse(JSON.parse(_bsEl.textContent)) : null;
+</script>
+
+</body>
+{% endblock %}

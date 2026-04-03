@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles_user.css' %}"/>
+<div class="rw">
+  <div class="rw-inner">
+    <div class="rw-logo">
+      <div class="rw-logo-icon">✂</div>
+      <div class="rw-logo-text">BARBEARIA</div>
+    </div>
+    <div class="rw-hero">
+      <div class="rw-hero-label">Bem-vindo</div>
+      <div class="rw-hero-title">CRIAR <span>CONTA</span></div>
+      <div class="rw-hero-desc">Preencha os dados abaixo para se registrar no sistema</div>
+    </div>
+
+    <div class="card" id="form-card">
+      <div class="card-title">DADOS PESSOAIS</div>
+      <div class="card-sub">Informações do usuário</div>
+
+      <div id="form-area">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="first_name" placeholder="João" autocomplete="given-name">
+            <span class="field-error" id="err-first_name"></span>
+          </div>
+          <div class="form-group">
+            <label>Sobrenome</label>
+            <input type="text" id="last_name" placeholder="Silva" autocomplete="family-name">
+            <span class="field-error" id="err-last_name"></span>
+          </div>
+          <div class="form-group full">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="joaosilva" autocomplete="username">
+            <span class="field-error" id="err-username"></span>
+          </div>
+          <div class="form-group full">
+            <label>E-mail</label>
+            <input type="email" id="email" placeholder="joao@email.com" autocomplete="email">
+            <span class="field-error" id="err-email"></span>
+          </div>
+          <div class="form-group full">
+            <label>UID <span style="color:var(--gray);font-size:10px;letter-spacing:1px;">(máx. 25 caracteres)</span></label>
+            <div class="uid-wrap">
+              <input type="text" id="uid" placeholder="Ex.: BAR-2024-001" maxlength="25" autocomplete="off">
+              <span class="uid-badge" id="gen-uid" title="Gerar UID automático">⚡ GERAR</span>
+            </div>
+            <span class="field-error" id="err-uid"></span>
+          </div>
+          <div class="form-group full">
+            <label>Especialidade</label>
+            <div class="select-wrap">
+              <select id="especialidade">
+                <option value="" disabled selected>Selecione uma especialidade</option>
+                <option value="Corte Masculino">Corte Masculino</option>
+                <option value="Barba">Barba</option>
+                <option value="Corte + Barba">Corte + Barba</option>
+                <option value="Coloração">Coloração</option>
+                <option value="Tratamento Capilar">Tratamento Capilar</option>
+                <option value="Depilação">Depilação</option>
+                <option value="Design de Sobrancelha">Design de Sobrancelha</option>
+                <option value="Atendente">Atendente</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+            <span class="field-error" id="err-especialidade"></span>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-label">Segurança</div>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Senha</label>
+            <div class="pw-row">
+              <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+              <button class="pw-toggle" id="toggle-pw">Mostrar</button>
+            </div>
+            <div class="strength-bar">
+              <div class="strength-seg" id="s1"></div>
+              <div class="strength-seg" id="s2"></div>
+              <div class="strength-seg" id="s3"></div>
+              <div class="strength-seg" id="s4"></div>
+            </div>
+            <div class="strength-label" id="strength-lbl"></div>
+            <span class="field-error" id="err-password"></span>
+          </div>
+          <div class="form-group full">
+            <label>Confirmar Senha</label>
+            <input type="password" id="password2" placeholder="Repita a senha" autocomplete="new-password">
+            <span class="field-error" id="err-password2"></span>
+          </div>
+        </div>
+
+        <button class="btn-confirm" id="btn-register">CRIAR CONTA</button>
+        <p class="policy-note">Ao criar sua conta, você concorda com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</p>
+        <div class="login-link">Já tem conta? <a href="#">Entrar</a></div>
+      </div>
+
+      <div class="success-box" id="success-box" style="display:none;">
+        <div class="s-icon">✓</div>
+        <div class="s-title">CONTA CRIADA!</div>
+        <p class="s-msg">Usuário registrado com sucesso no sistema.</p>
+        <div class="s-code" id="s-uid-display"></div>
+        <p class="s-msg" style="margin-top:12px;font-size:12px;">Guarde seu UID — ele é seu identificador único.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock  %}
