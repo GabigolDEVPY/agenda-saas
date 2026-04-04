@@ -7,26 +7,21 @@
     --accent:#2563eb;--accent-pale:#dbeafe;--accent-dark:#1d4ed8;
     --text:#0f172a;--text-2:#334155;--muted:#94a3b8;
     --border:#e2e8f0;--border-dark:#cbd5e1;
-    --danger:#ef4444;--success:#22c55e;--warn:#f59e0b;
+    --danger:#ef4444;--success:#22c55e;
     --radius:8px;
-    --shadow-sm:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.05);
     --shadow-md:0 4px 12px rgba(15,23,42,.08),0 2px 6px rgba(15,23,42,.05);
-    --shadow-lg:0 12px 32px rgba(15,23,42,.12),0 4px 12px rgba(15,23,42,.07);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'Geist',-apple-system,sans-serif;min-height:100vh;line-height:1.5;}
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle,rgba(37,99,235,.06) 1px,transparent 1px);background-size:28px 28px;}
 
-  /* ── Wrapper da página de login ── */
   .login-page{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px 48px;}
 
-  /* ── Logo ── */
   .logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
   .logo-icon-box{width:38px;height:38px;flex-shrink:0;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.35);}
   .logo-text{font-family:'Geist',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--text);line-height:1;}
   .logo-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
 
-  /* ── Hero ── */
   .hero{text-align:center;margin-bottom:28px;}
   .hero-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;}
   .hero-label::before,.hero-label::after{content:'';display:block;width:20px;height:1px;background:var(--accent);opacity:.5;}
@@ -34,58 +29,48 @@
   .hero-title span{color:var(--accent);}
   .hero-desc{margin-top:10px;color:var(--muted);font-size:14px;max-width:380px;margin-left:auto;margin-right:auto;}
 
-  /* ── Card central ── */
   .card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-md);width:100%;max-width:420px;}
   .card-title{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;}
   .card-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
 
-  /* ── Form ── */
   .form-grid{display:grid;grid-template-columns:1fr;gap:14px;}
   .form-group{display:flex;flex-direction:column;gap:6px;}
-  .form-group.full{grid-column:1/-1;}
   label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;}
-  input{background:var(--bg-3);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Geist',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+  input[type="text"],input[type="password"]{
+    background:var(--bg-3);border:1.5px solid var(--border);border-radius:var(--radius);
+    color:var(--text);font-family:'Geist',sans-serif;font-size:14px;padding:10px 14px;
+    outline:none;transition:border-color .15s,box-shadow .15s;width:100%;
+  }
   input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:var(--bg-2);}
   input::placeholder{color:var(--muted);}
   hr.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
 
-  /* ── Linha senha ── */
   .pw-row{position:relative;display:flex;align-items:center;}
-  .pw-row input{padding-right:90px;}
+  .pw-row input{padding-right:90px;width:100%;}
   .pw-toggle{position:absolute;right:10px;background:none;border:none;color:var(--accent);font-family:'Geist',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;padding:4px 6px;}
   .pw-toggle:hover{color:var(--accent-dark);}
 
-  /* ── Erros de campo ── */
-  .field-error{font-size:11px;color:var(--danger);display:none;margin-top:2px;}
-  .field-error.show{display:block;}
+  /* Erros do Django */
+  .errorlist{list-style:none;margin-top:4px;}
+  .errorlist li{font-size:11px;color:var(--danger);}
 
-  /* ── Alert pill ── */
-  .alert-pill{display:none;align-items:flex-start;gap:10px;background:#fef2f2;border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);padding:11px 14px;font-size:12px;margin-bottom:16px;}
-  .alert-pill.show{display:flex;}
+  .alert-pill{display:flex;align-items:flex-start;gap:10px;background:#fef2f2;border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);padding:11px 14px;font-size:12px;margin-bottom:16px;}
   .alert-pill .pill-icon{font-size:14px;color:var(--danger);width:20px;text-align:center;flex-shrink:0;padding-top:1px;}
   .alert-pill .pill-text{color:var(--text-2);line-height:1.5;}
   .alert-pill .pill-text strong{color:var(--text);display:block;margin-bottom:2px;font-weight:600;}
 
-  /* ── Forgot link / login link ── */
   .forgot-row{display:flex;justify-content:flex-end;}
-  .forgot-link,.login-link a{color:var(--accent);text-decoration:none;font-size:12px;font-weight:500;}
-  .forgot-link:hover,.login-link a:hover{text-decoration:underline;}
+  .forgot-link{color:var(--accent);text-decoration:none;font-size:12px;font-weight:500;}
+  .forgot-link:hover{text-decoration:underline;}
   .login-link{text-align:center;font-size:12px;color:var(--muted);}
+  .login-link a{color:var(--accent);text-decoration:none;font-weight:500;}
+  .login-link a:hover{text-decoration:underline;}
 
-  /* ── Botão principal (reutiliza .btn-confirm do CSS) ── */
   .btn-confirm{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Geist',sans-serif;font-size:15px;font-weight:700;letter-spacing:.3px;padding:14px;min-height:50px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(37,99,235,.3);margin-top:20px;}
   .btn-confirm::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:rgba(255,255,255,.12);transform:skewX(-20deg);transition:left .4s;}
   .btn-confirm:hover::before{left:120%;}
   .btn-confirm:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.4);}
   .btn-confirm:active{transform:scale(.98);}
-  .btn-confirm:disabled{background:var(--bg-4);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;}
-
-  /* ── Success box (reutiliza .success-sheet do CSS) ── */
-  .success-box{display:none;text-align:center;padding:12px 0 4px;}
-  .s-icon{color:var(--success);font-size:44px;margin-bottom:14px;}
-  .s-title{font-size:28px;font-weight:700;letter-spacing:-.5px;color:var(--text);margin-bottom:8px;}
-  .s-msg{color:var(--muted);font-size:14px;line-height:1.7;}
-  .s-code{font-family:'Geist Mono',monospace;font-size:18px;font-weight:600;letter-spacing:4px;color:var(--accent);background:var(--accent-pale);border:1px dashed rgba(37,99,235,.35);padding:10px 20px;border-radius:6px;display:inline-block;margin:14px 0 6px;}
 </style>
 
 <div class="login-page">
@@ -104,90 +89,77 @@
     <div class="hero-desc">Entre com suas credenciais para acessar o sistema</div>
   </div>
 
-  <div class="card" id="form-card">
+  <div class="card">
     <div class="card-title">CREDENCIAIS</div>
     <div class="card-sub">Insira seu usuário e senha</div>
 
-    <div id="form-area">
-      <div class="alert-pill" id="alert-box">
+    {% if form.non_field_errors %}
+      <div class="alert-pill">
         <span class="pill-icon">⚠</span>
         <div class="pill-text">
           <strong>Acesso negado</strong>
-          Usuário ou senha incorretos. Tente novamente.
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
         </div>
       </div>
+    {% endif %}
+
+    <form method="post" action="">
+      {% csrf_token %}
 
       <div class="form-grid">
-        <div class="form-group full">
-          <label>Username ou E-mail</label>
-          <input type="text" id="username" placeholder="joaosilva ou joao@email.com" autocomplete="username">
-          <span class="field-error" id="err-username">Preencha o usuário ou e-mail.</span>
+
+        <div class="form-group">
+          <label for="{{ form.username.id_for_label }}">Usuário</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <ul class="errorlist">
+              {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          {% endif %}
         </div>
-        <div class="form-group full">
-          <label>Senha</label>
+
+        <div class="form-group">
+          <label for="{{ form.password.id_for_label }}">Senha</label>
           <div class="pw-row">
-            <input type="password" id="password" placeholder="Sua senha" autocomplete="current-password">
+            {{ form.password }}
             <button class="pw-toggle" id="toggle-pw" type="button">MOSTRAR</button>
           </div>
-          <span class="field-error" id="err-password">Preencha a senha.</span>
+          {% if form.password.errors %}
+            <ul class="errorlist">
+              {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          {% endif %}
         </div>
+
       </div>
 
       <div class="forgot-row" style="margin-top:10px;">
         <a href="#" class="forgot-link">Esqueci minha senha</a>
       </div>
 
-      <button class="btn-confirm" id="btn-login" type="button">ENTRAR</button>
+      {# next field oculto — necessário para o LoginView redirecionar corretamente #}
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+      {% endif %}
 
-      <hr class="divider">
+      <button class="btn-confirm" type="submit">ENTRAR</button>
 
-      <div class="login-link">Não tem conta? <a href="#">Criar conta</a></div>
-    </div>
+    </form>
 
-    <div class="success-box" id="success-box">
-      <div class="s-icon">✓</div>
-      <div class="s-title">BEM-VINDO!</div>
-      <p class="s-msg">Login realizado com sucesso.</p>
-      <div class="s-code" id="s-user-display"></div>
-      <p class="s-msg" style="font-size:12px;margin-top:4px;">Redirecionando para o painel...</p>
-    </div>
+    <hr class="divider">
+    <div class="login-link">Não tem conta? <a href="{% url 'user:register' %}">Criar conta</a></div>
+
   </div>
-
 </div>
 
 <script>
   const toggleBtn = document.getElementById('toggle-pw');
-  const pwInput   = document.getElementById('password');
+  const pwInput   = document.getElementById('{{ form.password.id_for_label }}');
   toggleBtn.addEventListener('click', () => {
     const hidden = pwInput.type === 'password';
     pwInput.type = hidden ? 'text' : 'password';
     toggleBtn.textContent = hidden ? 'OCULTAR' : 'MOSTRAR';
   });
-  document.getElementById('btn-login').addEventListener('click', doLogin);
-  document.getElementById('username').addEventListener('keydown', e => e.key==='Enter'&&doLogin());
-  document.getElementById('password').addEventListener('keydown', e => e.key==='Enter'&&doLogin());
-  function doLogin() {
-    const user = document.getElementById('username').value.trim();
-    const pw   = document.getElementById('password').value;
-    let ok = true;
-    document.getElementById('err-username').classList.remove('show');
-    document.getElementById('err-password').classList.remove('show');
-    document.getElementById('alert-box').classList.remove('show');
-    if (!user) { document.getElementById('err-username').classList.add('show'); ok=false; }
-    if (!pw)   { document.getElementById('err-password').classList.add('show'); ok=false; }
-    if (!ok) return;
-    const btn = document.getElementById('btn-login');
-    btn.textContent = 'VERIFICANDO...';
-    btn.disabled = true;
-    setTimeout(() => {
-      if ((user==='admin'||user==='admin@barbearia.com') && pw==='12345678') {
-        document.getElementById('form-area').style.display='none';
-        document.getElementById('s-user-display').textContent = user.toUpperCase();
-        document.getElementById('success-box').style.display='block';
-      } else {
-        document.getElementById('alert-box').classList.add('show');
-        btn.textContent='ENTRAR';
-        btn.disabled=false;
-      }
+</script>
 
 {% endblock %}
