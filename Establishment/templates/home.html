@@ -17,14 +17,14 @@
     <a href="{% url 'servicos:home' %}" class="btn-admin">
       <i class="fa-solid fa-shield-halved"></i>Admin
     </a>
-    <form method="POST" action="{% url 'user:logout' %}">
+    <form method="POST" action="{% url 'users:logout' %}">
       {% csrf_token %}
       <button type="submit" class="btn-logout">
         <i class="fa-solid fa-right-from-bracket"></i> 
       </button>
     </form>
     {% else %}
-    <a href="{% url 'user:login' %}" class="btn-admin">
+    <a href="{% url 'users:login' %}" class="btn-admin">
       <i class="fa-solid fa-user"></i>Entrar 
     </a>
     {% endif %}
