@@ -1,25 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet"/>
+
+<!-- DEPENDÊNCIAS -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="stylesheet" href="{% static 'styles_barber.css' %}"/>
+<link rel="stylesheet" href="{% static 'barber.css' %}"/>
 
 <body>
 
 <!-- HEADER -->
 <header>
-  <a href="{% url 'home:home' %}">
-      <div class="logo">
-        <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
-        <div>
-          <div class="logo-text">BarberBlack</div>
-          <div class="logo-sub">Painel do Barbeiro</div>
-        </div>
-      </div>
+  <a href="" class="logo">
+    <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
+    <div>
+      <div class="logo-text">BarberBlack</div>
+      <div class="logo-sub">Painel do Barbeiro</div>
+    </div>
   </a>
-
-  <div style="display:flex; align-items:center; gap:10px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     {% if user.is_staff %}
     <form method="POST" action="{% url 'user:logout' %}">
       {% csrf_token %}
@@ -34,7 +33,7 @@
 <!-- HERO -->
 <div class="hero">
   <div class="hero-label">Painel de Controle</div>
-  <h1 class="hero-title">MINHA<br><span>AGENDA</span></h1>
+  <h1 class="hero-title">MINHA <span>AGENDA</span></h1>
   <p class="hero-desc">Gerencie seus horários, serviços e dias de trabalho</p>
 </div>
 
@@ -56,15 +55,14 @@
   </div>
 </div>
 
+<div class="main">
+
 <!-- ══════════════════════════════════════
      PANEL: AGENDA
 ══════════════════════════════════════ -->
-<div class="main">
 <div class="panel active" id="panel-agenda">
 
-  <!-- Stats rápidos -->
   <div class="stats-row">
-    <!-- Django: preencher com dados reais -->
     <div class="stat-card">
       <div class="stat-label">Esta semana</div>
       <div class="stat-value">12</div>
@@ -87,14 +85,10 @@
     </div>
   </div>
 
-  <!-- Lista de meses -->
   <div class="card">
     <div class="card-title">Meses</div>
     <div class="card-sub">Clique em um mês para configurar dias e horários</div>
-
-    <div class="month-list" id="month-list">
-      <!-- Gerado por JS com base no ano atual -->
-    </div>
+    <div class="month-list" id="month-list"></div>
   </div>
 
 </div>
@@ -114,20 +108,17 @@
     </button>
   </div>
 
-  <!-- Django: {% for s in servicos %} ... {% endfor %} -->
   <div class="services-grid" id="services-grid">
 
     <div class="service-card">
       <div class="sc-top">
         <div class="sc-icon"><i class="fa-solid fa-scissors"></i></div>
         <div class="sc-actions">
-          <button class="sc-btn" type="button"
-            onclick="openEditService(this)"
+          <button class="sc-btn" type="button" onclick="openEditService(this)"
             data-id="1" data-nome="Corte Masculino" data-desc="Corte clássico com acabamento"
             data-preco="45" data-duracao="30" data-icone="fa-solid fa-scissors" data-ativo="1"
             title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button"
-            onclick="openDeleteService(this)"
+          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
             data-id="1" data-nome="Corte Masculino"
             title="Excluir"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -139,7 +130,7 @@
       <div class="sc-footer">
         <div class="sc-price">R$45</div>
         <div class="sc-time"><i class="fa-regular fa-clock"></i> 30 min</div>
-        <div class="sc-status badge badge-gold">Ativo</div>
+        <div class="sc-status badge badge-accent">Ativo</div>
       </div>
     </div>
 
@@ -147,13 +138,11 @@
       <div class="sc-top">
         <div class="sc-icon"><i class="fa-solid fa-user-tie"></i></div>
         <div class="sc-actions">
-          <button class="sc-btn" type="button"
-            onclick="openEditService(this)"
+          <button class="sc-btn" type="button" onclick="openEditService(this)"
             data-id="2" data-nome="Barba Completa" data-desc="Modelagem e hidratação"
             data-preco="35" data-duracao="25" data-icone="fa-solid fa-user-tie" data-ativo="1"
             title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button"
-            onclick="openDeleteService(this)"
+          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
             data-id="2" data-nome="Barba Completa"
             title="Excluir"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -165,7 +154,7 @@
       <div class="sc-footer">
         <div class="sc-price">R$35</div>
         <div class="sc-time"><i class="fa-regular fa-clock"></i> 25 min</div>
-        <div class="sc-status badge badge-gold">Ativo</div>
+        <div class="sc-status badge badge-accent">Ativo</div>
       </div>
     </div>
 
@@ -173,13 +162,11 @@
       <div class="sc-top">
         <div class="sc-icon"><i class="fa-solid fa-star"></i></div>
         <div class="sc-actions">
-          <button class="sc-btn" type="button"
-            onclick="openEditService(this)"
+          <button class="sc-btn" type="button" onclick="openEditService(this)"
             data-id="3" data-nome="Corte + Barba" data-desc="Combo completo premium"
             data-preco="70" data-duracao="50" data-icone="fa-solid fa-star" data-ativo="1"
             title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button"
-            onclick="openDeleteService(this)"
+          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
             data-id="3" data-nome="Corte + Barba"
             title="Excluir"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -191,7 +178,7 @@
       <div class="sc-footer">
         <div class="sc-price">R$70</div>
         <div class="sc-time"><i class="fa-regular fa-clock"></i> 50 min</div>
-        <div class="sc-status badge badge-gold">Ativo</div>
+        <div class="sc-status badge badge-accent">Ativo</div>
       </div>
     </div>
 
@@ -206,7 +193,7 @@
   <div class="section-header">
     <div>
       <div class="section-title">Horários Padrão</div>
-      <div class="section-sub">Configure seus horários padrão de atendimento por dia da semana</div>
+      <div class="section-sub">Configure seus horários de atendimento por dia da semana</div>
     </div>
     <button type="submit" form="form-horarios" class="btn-primary">
       <i class="fa-solid fa-floppy-disk"></i> Salvar
@@ -220,7 +207,6 @@
 
   <form method="POST" id="form-horarios" action="">
     {% csrf_token %}
-    {# checkboxes: name="dia_0", "dia_1"... e inputs de hora: "inicio_0", "fim_0"... #}
     <div class="card" id="default-hours-card">
       <!-- Gerado por JS -->
     </div>
@@ -246,54 +232,54 @@
   <form method="POST" id="form-perfil" action="">
     {% csrf_token %}
 
-  <div class="card">
-    <div class="card-title">Dados Pessoais</div>
-    <div class="card-sub">Visível para os clientes no agendamento</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="p-nome">Nome de exibição</label>
-        <input type="text" id="p-nome" name="nome" value="Carlos Silva" placeholder="Seu nome"/>
-      </div>
-      <div class="form-group">
-        <label for="p-tel">WhatsApp</label>
-        <input type="tel" id="p-tel" name="telefone" placeholder="(99) 99999-9999"/>
-      </div>
-      <div class="form-group full">
-        <label for="p-esp">Especialidade</label>
-        <input type="text" id="p-esp" name="especialidade" value="Corte Clássico · Barba" placeholder="Ex: Corte Degradê, Barba..."/>
-      </div>
-      <div class="form-group full">
-        <label for="p-bio">Bio</label>
-        <textarea id="p-bio" name="bio" placeholder="Conte um pouco sobre você e seu trabalho...">10 anos de experiência. Especialista em cortes clássicos e modernos.</textarea>
+    <div class="card">
+      <div class="card-title">Dados Pessoais</div>
+      <div class="card-sub">Visível para os clientes no agendamento</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="p-nome">Nome de exibição</label>
+          <input type="text" id="p-nome" name="nome" value="Carlos Silva" placeholder="Seu nome"/>
+        </div>
+        <div class="form-group">
+          <label for="p-tel">WhatsApp</label>
+          <input type="tel" id="p-tel" name="telefone" placeholder="(99) 99999-9999"/>
+        </div>
+        <div class="form-group full">
+          <label for="p-esp">Especialidade</label>
+          <input type="text" id="p-esp" name="especialidade" value="Corte Clássico · Barba" placeholder="Ex: Corte Degradê, Barba..."/>
+        </div>
+        <div class="form-group full">
+          <label for="p-bio">Bio</label>
+          <textarea id="p-bio" name="bio" placeholder="Conte um pouco sobre você...">10 anos de experiência. Especialista em cortes clássicos e modernos.</textarea>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">Configurações</div>
-    <div class="card-sub">Preferências do seu painel</div>
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Aceitar agendamentos online</div>
-        <div class="toggle-sub">Clientes podem agendar pelo site</div>
+    <div class="card">
+      <div class="card-title">Configurações</div>
+      <div class="card-sub">Preferências do seu painel</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Aceitar agendamentos online</div>
+          <div class="toggle-sub">Clientes podem agendar pelo site</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="aceitar_agendamentos" checked/><span class="toggle-track"></span></label>
       </div>
-      <label class="toggle"><input type="checkbox" name="aceitar_agendamentos" checked/><span class="toggle-track"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Confirmar manualmente</div>
-        <div class="toggle-sub">Você aprova cada agendamento antes de confirmar</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Confirmar manualmente</div>
+          <div class="toggle-sub">Você aprova cada agendamento antes de confirmar</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="confirmar_manualmente"/><span class="toggle-track"></span></label>
       </div>
-      <label class="toggle"><input type="checkbox" name="confirmar_manualmente"/><span class="toggle-track"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Lembrete WhatsApp</div>
-        <div class="toggle-sub">Enviar lembrete ao cliente 2h antes</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Lembrete WhatsApp</div>
+          <div class="toggle-sub">Enviar lembrete ao cliente 2h antes</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="lembrete_whatsapp" checked/><span class="toggle-track"></span></label>
       </div>
-      <label class="toggle"><input type="checkbox" name="lembrete_whatsapp" checked/><span class="toggle-track"></span></label>
     </div>
-  </div>
 
   </form>
 
@@ -310,7 +296,7 @@
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-head-title">
-        <i class="fa-regular fa-calendar-days" style="margin-right:8px;font-size:15px;"></i>
+        <i class="fa-regular fa-calendar-days" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>
         <span id="modal-month-title">Janeiro 2026</span>
       </div>
       <button class="modal-close" type="button" onclick="closeModal('modal-month')"><i class="fa-solid fa-xmark"></i></button>
@@ -325,7 +311,6 @@
         </div>
       </div>
 
-      <!-- Calendário do mês -->
       <div class="m-cal-header">
         <div class="m-cal-title" id="m-cal-title">MARÇO 2026</div>
       </div>
@@ -337,7 +322,6 @@
       </div>
       <div class="cal-days" id="m-cal-days"></div>
 
-      <!-- Config do dia selecionado -->
       <div id="day-config" style="display:none; margin-top:20px;">
         <hr class="divider" style="margin-top:0;"/>
 
@@ -346,16 +330,16 @@
         </div>
 
         <div class="quick-btns">
-          <button class="q-btn red-btn"   onclick="markDayOff()"><i class="fa-solid fa-ban"></i> Folga (dia todo)</button>
+          <button class="q-btn red-btn"   onclick="markDayOff()"><i class="fa-solid fa-ban"></i> Folga</button>
           <button class="q-btn green-btn" onclick="markDayOn()"><i class="fa-solid fa-circle-check"></i> Dia normal</button>
           <button class="q-btn"           onclick="setMorningOnly()"><i class="fa-solid fa-sun"></i> Só manhã</button>
           <button class="q-btn"           onclick="setAfternoonOnly()"><i class="fa-solid fa-moon"></i> Só tarde</button>
-          <button class="q-btn"           onclick="setAllSlots()"><i class="fa-regular fa-clock"></i> Todos horários</button>
-          <button class="q-btn"           onclick="clearAllSlots()"><i class="fa-solid fa-xmark"></i> Nenhum horário</button>
+          <button class="q-btn"           onclick="setAllSlots()"><i class="fa-regular fa-clock"></i> Todos</button>
+          <button class="q-btn"           onclick="clearAllSlots()"><i class="fa-solid fa-xmark"></i> Nenhum</button>
         </div>
 
         <div class="time-blocks-section">
-          <div class="time-blocks-label">Horários disponíveis neste dia — clique para ligar/desligar</div>
+          <div class="time-blocks-label">Horários disponíveis — clique para ligar/desligar</div>
           <div class="time-blocks-grid" id="m-time-grid"></div>
         </div>
       </div>
@@ -363,11 +347,10 @@
     </div>
     <form method="POST" id="form-month" action="">
       {% csrf_token %}
-      {# JS preenche estes campos antes do submit #}
-      <input type="hidden" name="ano"       id="fm-ano"/>
-      <input type="hidden" name="mes"       id="fm-mes"/>
-      <input type="hidden" name="dias_off"  id="fm-dias-off"/>   {# JSON: ["2026-03-10",...] #}
-      <input type="hidden" name="horarios"  id="fm-horarios"/>   {# JSON: {"2026-03-15":["09:00",...]} #}
+      <input type="hidden" name="ano"      id="fm-ano"/>
+      <input type="hidden" name="mes"      id="fm-mes"/>
+      <input type="hidden" name="dias_off" id="fm-dias-off"/>
+      <input type="hidden" name="horarios" id="fm-horarios"/>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeModal('modal-month')">Fechar</button>
         <button type="submit" class="btn-primary" onclick="prepareMonthForm()">
@@ -386,10 +369,9 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-plus" style="margin-right:8px;font-size:14px;"></i>Novo Serviço</div>
+      <div class="modal-head-title"><i class="fa-solid fa-plus" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>Novo Serviço</div>
       <button class="modal-close" type="button" onclick="closeModal('modal-new-service')"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    {# action aponta para sua URL do Django #}
     <form method="POST" action="">
       {% csrf_token %}
       <div class="modal-body">
@@ -411,16 +393,15 @@
             <input type="number" id="ns-duracao" name="duracao" placeholder="30" min="10" step="5" required/>
           </div>
           <div class="form-group full">
-            <label for="ns-icone">Ícone (classe Font Awesome)</label>
+            <label for="ns-icone">Ícone (Font Awesome)</label>
             <input type="text" id="ns-icone" name="icone" placeholder="fa-solid fa-scissors"/>
           </div>
           <div class="form-group full">
-            <div class="toggle-row" style="padding:0; border:none;">
+            <div class="toggle-row" style="padding:0;border:none;">
               <div>
                 <div class="toggle-label">Serviço ativo</div>
                 <div class="toggle-sub">Visível para clientes agendarem</div>
               </div>
-              {# checkbox: value "on" quando marcado, ausente quando não — trate no views.py #}
               <label class="toggle"><input type="checkbox" name="ativo" checked/><span class="toggle-track"></span></label>
             </div>
           </div>
@@ -428,9 +409,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeModal('modal-new-service')">Cancelar</button>
-        <button type="submit" class="btn-primary">
-          <i class="fa-solid fa-plus"></i> Criar Serviço
-        </button>
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Criar Serviço</button>
       </div>
     </form>
   </div>
@@ -444,17 +423,11 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-pen" style="margin-right:8px;font-size:14px;"></i>Editar Serviço</div>
+      <div class="modal-head-title"><i class="fa-solid fa-pen" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>Editar Serviço</div>
       <button class="modal-close" type="button" onclick="closeModal('modal-edit-service')"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    {#
-      action dinâmico: no Django, passe o id do serviço via data-attr no botão de editar
-      e preencha este action via JS (já tratado no onclick do sc-btn abaixo).
-      Ou use uma URL fixa se preferir um form por serviço.
-    #}
     <form method="POST" id="form-edit-service" action="">
       {% csrf_token %}
-      {# id do serviço é injetado via JS quando o modal abre #}
       <input type="hidden" name="servico_id" id="es-id"/>
       <div class="modal-body">
         <div class="form-grid">
@@ -479,7 +452,7 @@
             <input type="text" id="es-icone" name="icone"/>
           </div>
           <div class="form-group full">
-            <div class="toggle-row" style="padding:0; border:none;">
+            <div class="toggle-row" style="padding:0;border:none;">
               <div>
                 <div class="toggle-label">Serviço ativo</div>
                 <div class="toggle-sub">Visível para clientes agendarem</div>
@@ -491,9 +464,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeModal('modal-edit-service')">Cancelar</button>
-        <button type="submit" class="btn-primary">
-          <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
-        </button>
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
       </div>
     </form>
   </div>
@@ -509,15 +480,15 @@
     <form method="POST" id="form-delete-service" action="">
       {% csrf_token %}
       <input type="hidden" name="servico_id" id="del-id"/>
-      <div class="modal-body" style="text-align:center; padding: 32px 24px;">
-        <div style="font-size:46px; color:var(--red); margin-bottom:14px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:3px; margin-bottom:8px;">Excluir Serviço?</div>
-        <p style="font-size:14px; color:var(--gray); line-height:1.7; margin-bottom:22px;">
-          Tem certeza que deseja excluir <strong id="del-nome" style="color:var(--white);">este serviço</strong>?<br>Esta ação não pode ser desfeita.
+      <div class="modal-body" style="text-align:center;padding:32px 24px;">
+        <div style="font-size:44px;color:var(--danger);margin-bottom:14px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;">Excluir Serviço?</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:22px;">
+          Tem certeza que deseja excluir <strong id="del-nome" style="color:var(--text);">este serviço</strong>?<br>Esta ação não pode ser desfeita.
         </p>
-        <div style="display:flex; gap:10px; justify-content:center;">
+        <div style="display:flex;gap:10px;justify-content:center;">
           <button type="button" class="btn-ghost" onclick="closeModal('modal-delete-confirm')">Cancelar</button>
-          <button type="submit" class="btn-primary" style="background:var(--red); border-color:var(--red);">
+          <button type="submit" class="btn-primary" style="background:var(--danger);box-shadow:0 2px 8px rgba(239,68,68,.3);">
             <i class="fa-solid fa-trash"></i> Excluir
           </button>
         </div>

@@ -2,8 +2,14 @@
 {% block content %}
 {% load static %}
 
+<!-- DEPENDÊNCIAS -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="{% static 'barber.css' %}"/>
+
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
@@ -12,7 +18,7 @@
       <div class="logo-sub">Est. 2018 · Premium</div>
     </div>
   </div>
-  <div style="display:flex; align-items:center; gap:10px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     {% if user.is_staff %}
     <a href="{% url 'servicos:home' %}" class="btn-admin">
       <i class="fa-solid fa-shield-halved"></i>Admin
@@ -20,24 +26,28 @@
     <form method="POST" action="{% url 'users:logout' %}">
       {% csrf_token %}
       <button type="submit" class="btn-logout">
-        <i class="fa-solid fa-right-from-bracket"></i> 
+        <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </form>
     {% else %}
     <a href="{% url 'users:login' %}" class="btn-admin">
-      <i class="fa-solid fa-user"></i>Entrar 
+      <i class="fa-solid fa-user"></i>Entrar
     </a>
     {% endif %}
   </div>
 </header>
 
+<!-- HERO -->
 <div class="hero">
   <div class="hero-label">Seu estilo, nossa arte</div>
-  <h1 class="hero-title">AGENDE SEU<br><span>HORÁRIO</span></h1>
+  <h1 class="hero-title">AGENDE SEU <span>HORÁRIO</span></h1>
   <p class="hero-desc">Escolha o barbeiro, serviço e horário ideal para você</p>
 </div>
 
-<div class="main">
+<!-- MAIN — 2 colunas no desktop -->
+<div class="main two-col">
+
+  <!-- COLUNA ESQUERDA -->
   <div style="display:flex;flex-direction:column;gap:18px;">
 
     <!-- BARBEIRO -->
@@ -66,7 +76,7 @@
       </button>
     </div>
 
-    <!-- DATA & HORÁRIO — renderizado pelo Django -->
+    <!-- DATA & HORÁRIO -->
     <div class="card">
       <div class="card-title">Data & Horário</div>
       <div class="card-sub">Selecione o dia e um horário disponível</div>
@@ -100,11 +110,13 @@
       <div class="form-grid">
         <div class="form-group">
           <label for="nome">Nome Completo</label>
-          <input type="text" id="nome" name="nome" placeholder="João da Silva" autocomplete="name" oninput="checkConfirm()"/>
+          <input type="text" id="nome" name="nome" placeholder="João da Silva"
+                 autocomplete="name" oninput="checkConfirm()"/>
         </div>
         <div class="form-group">
           <label for="telefone">WhatsApp</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="(99) 99999-9999" autocomplete="tel"oninput="maskTelefone(this); checkConfirm()"/>
+          <input type="tel" id="telefone" name="telefone" placeholder="(99) 99999-9999"
+                 autocomplete="tel" oninput="maskTelefone(this); checkConfirm()"/>
         </div>
         <div class="form-group full">
           <label for="obs">Observações (opcional)</label>
@@ -117,6 +129,7 @@
 
   <!-- SIDEBAR -->
   <div class="sidebar">
+
     <div class="summary-card">
       <div class="summary-header"><i class="fa-solid fa-receipt" style="margin-right:8px;"></i>Resumo</div>
       <div class="summary-body">
@@ -146,15 +159,15 @@
 
     <form method="POST" action="{% url 'servicos:agendar' %}" id="form-agendamento">
       {% csrf_token %}
-      <input type="hidden" name="employee" id="h-barber-id">
-      <input type="hidden" name="service"    id="h-services">
+      <input type="hidden" name="employee"    id="h-barber-id">
+      <input type="hidden" name="service"     id="h-services">
       <input type="hidden" name="date"        id="h-date">
-      <input type="hidden" name="time"     id="h-time">
-      <input type="hidden" name="client_name"        id="h-nome">
-      <input type="hidden" name="phone"    id="h-telefone">
+      <input type="hidden" name="time"        id="h-time">
+      <input type="hidden" name="client_name" id="h-nome">
+      <input type="hidden" name="phone"       id="h-telefone">
       <input type="hidden" name="observation" id="h-obs">
       <input type="hidden" name="total"       id="h-total">
-      <input type="hidden" name="uid"    id="h-uid" value="{{ establishment.uid }}">
+      <input type="hidden" name="uid"         id="h-uid" value="{{ establishment.uid }}">
 
       <button class="btn-confirm" id="btn-confirm" type="button" onclick="confirmar()" disabled>
         <i class="fa-solid fa-calendar-check"></i>&nbsp; CONFIRMAR AGENDAMENTO
@@ -184,17 +197,18 @@
         <div class="pill-text"><strong>Pagamento</strong>Pix · Cartão · Dinheiro</div>
       </div>
     </div>
-  </div>
+
+  </div><!-- /sidebar -->
 
 </div><!-- /main -->
 
 
-<!-- MODAL — BARBEIRO (itens gerados pelo Django) -->
+<!-- MODAL — BARBEIRO -->
 <div class="overlay" id="modal-barber" onclick="closeOnBg(event,'modal-barber')">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-scissors" style="margin-right:8px;font-size:15px;"></i>Barbeiro</div>
+      <div class="modal-head-title"><i class="fa-solid fa-scissors" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>Barbeiro</div>
       <button class="modal-close" type="button" onclick="closeModal('modal-barber')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -226,7 +240,7 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-list" style="margin-right:8px;font-size:15px;"></i>Serviços</div>
+      <div class="modal-head-title"><i class="fa-solid fa-list" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>Serviços</div>
       <button class="modal-close" type="button" onclick="closeModal('modal-service')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -253,10 +267,11 @@
   </div>
 </div>
 
+<!-- MODAL — ERRO -->
 <div class="overlay" id="modal-form-error">
   <div class="success-sheet">
-    <div class="s-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-    <div id="title-id-form-error" class="s-title">Agendado!</div>
+    <div class="s-icon" style="color:var(--danger);"><i class="fa-solid fa-circle-xmark"></i></div>
+    <div id="title-id-form-error" class="s-title">Erro</div>
     <p id="message-id-form-error" class="s-msg">Erro ao agendar.</p>
     <button class="btn-fechar" type="button" onclick="closeModal('modal-form-error')">Fechar</button>
   </div>
@@ -268,7 +283,6 @@
   {% endif %}
 {% endfor %}
 
-{# Dados do backend expostos como JSON para o JS mínimo #}
 <script>
   var CONFIG_POR_BARBEIRO            = {{ config_json|safe }};
   var AGENDAMENTOS_POR_BARBEIRO      = {{ agendamentos_json|safe }};

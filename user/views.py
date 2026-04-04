@@ -19,19 +19,9 @@ class UserLogoutView(LogoutView):
 
 class UserLoginView(LoginView):
     template_name = "login.html"
-    redirect_authenticated_user = True
-    
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        self.request.session["uid"] = self.request.user.establishment.uid
-        return response
-
 
     def get_success_url(self):
-        uid = self.request.session.get("uid")
-        if uid:
-            return reverse("establishment:public_agenda", kwargs={"uid": uid})
-        return reverse("users:login")  # fallback, caso algo dê errado
+        return reverse("servicos:home")  # ou qualquer outra página que queira redirecionar após o login
 
 class UserRegisterView(CreateView):
     model = User
