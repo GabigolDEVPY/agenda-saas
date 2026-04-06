@@ -11,19 +11,19 @@ class HomeService:
     @staticmethod
     def get_context_establishment(uid):
         establishment = get_object_or_404(Establishment, uid=uid)
-        employees = establishment.employees.all()
+        users = establishment.users.all()
  
         context = {
             'uid': uid,
-            "employees": employees,
+            "users": users,
             # Configurações de horário por barbeiro (início, fim, intervalo)
-            "config_json":            HomeService.get_config(employees),
+            "config_json":            HomeService.get_config(users),
             # Agendamentos existentes: {employee_id: {date: [{inicio, fim}]}}
-            "agendamentos_json":      HomeService.get_agendamentos(employees),
+            "agendamentos_json":      HomeService.get_agendamentos(users),
             # Meses disponíveis (mantido igual)
-            "meses_disponiveis_json": HomeService.get_available_months(employees),
+            "meses_disponiveis_json": HomeService.get_available_months(users),
             # Serviços (mantido igual)
-            "servicos_json":          HomeService.get_servicos(employees),
+            "servicos_json":          HomeService.get_servicos(users),
         }
         return context
  
