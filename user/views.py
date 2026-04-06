@@ -5,6 +5,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
 from django.contrib.auth.models import User
 from .forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm
+
 
 class UserLogoutView(LogoutView):
     def post(self, request, *args, **kwargs):
