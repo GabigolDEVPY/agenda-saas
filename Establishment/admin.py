@@ -1,6 +1,6 @@
 from django.contrib import admin
-from . models import Establishment
-# Register your models here.
+from .models import Establishment
+
 
 @admin.register(Establishment)
 class EstablishmentAdmin(admin.ModelAdmin):

@@ -1,114 +1,99 @@
-from datetime import datetime, timedelta, time, date
+from datetime import datetime, timedelta
 from collections import defaultdict
 from servicos.models import Appointment, Diverses, MonthAvailability, Service
-import calendar
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from .models import Establishment
- 
- 
+
+
 class HomeService:
     @staticmethod
     def get_context_establishment(uid):
         establishment = get_object_or_404(Establishment, uid=uid)
         users = establishment.users.all()
- 
+
         context = {
             'uid': uid,
             "users": users,
-            # Configurações de horário por barbeiro (início, fim, intervalo)
+            # Configurações de horário por usuário (início, fim, intervalo)
             "config_json":            HomeService.get_config(users),
-            # Agendamentos existentes: {employee_id: {date: [{inicio, fim}]}}
+            # Agendamentos existentes: {user_id: {date: [{inicio, fim}]}}
             "agendamentos_json":      HomeService.get_agendamentos(users),
-            # Meses disponíveis (mantido igual)
+            # Meses disponíveis
             "meses_disponiveis_json": HomeService.get_available_months(users),
-            # Serviços (mantido igual)
+            # Serviços
             "servicos_json":          HomeService.get_servicos(users),
         }
         return context
- 
+
     # ── CONFIGURAÇÃO DE HORÁRIO ───────────────────────────────────────────────
-    # Retorna para cada barbeiro: hora_inicio, hora_fim e interval_time
-    # O frontend usa isso para gerar os slots dinamicamente.
     @staticmethod
-    def get_config(employees):
+    def get_config(users):
         result = {}
-        for employee in employees:
-            diverses = Diverses.objects.get(employee=employee)
-            result[str(employee.id)] = {
-                "hora_inicio":   "09:00",   # ajuste conforme seu modelo
-                "hora_fim":      "18:00",   # ajuste conforme seu modelo
-                "interval_time": diverses.interval_time,  # minutos (ex: 30)
+        for user in users:
+            diverses = Diverses.objects.get(user=user)
+            result[str(user.id)] = {
+                "hora_inicio":   "09:00",
+                "hora_fim":      "18:00",
+                "interval_time": diverses.interval_time,
             }
         return json.dumps(result)
- 
+
     # ── AGENDAMENTOS EXISTENTES ───────────────────────────────────────────────
-    # Retorna todos os agendamentos futuros com início e fim reais.
-    # O frontend usa isso para saber quais janelas estão bloqueadas.
-    #
-    # Formato: {
-    #   "<employee_id>": {
-    #     "YYYY-MM-DD": [
-    #       {"inicio": "09:30", "fim": "10:10"},
-    #       ...
-    #     ]
-    #   }
-    # }
     @staticmethod
-    def get_agendamentos(employees):
+    def get_agendamentos(users):
         result = {}
         hoje = datetime.now().date()
- 
-        for employee in employees:
+
+        for user in users:
             dias = defaultdict(list)
- 
+
             agendamentos = (
                 Appointment.objects
-                .filter(employee=employee, date__gte=hoje)
+                .filter(user=user, date__gte=hoje)
                 .select_related('service')
             )
- 
+
             for ag in agendamentos:
                 inicio_dt = datetime.combine(ag.date, ag.time)
-                fim_dt    = inicio_dt + timedelta(minutes=ag.duration)  # ← era ag.service.time_duration
+                fim_dt    = inicio_dt + timedelta(minutes=ag.duration)
 
                 dias[str(ag.date)].append({
                     "inicio": ag.time.strftime("%H:%M"),
                     "fim":    fim_dt.strftime("%H:%M"),
                 })
- 
-            # Ordena por horário de início em cada dia
-            result[str(employee.id)] = {
+
+            result[str(user.id)] = {
                 day: sorted(slots, key=lambda x: x["inicio"])
                 for day, slots in dias.items()
             }
- 
+
         return json.dumps(result)
- 
+
     # ── MESES DISPONÍVEIS ─────────────────────────────────────────────────────
     @staticmethod
-    def get_available_months(employees):
+    def get_available_months(users):
         result = {}
-        for employee in employees:
-            months = MonthAvailability.objects.filter(availability=True, employee=employee)
-            result[str(employee.id)] = [
+        for user in users:
+            months = MonthAvailability.objects.filter(availability=True, user=user)
+            result[str(user.id)] = [
                 {"ano": m.year, "mes": m.month}
                 for m in months
             ]
         return json.dumps(result)
- 
+
     # ── SERVIÇOS ──────────────────────────────────────────────────────────────
     @staticmethod
-    def get_servicos(employees):
+    def get_servicos(users):
         result = {}
-        for employee in employees:
-            result[str(employee.id)] = [
+        for user in users:
+            result[str(user.id)] = [
                 {
                     "id":      s.id,
                     "nome":    s.name,
                     "preco":   str(s.price),
                     "duracao": s.time_duration,
                 }
-                for s in employee.services.all()
+                for s in user.services.all()
             ]
         return json.dumps(result)

@@ -6,8 +6,6 @@ from .services import AppointmentService
 from django.contrib import messages
 
 
-
-# Create your views here.
 class ServicosView(TemplateView):
     template_name = 'admin.html'
 
@@ -15,7 +13,7 @@ class ServicosView(TemplateView):
 class CreateAppointmentView(View):
     def post(self, request):
         errors, result = AppointmentService.create_appointment(request.POST)
-        
+
         if not result:
             messages.error(request, json.dumps({
                 "status": "error",
@@ -23,10 +21,9 @@ class CreateAppointmentView(View):
                 "message": str(errors)
             }))
             return redirect(request.META.get("HTTP_REFERER"))
-        
 
         if result and result.get("status") == "success":
-            uid = result["uid"] 
+            uid = result["uid"]
             messages.success(request, json.dumps({
                 "status": result["status"],
                 "horario": result["horario"],
@@ -35,11 +32,11 @@ class CreateAppointmentView(View):
             }))
 
         elif result:
+            uid = result["uid"]
             messages.error(request, json.dumps({
                 "status": result["status"],
                 "title": result["title"],
                 "message": result["message"]
             }))
-        
-        return redirect("establishment:public_agenda", uid=uid)
 
+        return redirect("establishment:public_agenda", uid=uid)

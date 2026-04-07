@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Establishment(models.Model):
-    user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
+    user = models.OneToOneField("user.User", on_delete=models.CASCADE, related_name="owned_establishment")
     name = models.CharField(max_length=255)
     uid = models.CharField(max_length=20, unique=True, editable=False)
 
