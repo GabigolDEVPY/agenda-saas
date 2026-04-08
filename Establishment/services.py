@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 from servicos.models import Appointment, Diverses, MonthAvailability, Service
+from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 import json
 from django.shortcuts import get_object_or_404
 from .models import Establishment
@@ -9,8 +10,13 @@ from .models import Establishment
 class HomeService:
     @staticmethod
     def get_context_establishment(uid):
-        establishment = get_object_or_404(Establishment, uid=uid)
+        establishment = Establishment.objects.filter(uid=uid).first()
+        if not establishment:
+            raise EstablishmentNotFound()
+        
         users = establishment.users.all()
+        if not users:
+            raise EstablishmentIncomplete()
 
         context = {
             'uid': uid,
@@ -31,7 +37,9 @@ class HomeService:
     def get_config(users):
         result = {}
         for user in users:
-            diverses = Diverses.objects.get(user=user)
+            diverses = Diverses.objects.filter(user=user).first()
+            if not diverses:
+                raise EstablishmentIncomplete()
             result[str(user.id)] = {
                 "hora_inicio":   "09:00",
                 "hora_fim":      "18:00",
@@ -76,6 +84,7 @@ class HomeService:
         result = {}
         for user in users:
             months = MonthAvailability.objects.filter(availability=True, user=user)
+            
             result[str(user.id)] = [
                 {"ano": m.year, "mes": m.month}
                 for m in months

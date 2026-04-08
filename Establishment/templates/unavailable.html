@@ -11,7 +11,20 @@
   <i class="fa-solid fa-triangle-exclamation" style="font-size:56px;color:var(--accent);margin-bottom:24px;"></i>
   <h1 style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:8px;">Página Indisponível</h1>
   <p style="color:var(--text-muted);font-size:15px;max-width:340px;">
-    Este estabelecimento não foi encontrado ou está temporariamente fora do ar.
+    {{ msg }}
+    {% if user %}
+
+      {% if payment %}
+        <a href="{% url 'servicos:home' %}" class="btn-admin">
+          <i class="fa-solid"></i>Fazer pagamento
+        </a>
+      {% else %}
+        <a href="{% url 'servicos:home' %}" class="btn-admin">
+          <i class="fa-solid"></i>Concluir configuração
+        </a>
+      {% endif %}
+
+    {% endif %}
   </p>
 </div>
 
