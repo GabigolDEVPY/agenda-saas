@@ -5,16 +5,15 @@
 <!-- DEPENDÊNCIAS -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="stylesheet" href="{% static 'barber.css' %}"/>
 
 <body>
 
-<!-- HERO -->
+<!-- HERO
 <div class="hero">
   <div class="hero-label">Painel de Controle</div>
   <h1 class="hero-title">MINHA <span>AGENDA</span></h1>
   <p class="hero-desc">Gerencie seus horários, serviços e dias de trabalho</p>
-</div>
+</div> -->
 
 <!-- NAV TABS -->
 <div class="nav-tabs-wrap">
@@ -30,6 +29,9 @@
     </button>
     <button class="nav-tab" onclick="switchTab('perfil', this)">
       <i class="fa-solid fa-circle-user"></i>Perfil
+    </button>
+    <button class="nav-tab" onclick="switchTab('estabelecimento', this)">
+      <i class="fa-solid fa-store"></i>Estabelecimento
     </button>
   </div>
 </div>
@@ -195,7 +197,6 @@
     Funcionários cadastrados poderão acessar o sistema com login próprio e gerenciar sua própria agenda.
   </div>
 
-  <!-- Lista de funcionários (renderizada pelo Django) -->
   <div class="employees-list">
     {% for employee in employees %}
     <div class="employee-card">
@@ -247,6 +248,7 @@
   <form method="POST" id="form-perfil" action="">
     {% csrf_token %}
 
+    <!-- DADOS PESSOAIS -->
     <div class="card">
       <div class="card-title">Dados Pessoais</div>
       <div class="card-sub">Visível para os clientes no agendamento</div>
@@ -263,10 +265,6 @@
           <label for="p-esp">Especialidade</label>
           <input type="text" id="p-esp" name="especialidade" value="Corte Clássico · Barba" placeholder="Ex: Corte Degradê, Barba..."/>
         </div>
-        <div class="form-group">
-          <label for="ns-duracao">Duração de intervalo se serviços (minutos) </label>
-          <input type="number" id="ns-duracao" name="duracao" placeholder="30" min="10" step="5" required/>
-        </div>
         <div class="form-group full">
           <label for="p-bio">Bio</label>
           <textarea id="p-bio" name="bio" placeholder="Conte um pouco sobre você...">10 anos de experiência. Especialista em cortes clássicos e modernos.</textarea>
@@ -274,6 +272,23 @@
       </div>
     </div>
 
+    <!-- ATENDIMENTO -->
+    <div class="card">
+      <div class="card-title">Atendimento</div>
+      <div class="card-sub">Configurações de agenda pessoal</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="p-intervalo">Intervalo entre serviços (min)</label>
+          <input type="number" id="p-intervalo" name="duracao" placeholder="30" min="10" step="5" required/>
+        </div>
+        <div class="form-group">
+          <label for="p-limite">Máx. agendamentos por dia</label>
+          <input type="number" id="p-limite" name="limite_dia" placeholder="8" min="1" step="1"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
     <div class="card">
       <div class="card-title">Configurações</div>
       <div class="card-sub">Preferências do seu painel</div>
@@ -304,11 +319,127 @@
 
 </div>
 
+<!-- ══════════════════════════════════════
+     PANEL: ESTABELECIMENTO
+══════════════════════════════════════ -->
+<div class="panel" id="panel-estabelecimento">
+
+  <div class="section-header">
+    <div>
+      <div class="section-title">Estabelecimento</div>
+      <div class="section-sub">Informações exibidas para os clientes no agendamento</div>
+    </div>
+    <button type="submit" form="form-estabelecimento" class="btn-primary">
+      <i class="fa-solid fa-floppy-disk"></i> Salvar
+    </button>
+  </div>
+
+  <form method="POST" id="form-estabelecimento" action="">
+    {% csrf_token %}
+
+    <!-- DADOS DO NEGÓCIO -->
+    <div class="card">
+      <div class="card-title">Dados do Negócio</div>
+      <div class="card-sub">Identificação pública da sua barbearia</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="est-nome">Nome da barbearia</label>
+          <input type="text" id="est-nome" name="nome_estabelecimento" placeholder="Ex: Barbearia Corte &amp; Estilo"/>
+        </div>
+        <div class="form-group">
+          <label for="est-cnpj">CNPJ</label>
+          <input type="text" id="est-cnpj" name="cnpj" placeholder="00.000.000/0001-00"/>
+        </div>
+        <div class="form-group">
+          <label for="est-tel">Telefone / WhatsApp</label>
+          <input type="tel" id="est-tel" name="telefone_estabelecimento" placeholder="(99) 99999-9999"/>
+        </div>
+        <div class="form-group full">
+          <label for="est-desc">Descrição</label>
+          <textarea id="est-desc" name="descricao_estabelecimento" placeholder="Fale sobre a sua barbearia..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENDEREÇO -->
+    <div class="card">
+      <div class="card-title">Endereço</div>
+      <div class="card-sub">Localização física do estabelecimento</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="est-cep">CEP</label>
+          <input type="text" id="est-cep" name="cep" placeholder="00000-000"/>
+        </div>
+        <div class="form-group">
+          <label for="est-cidade">Cidade</label>
+          <input type="text" id="est-cidade" name="cidade" placeholder="Ex: São Paulo"/>
+        </div>
+        <div class="form-group">
+          <label for="est-estado">Estado</label>
+          <input type="text" id="est-estado" name="estado" placeholder="SP"/>
+        </div>
+        <div class="form-group">
+          <label for="est-bairro">Bairro</label>
+          <input type="text" id="est-bairro" name="bairro" placeholder="Ex: Centro"/>
+        </div>
+        <div class="form-group">
+          <label for="est-rua">Rua / Avenida</label>
+          <input type="text" id="est-rua" name="rua" placeholder="Ex: Av. Paulista"/>
+        </div>
+        <div class="form-group">
+          <label for="est-numero">Número</label>
+          <input type="text" id="est-numero" name="numero_endereco" placeholder="1234"/>
+        </div>
+        <div class="form-group full">
+          <label for="est-complemento">Complemento</label>
+          <input type="text" id="est-complemento" name="complemento" placeholder="Sala, andar, bloco..."/>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORÁRIO DE FUNCIONAMENTO -->
+    <div class="card">
+      <div class="card-title">Horário de Funcionamento</div>
+      <div class="card-sub">Dias e horários em que o estabelecimento está aberto</div>
+      <div id="horarios-funcionamento"></div>
+    </div>
+
+    <!-- CONFIGURAÇÕES GERAIS -->
+    <div class="card">
+      <div class="card-title">Configurações Gerais</div>
+      <div class="card-sub">Preferências do estabelecimento</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Exibir endereço publicamente</div>
+          <div class="toggle-sub">Clientes veem o endereço na página de agendamento</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="exibir_endereco" checked/><span class="toggle-track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Exibir telefone publicamente</div>
+          <div class="toggle-sub">Número visível para clientes entrarem em contato</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="exibir_telefone" checked/><span class="toggle-track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Estabelecimento aberto</div>
+          <div class="toggle-sub">Desative para suspender todos os agendamentos temporariamente</div>
+        </div>
+        <label class="toggle"><input type="checkbox" name="estabelecimento_aberto" checked/><span class="toggle-track"></span></label>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
 </div><!-- /main -->
 
 
 <!-- ══════════════════════════════════════
-     MODAL: SELECIONAR MÊS (novo)
+     MODAL: SELECIONAR MÊS
 ══════════════════════════════════════ -->
 <div class="overlay" id="modal-pick-month" onclick="closeOnBg(event,'modal-pick-month')">
   <div class="modal-sheet" style="max-width:480px;">
@@ -322,9 +453,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size:13px;color:var(--gray);margin-bottom:16px;">Escolha o mês que deseja configurar:</p>
-      <div class="month-pick-list" id="month-pick-list">
-        <!-- Gerado por JS -->
-      </div>
+      <div class="month-pick-list" id="month-pick-list"></div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn-ghost" onclick="closeModal('modal-pick-month')">Fechar</button>
@@ -540,7 +669,7 @@
 
 
 <!-- ══════════════════════════════════════
-     MODAL: NOVO FUNCIONÁRIO (novo)
+     MODAL: NOVO FUNCIONÁRIO
 ══════════════════════════════════════ -->
 <div class="overlay" id="modal-new-employee" onclick="closeOnBg(event,'modal-new-employee')">
   <div class="modal-sheet" style="max-width:520px;">
@@ -611,7 +740,7 @@
 
 
 <!-- ══════════════════════════════════════
-     MODAL: REMOVER FUNCIONÁRIO (novo)
+     MODAL: REMOVER FUNCIONÁRIO
 ══════════════════════════════════════ -->
 <div class="overlay" id="modal-delete-employee" onclick="closeOnBg(event,'modal-delete-employee')">
   <div class="modal-sheet" style="max-width:440px;">
@@ -720,11 +849,29 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 15px; color: var(--gold); flex-shrink: 0;
 }
+
+/* ── HORÁRIOS DE FUNCIONAMENTO ── */
+.hf-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--black-4);
+}
+.hf-row:last-child { border-bottom: none; }
+.hf-day-label {
+  min-width: 86px; flex-shrink: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+}
+.hf-times {
+  display: flex; align-items: center; gap: 8px; flex: 1;
+}
+.hf-times input[type="time"] { flex: 1; }
+.hf-sep {
+  font-size: 11px; color: var(--gray); flex-shrink: 0;
+}
 </style>
 
 <script src="{% static 'scripts_barber.js' %}"></script>
 <script>
-
 
 /* ══════════════════════════════════════
    FUNCIONÁRIOS — modal de exclusão
@@ -741,7 +888,7 @@ function openDeleteEmployee(btn) {
 /* ══════════════════════════════════════
    PICK MONTH — lista de seleção
 ══════════════════════════════════════ */
-var openedMonths = []; // meses que o usuário abriu: [{m, y}]
+var openedMonths = [];
 
 function buildPickMonthList() {
   var el = document.getElementById('month-pick-list');
@@ -769,7 +916,6 @@ function buildPickMonthList() {
     item.addEventListener('click', function() {
       var m2 = parseInt(this.dataset.m);
       var y2 = parseInt(this.dataset.y);
-      // adiciona à lista de abertos se ainda não estiver
       if (!openedMonths.some(function(o){ return o.m === m2 && o.y === y2; })) {
         openedMonths.push({ m: m2, y: y2 });
         renderOpenMonthsList();
@@ -812,10 +958,69 @@ function renderOpenMonthsList() {
   });
 }
 
-/* Sobrescreve o buildMonthList original para não fazer nada — substituído pelo novo fluxo */
 buildMonthList = function() {};
 
-/* Init extra */
+/* ══════════════════════════════════════
+   HORÁRIOS DE FUNCIONAMENTO — Estabelecimento
+══════════════════════════════════════ */
+(function buildHorariosFuncionamento() {
+  var dias = [
+    { key: 'dom', label: 'Domingo' },
+    { key: 'seg', label: 'Segunda' },
+    { key: 'ter', label: 'Terça'   },
+    { key: 'qua', label: 'Quarta'  },
+    { key: 'qui', label: 'Quinta'  },
+    { key: 'sex', label: 'Sexta'   },
+    { key: 'sab', label: 'Sábado'  },
+  ];
+  var defaults = {
+    dom: { aberto: false, abertura: '08:00', fechamento: '18:00' },
+    seg: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    ter: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    qua: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    qui: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    sex: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    sab: { aberto: true,  abertura: '09:00', fechamento: '18:00' },
+  };
+
+  var wrap = document.getElementById('horarios-funcionamento');
+  if (!wrap) return;
+
+  dias.forEach(function(dia) {
+    var d = defaults[dia.key];
+
+    var row = document.createElement('div');
+    row.className = 'hf-row';
+
+    row.innerHTML =
+      '<div class="hf-day-label">' + dia.label + '</div>' +
+      '<label class="toggle" style="flex-shrink:0;">' +
+        '<input type="checkbox" name="hf_' + dia.key + '_aberto" id="hf-' + dia.key + '-aberto"' + (d.aberto ? ' checked' : '') + '/>' +
+        '<span class="toggle-track"></span>' +
+      '</label>' +
+      '<div class="hf-times" id="hf-' + dia.key + '-times" style="display:' + (d.aberto ? 'flex' : 'none') + ';">' +
+        '<input type="time" name="hf_' + dia.key + '_abertura" value="' + d.abertura + '"/>' +
+        '<span class="hf-sep">até</span>' +
+        '<input type="time" name="hf_' + dia.key + '_fechamento" value="' + d.fechamento + '"/>' +
+      '</div>' +
+      '<div id="hf-' + dia.key + '-closed" style="display:' + (d.aberto ? 'none' : 'flex') + ';align-items:center;">' +
+        '<span class="badge badge-alert">Fechado</span>' +
+      '</div>';
+
+    var checkbox = row.querySelector('#hf-' + dia.key + '-aberto');
+    var timesEl  = row.querySelector('#hf-' + dia.key + '-times');
+    var closedEl = row.querySelector('#hf-' + dia.key + '-closed');
+
+    checkbox.addEventListener('change', function() {
+      timesEl.style.display  = this.checked ? 'flex' : 'none';
+      closedEl.style.display = this.checked ? 'none' : 'flex';
+    });
+
+    wrap.appendChild(row);
+  });
+})();
+
+/* Init */
 buildPickMonthList();
 </script>
 </body>
