@@ -9,27 +9,6 @@
 
 <body>
 
-<!-- HEADER -->
-<header>
-  <a href="" class="logo">
-    <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
-    <div>
-      <div class="logo-text">BarberBlack</div>
-      <div class="logo-sub">Painel do Barbeiro</div>
-    </div>
-  </a>
-  <div style="display:flex;align-items:center;gap:10px;">
-    {% if user %}
-    <form method="POST" action="{% url 'user:logout' %}">
-      {% csrf_token %}
-      <button type="submit" class="btn-logout">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
-    </form>
-    {% endif %}
-  </div>
-</header>
-
 <!-- HERO -->
 <div class="hero">
   <div class="hero-label">Painel de Controle</div>
@@ -46,8 +25,8 @@
     <button class="nav-tab" onclick="switchTab('servicos', this)">
       <i class="fa-solid fa-scissors"></i>Serviços
     </button>
-    <button class="nav-tab" onclick="switchTab('horarios', this)">
-      <i class="fa-regular fa-clock"></i>Horários Padrão
+    <button class="nav-tab" onclick="switchTab('funcionarios', this)">
+      <i class="fa-solid fa-users"></i>Funcionários
     </button>
     <button class="nav-tab" onclick="switchTab('perfil', this)">
       <i class="fa-solid fa-circle-user"></i>Perfil
@@ -85,11 +64,22 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Meses</div>
-    <div class="card-sub">Clique em um mês para configurar dias e horários</div>
-    <div class="month-list" id="month-list"></div>
+  <!-- BOTÃO ABRIR AGENDA -->
+  <div class="card" style="text-align:center; padding: 36px 20px;">
+    <div style="font-size:48px; color:var(--gold); margin-bottom:16px;">
+      <i class="fa-regular fa-calendar-days"></i>
+    </div>
+    <div class="card-title" style="margin-bottom:6px;">Agenda Mensal</div>
+    <p style="font-size:13px; color:var(--gray); margin-bottom:24px;">
+      Selecione um mês para configurar dias de trabalho, folgas e horários disponíveis.
+    </p>
+    <button class="btn-primary" onclick="openModal('modal-pick-month')" type="button">
+      <i class="fa-solid fa-calendar-plus"></i> Abrir Agenda
+    </button>
   </div>
+
+  <!-- MESES ABERTOS (renderizados dinamicamente) -->
+  <div id="open-months-list"></div>
 
 </div>
 
@@ -186,31 +176,56 @@
 </div>
 
 <!-- ══════════════════════════════════════
-     PANEL: HORÁRIOS PADRÃO
+     PANEL: FUNCIONÁRIOS
 ══════════════════════════════════════ -->
-<div class="panel" id="panel-horarios">
+<div class="panel" id="panel-funcionarios">
 
   <div class="section-header">
     <div>
-      <div class="section-title">Horários Padrão</div>
-      <div class="section-sub">Configure seus horários de atendimento por dia da semana</div>
+      <div class="section-title">Funcionários</div>
+      <div class="section-sub">Cadastre os barbeiros que trabalham no estabelecimento</div>
     </div>
-    <button type="submit" form="form-horarios" class="btn-primary">
-      <i class="fa-solid fa-floppy-disk"></i> Salvar
+    <button class="btn-primary" type="button" onclick="openModal('modal-new-employee')">
+      <i class="fa-solid fa-user-plus"></i> Novo Funcionário
     </button>
   </div>
 
   <div class="info-note" style="margin-bottom:16px;">
     <i class="fa-solid fa-circle-info"></i>
-    Estes são os horários padrão. Você pode ajustar dias específicos diretamente na agenda.
+    Funcionários cadastrados poderão acessar o sistema com login próprio e gerenciar sua própria agenda.
   </div>
 
-  <form method="POST" id="form-horarios" action="">
-    {% csrf_token %}
-    <div class="card" id="default-hours-card">
-      <!-- Gerado por JS -->
+  <!-- Lista de funcionários (renderizada pelo Django) -->
+  <div class="employees-list">
+    {% for employee in employees %}
+    <div class="employee-card">
+      <div class="emp-left">
+        <div class="emp-avatar"><i class="fa-solid fa-scissors"></i></div>
+        <div>
+          <div class="emp-name">{{ employee.name }}</div>
+          <div class="emp-meta">{{ employee.user.email }}</div>
+        </div>
+      </div>
+      <div class="emp-actions">
+        <span class="badge {% if employee.user.is_active %}badge-ok{% else %}badge-alert{% endif %}">
+          {% if employee.user.is_active %}Ativo{% else %}Inativo{% endif %}
+        </span>
+        <button class="sc-btn danger" type="button"
+          onclick="openDeleteEmployee(this)"
+          data-id="{{ employee.id }}"
+          data-nome="{{ employee.name }}"
+          title="Remover">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
     </div>
-  </form>
+    {% empty %}
+    <div class="empty-state">
+      <i class="fa-solid fa-users"></i>
+      Nenhum funcionário cadastrado ainda.
+    </div>
+    {% endfor %}
+  </div>
 
 </div>
 
@@ -247,6 +262,10 @@
         <div class="form-group full">
           <label for="p-esp">Especialidade</label>
           <input type="text" id="p-esp" name="especialidade" value="Corte Clássico · Barba" placeholder="Ex: Corte Degradê, Barba..."/>
+        </div>
+        <div class="form-group">
+          <label for="ns-duracao">Duração de intervalo se serviços (minutos) </label>
+          <input type="number" id="ns-duracao" name="duracao" placeholder="30" min="10" step="5" required/>
         </div>
         <div class="form-group full">
           <label for="p-bio">Bio</label>
@@ -289,6 +308,32 @@
 
 
 <!-- ══════════════════════════════════════
+     MODAL: SELECIONAR MÊS (novo)
+══════════════════════════════════════ -->
+<div class="overlay" id="modal-pick-month" onclick="closeOnBg(event,'modal-pick-month')">
+  <div class="modal-sheet" style="max-width:480px;">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <i class="fa-solid fa-calendar-plus" style="margin-right:8px;font-size:14px;color:var(--gold);"></i>
+        Abrir Agenda
+      </div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-pick-month')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px;">Escolha o mês que deseja configurar:</p>
+      <div class="month-pick-list" id="month-pick-list">
+        <!-- Gerado por JS -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-ghost" onclick="closeModal('modal-pick-month')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
      MODAL: AGENDA DO MÊS
 ══════════════════════════════════════ -->
 <div class="overlay" id="modal-month" onclick="closeOnBg(event,'modal-month')">
@@ -296,7 +341,7 @@
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-head-title">
-        <i class="fa-regular fa-calendar-days" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>
+        <i class="fa-regular fa-calendar-days" style="margin-right:8px;font-size:14px;color:var(--gold);"></i>
         <span id="modal-month-title">Janeiro 2026</span>
       </div>
       <button class="modal-close" type="button" onclick="closeModal('modal-month')"><i class="fa-solid fa-xmark"></i></button>
@@ -393,10 +438,6 @@
             <input type="number" id="ns-duracao" name="duracao" placeholder="30" min="10" step="5" required/>
           </div>
           <div class="form-group full">
-            <label for="ns-icone">Ícone (Font Awesome)</label>
-            <input type="text" id="ns-icone" name="icone" placeholder="fa-solid fa-scissors"/>
-          </div>
-          <div class="form-group full">
             <div class="toggle-row" style="padding:0;border:none;">
               <div>
                 <div class="toggle-label">Serviço ativo</div>
@@ -472,7 +513,7 @@
 
 
 <!-- ══════════════════════════════════════
-     MODAL: CONFIRMAR EXCLUSÃO
+     MODAL: CONFIRMAR EXCLUSÃO SERVIÇO
 ══════════════════════════════════════ -->
 <div class="overlay" id="modal-delete-confirm" onclick="closeOnBg(event,'modal-delete-confirm')">
   <div class="modal-sheet" style="max-width:440px;">
@@ -498,8 +539,284 @@
 </div>
 
 
+<!-- ══════════════════════════════════════
+     MODAL: NOVO FUNCIONÁRIO (novo)
+══════════════════════════════════════ -->
+<div class="overlay" id="modal-new-employee" onclick="closeOnBg(event,'modal-new-employee')">
+  <div class="modal-sheet" style="max-width:520px;">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <i class="fa-solid fa-user-plus" style="margin-right:8px;font-size:13px;color:var(--gold);"></i>
+        Novo Funcionário
+      </div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-new-employee')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="modal-body">
+
+        <div class="info-note" style="margin-bottom:18px;">
+          <i class="fa-solid fa-circle-info"></i>
+          O funcionário receberá acesso ao sistema com as credenciais cadastradas abaixo.
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="emp-first-name">Nome</label>
+            <input type="text" id="emp-first-name" name="first_name" placeholder="João" required/>
+          </div>
+          <div class="form-group">
+            <label for="emp-last-name">Sobrenome</label>
+            <input type="text" id="emp-last-name" name="last_name" placeholder="Silva" required/>
+          </div>
+          <div class="form-group full">
+            <label for="emp-display-name">Nome de exibição</label>
+            <input type="text" id="emp-display-name" name="nome" placeholder="Como aparece para os clientes" required/>
+          </div>
+          <div class="form-group full">
+            <label for="emp-email">E-mail</label>
+            <input type="email" id="emp-email" name="email" placeholder="joao@barbearia.com" required/>
+          </div>
+          <div class="form-group full">
+            <label for="emp-username">Username</label>
+            <input type="text" id="emp-username" name="username" placeholder="joao.silva" required/>
+          </div>
+
+          <hr class="divider" style="grid-column:1/-1;margin:4px 0;"/>
+
+          <div class="form-group full" style="grid-column:1/-1;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;">Acesso</div>
+          </div>
+          <div class="form-group">
+            <label for="emp-password1">Senha</label>
+            <input type="password" id="emp-password1" name="password1" placeholder="Mínimo 8 caracteres" required/>
+          </div>
+          <div class="form-group">
+            <label for="emp-password2">Confirmar Senha</label>
+            <input type="password" id="emp-password2" name="password2" placeholder="Repita a senha" required/>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" onclick="closeModal('modal-new-employee')">Cancelar</button>
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Cadastrar Funcionário
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: REMOVER FUNCIONÁRIO (novo)
+══════════════════════════════════════ -->
+<div class="overlay" id="modal-delete-employee" onclick="closeOnBg(event,'modal-delete-employee')">
+  <div class="modal-sheet" style="max-width:440px;">
+    <div class="modal-handle"></div>
+    <form method="POST" id="form-delete-employee" action="">
+      {% csrf_token %}
+      <input type="hidden" name="employee_id" id="del-emp-id"/>
+      <div class="modal-body" style="text-align:center;padding:32px 24px;">
+        <div style="font-size:44px;color:var(--red);margin-bottom:14px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;">Remover Funcionário?</div>
+        <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:22px;">
+          Tem certeza que deseja remover <strong id="del-emp-nome" style="color:var(--white);">este funcionário</strong>?<br>
+          O acesso ao sistema será revogado.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button type="button" class="btn-ghost" onclick="closeModal('modal-delete-employee')">Cancelar</button>
+          <button type="submit" class="btn-primary" style="background:var(--red);box-shadow:0 2px 8px rgba(224,82,82,.3);">
+            <i class="fa-solid fa-user-minus"></i> Remover
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 <!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
+
+<style>
+/* ── STEPPER ── */
+.stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: fit-content;
+}
+.stepper-wrap input[type="number"] {
+  width: 72px;
+  text-align: center;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  -moz-appearance: textfield;
+}
+.stepper-wrap input[type="number"]::-webkit-inner-spin-button,
+.stepper-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+.stepper-btn {
+  width: 40px; height: 42px;
+  background: var(--black-3);
+  border: 1px solid var(--black-4);
+  color: var(--gold);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.stepper-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.stepper-btn:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+.stepper-btn:hover { background: var(--black-4); border-color: var(--gold); }
+.stepper-btn:active { transform: scale(.95); }
+
+/* ── FUNCIONÁRIOS ── */
+.employees-list { display: flex; flex-direction: column; gap: 10px; }
+.employee-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-3); border: 1px solid var(--black-4);
+  border-radius: var(--radius); padding: 14px 18px;
+  gap: 12px; transition: border-color .2s;
+}
+.employee-card:hover { border-color: rgba(245,197,24,.25); }
+.emp-left { display: flex; align-items: center; gap: 14px; }
+.emp-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--black-4); border: 1px solid rgba(245,197,24,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--gold); flex-shrink: 0;
+}
+.emp-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.emp-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.emp-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ── PICK MONTH LIST ── */
+.month-pick-list { display: flex; flex-direction: column; gap: 8px; }
+.month-pick-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-3); border: 1px solid var(--black-4);
+  border-radius: var(--radius); padding: 13px 16px;
+  cursor: pointer; transition: all .2s;
+}
+.month-pick-item:hover { border-color: rgba(245,197,24,.4); color: var(--gold); }
+.month-pick-item span { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; }
+
+/* ── OPEN MONTHS (agenda panel) ── */
+.open-month-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-2); border: 1px solid rgba(245,197,24,.2);
+  border-radius: var(--radius); padding: 14px 18px;
+  margin-bottom: 10px; cursor: pointer; transition: border-color .2s;
+}
+.open-month-bar:hover { border-color: rgba(245,197,24,.5); }
+.open-month-bar-left { display: flex; align-items: center; gap: 12px; }
+.open-month-bar-icon {
+  width: 36px; height: 36px; border-radius: 6px;
+  background: rgba(245,197,24,.1); border: 1px solid rgba(245,197,24,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--gold); flex-shrink: 0;
+}
+</style>
+
 <script src="{% static 'scripts_barber.js' %}"></script>
+<script>
+
+
+/* ══════════════════════════════════════
+   FUNCIONÁRIOS — modal de exclusão
+══════════════════════════════════════ */
+function openDeleteEmployee(btn) {
+  var d = btn.dataset;
+  document.getElementById('del-emp-id').value = d.id;
+  document.getElementById('del-emp-nome').textContent = '"' + d.nome + '"';
+  document.getElementById('form-delete-employee').action =
+    '/barbeiro/funcionarios/' + d.id + '/remover/';
+  openModal('modal-delete-employee');
+}
+
+/* ══════════════════════════════════════
+   PICK MONTH — lista de seleção
+══════════════════════════════════════ */
+var openedMonths = []; // meses que o usuário abriu: [{m, y}]
+
+function buildPickMonthList() {
+  var el = document.getElementById('month-pick-list');
+  el.innerHTML = '';
+  var now = new Date();
+  var curM = now.getMonth();
+  var curY = now.getFullYear();
+
+  for (var i = 0; i < 12; i++) {
+    var m = (curM + i) % 12;
+    var y = curY + Math.floor((curM + i) / 12);
+    var label = MONTHS_PT[m] + ' ' + y;
+    var alreadyOpen = openedMonths.some(function(o){ return o.m === m && o.y === y; });
+
+    var item = document.createElement('div');
+    item.className = 'month-pick-item';
+    item.dataset.m = m;
+    item.dataset.y = y;
+    item.innerHTML =
+      '<span>' + label + '</span>' +
+      (alreadyOpen
+        ? '<span style="font-size:11px;color:var(--gold);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px;"><i class="fa-solid fa-check" style="margin-right:4px;"></i>Aberta</span>'
+        : '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:12px;"></i>');
+
+    item.addEventListener('click', function() {
+      var m2 = parseInt(this.dataset.m);
+      var y2 = parseInt(this.dataset.y);
+      // adiciona à lista de abertos se ainda não estiver
+      if (!openedMonths.some(function(o){ return o.m === m2 && o.y === y2; })) {
+        openedMonths.push({ m: m2, y: y2 });
+        renderOpenMonthsList();
+      }
+      closeModal('modal-pick-month');
+      openMonthModal(m2, y2);
+    });
+    el.appendChild(item);
+  }
+}
+
+function renderOpenMonthsList() {
+  var el = document.getElementById('open-months-list');
+  el.innerHTML = '';
+  if (!openedMonths.length) return;
+
+  openedMonths.forEach(function(o) {
+    var label = MONTHS_PT[o.m] + ' ' + o.y;
+    var prefix = o.y + '-' + pad(o.m + 1) + '-';
+    var offs = DIAS_OFF.filter(function(d){ return d.startsWith(prefix); }).length;
+
+    var bar = document.createElement('div');
+    bar.className = 'open-month-bar';
+    bar.innerHTML =
+      '<div class="open-month-bar-left">' +
+        '<div class="open-month-bar-icon"><i class="fa-regular fa-calendar-days"></i></div>' +
+        '<div>' +
+          '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;letter-spacing:2px;">' + label + '</div>' +
+          '<div style="font-size:11px;color:var(--gray);margin-top:2px;">' +
+            (offs > 0 ? offs + ' dia(s) com folga' : 'Sem folgas configuradas') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:13px;"></i>';
+
+    bar.addEventListener('click', function() {
+      openMonthModal(o.m, o.y);
+    });
+    el.appendChild(bar);
+  });
+}
+
+/* Sobrescreve o buildMonthList original para não fazer nada — substituído pelo novo fluxo */
+buildMonthList = function() {};
+
+/* Init extra */
+buildPickMonthList();
+</script>
 </body>
 {% endblock content %}

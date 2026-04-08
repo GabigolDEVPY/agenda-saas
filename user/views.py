@@ -12,6 +12,12 @@ class UserLogoutView(LogoutView):
 class UserLoginView(LoginView):
     template_name = "login.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["hide_navbar"] = True
+        return context
+    
+
     def get_success_url(self):
         user = self.request.user
         if hasattr(user, 'establishment') and user.establishment:
@@ -27,3 +33,8 @@ class UserRegisterView(CreateView):
     template_name = "register.html"
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("user:login")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["hide_navbar"] = True
+        return context

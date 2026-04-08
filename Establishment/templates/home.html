@@ -8,35 +8,6 @@
 <link rel="stylesheet" href="{% static 'barber.css' %}"/>
 
 <body>
-
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
-    <div>
-      <div class="logo-text">BarberBlack</div>
-      <div class="logo-sub">Est. 2018 · Premium</div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    {% if user.is_staff %}
-    <a href="{% url 'servicos:home' %}" class="btn-admin">
-      <i class="fa-solid fa-shield-halved"></i>Admin
-    </a>
-    <form method="POST" action="{% url 'users:logout' %}">
-      {% csrf_token %}
-      <button type="submit" class="btn-logout">
-        <i class="fa-solid fa-right-from-bracket"></i>
-      </button>
-    </form>
-    {% else %}
-    <a href="{% url 'users:login' %}" class="btn-admin">
-      <i class="fa-solid fa-user"></i>Entrar
-    </a>
-    {% endif %}
-  </div>
-</header>
-
 <!-- HERO -->
 <div class="hero">
   <div class="hero-label">Seu estilo, nossa arte</div>
