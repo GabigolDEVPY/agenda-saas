@@ -2,21 +2,26 @@
 {% block content %}
 
 {% load static %}
-<link rel="stylesheet" href="{% static 'styles_user.css' %}"/>
+<link rel="stylesheet" href="{% static 'styles.css' %}"/>
 
 <div class="rw">
   <div class="rw-inner">
+
     <div class="rw-logo">
       <div class="rw-logo-icon">✂</div>
-      <div class="rw-logo-text">BARBEARIA</div>
+      <div>
+        <div class="rw-logo-text">BARBEARIA</div>
+        <div class="rw-logo-sub">Sistema de gestão</div>
+      </div>
     </div>
+
     <div class="rw-hero">
       <div class="rw-hero-label">Bem-vindo</div>
       <div class="rw-hero-title">CRIAR <span>CONTA</span></div>
       <div class="rw-hero-desc">Preencha os dados abaixo para se registrar no sistema</div>
     </div>
 
-    <div class="card" id="form-card">
+    <div class="card">
       <div class="card-title">DADOS PESSOAIS</div>
       <div class="card-sub">Informações do usuário</div>
 
@@ -44,6 +49,13 @@
             {% if form.username.errors %}
               <span class="field-error">{{ form.username.errors|join:", " }}</span>
             {% endif %}
+          </div>
+          <div class="form-group full">
+            <label for="{{ form.establishment_name.id_for_label }}">Nome da Barbearia</label>
+              {{ form.establishment_name }}
+              {% if form.establishment_name.errors %}
+                <span class="field-error">{{ form.establishment_name.errors|join:", " }}</span>
+              {% endif %}
           </div>
           <div class="form-group full">
             <label for="{{ form.email.id_for_label }}">E-mail</label>
@@ -82,9 +94,10 @@
 
         <button type="submit" class="btn-confirm">CRIAR CONTA</button>
         <p class="policy-note">Ao criar sua conta, você concorda com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</p>
-        <div class="login-link">Já tem conta? <a href="{% url 'users:login' %}">Entrar</a></div>
+        <div class="login-link">Já tem conta? <a href="{% url 'user:login' %}">Entrar</a></div>
       </form>
     </div>
+
   </div>
 </div>
 

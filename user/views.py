@@ -2,7 +2,7 @@ from django.contrib.auth.views import LogoutView, LoginView
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
 from .models import User
-from .forms import UserCreationForm
+from .forms import CustomUserCreationForm
 
 
 class UserLogoutView(LogoutView):
@@ -11,7 +11,6 @@ class UserLogoutView(LogoutView):
 
 class UserLoginView(LoginView):
     template_name = "login.html"
-    redirect_authenticated_user = True
 
     def get_success_url(self):
         user = self.request.user
@@ -20,11 +19,11 @@ class UserLoginView(LoginView):
                 "establishment:public_agenda",
                 kwargs={"uid": user.establishment.uid}
             )
-        return reverse("user:login")
+        return reverse("servicos:home")
 
 
 class UserRegisterView(CreateView):
     model = User
     template_name = "register.html"
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     success_url = reverse_lazy("user:login")

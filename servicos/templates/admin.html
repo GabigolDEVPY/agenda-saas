@@ -19,7 +19,7 @@
     </div>
   </a>
   <div style="display:flex;align-items:center;gap:10px;">
-    {% if user.is_staff %}
+    {% if user %}
     <form method="POST" action="{% url 'user:logout' %}">
       {% csrf_token %}
       <button type="submit" class="btn-logout">

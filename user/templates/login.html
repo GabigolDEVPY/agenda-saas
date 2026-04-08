@@ -1,154 +1,86 @@
 {% extends "base.html" %}
 {% block content %}
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;600&display=swap');
-  :root {
-    --bg:#f4f6f9;--bg-2:#ffffff;--bg-3:#eef0f5;--bg-4:#e2e5ed;
-    --accent:#2563eb;--accent-pale:#dbeafe;--accent-dark:#1d4ed8;
-    --text:#0f172a;--text-2:#334155;--muted:#94a3b8;
-    --border:#e2e8f0;--border-dark:#cbd5e1;
-    --danger:#ef4444;--success:#22c55e;
-    --radius:8px;
-    --shadow-md:0 4px 12px rgba(15,23,42,.08),0 2px 6px rgba(15,23,42,.05);
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Geist',-apple-system,sans-serif;min-height:100vh;line-height:1.5;}
-  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle,rgba(37,99,235,.06) 1px,transparent 1px);background-size:28px 28px;}
 
-  .login-page{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px 48px;}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles.css' %}"/>
 
-  .logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
-  .logo-icon-box{width:38px;height:38px;flex-shrink:0;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.35);}
-  .logo-text{font-family:'Geist',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--text);line-height:1;}
-  .logo-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+<div class="rw">
+  <div class="rw-inner">
 
-  .hero{text-align:center;margin-bottom:28px;}
-  .hero-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;}
-  .hero-label::before,.hero-label::after{content:'';display:block;width:20px;height:1px;background:var(--accent);opacity:.5;}
-  .hero-title{font-family:'Geist',sans-serif;font-size:clamp(28px,6vw,48px);font-weight:700;line-height:1.1;letter-spacing:-.5px;color:var(--text);}
-  .hero-title span{color:var(--accent);}
-  .hero-desc{margin-top:10px;color:var(--muted);font-size:14px;max-width:380px;margin-left:auto;margin-right:auto;}
-
-  .card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-md);width:100%;max-width:420px;}
-  .card-title{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;}
-  .card-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
-
-  .form-grid{display:grid;grid-template-columns:1fr;gap:14px;}
-  .form-group{display:flex;flex-direction:column;gap:6px;}
-  label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;}
-  input[type="text"],input[type="password"]{
-    background:var(--bg-3);border:1.5px solid var(--border);border-radius:var(--radius);
-    color:var(--text);font-family:'Geist',sans-serif;font-size:14px;padding:10px 14px;
-    outline:none;transition:border-color .15s,box-shadow .15s;width:100%;
-  }
-  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:var(--bg-2);}
-  input::placeholder{color:var(--muted);}
-  hr.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
-
-  .pw-row{position:relative;display:flex;align-items:center;}
-  .pw-row input{padding-right:90px;width:100%;}
-  .pw-toggle{position:absolute;right:10px;background:none;border:none;color:var(--accent);font-family:'Geist',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;padding:4px 6px;}
-  .pw-toggle:hover{color:var(--accent-dark);}
-
-  /* Erros do Django */
-  .errorlist{list-style:none;margin-top:4px;}
-  .errorlist li{font-size:11px;color:var(--danger);}
-
-  .alert-pill{display:flex;align-items:flex-start;gap:10px;background:#fef2f2;border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);padding:11px 14px;font-size:12px;margin-bottom:16px;}
-  .alert-pill .pill-icon{font-size:14px;color:var(--danger);width:20px;text-align:center;flex-shrink:0;padding-top:1px;}
-  .alert-pill .pill-text{color:var(--text-2);line-height:1.5;}
-  .alert-pill .pill-text strong{color:var(--text);display:block;margin-bottom:2px;font-weight:600;}
-
-  .forgot-row{display:flex;justify-content:flex-end;}
-  .forgot-link{color:var(--accent);text-decoration:none;font-size:12px;font-weight:500;}
-  .forgot-link:hover{text-decoration:underline;}
-  .login-link{text-align:center;font-size:12px;color:var(--muted);}
-  .login-link a{color:var(--accent);text-decoration:none;font-weight:500;}
-  .login-link a:hover{text-decoration:underline;}
-
-  .btn-confirm{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Geist',sans-serif;font-size:15px;font-weight:700;letter-spacing:.3px;padding:14px;min-height:50px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(37,99,235,.3);margin-top:20px;}
-  .btn-confirm::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:rgba(255,255,255,.12);transform:skewX(-20deg);transition:left .4s;}
-  .btn-confirm:hover::before{left:120%;}
-  .btn-confirm:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.4);}
-  .btn-confirm:active{transform:scale(.98);}
-</style>
-
-<div class="login-page">
-
-  <div class="logo">
-    <div class="logo-icon-box">✂</div>
-    <div>
-      <div class="logo-text">BARBEARIA</div>
-      <div class="logo-sub">Sistema de gestão</div>
+    <div class="rw-logo">
+      <div class="rw-logo-icon">✂</div>
+      <div>
+        <div class="rw-logo-text">BARBEARIA</div>
+        <div class="rw-logo-sub">Sistema de gestão</div>
+      </div>
     </div>
-  </div>
 
-  <div class="hero">
-    <div class="hero-label">Acesso restrito</div>
-    <div class="hero-title">FAZER <span>LOGIN</span></div>
-    <div class="hero-desc">Entre com suas credenciais para acessar o sistema</div>
-  </div>
+    <div class="rw-hero">
+      <div class="rw-hero-label">Acesso restrito</div>
+      <div class="rw-hero-title">FAZER <span>LOGIN</span></div>
+      <div class="rw-hero-desc">Entre com suas credenciais para acessar o sistema</div>
+    </div>
 
-  <div class="card">
-    <div class="card-title">CREDENCIAIS</div>
-    <div class="card-sub">Insira seu usuário e senha</div>
+    <div class="card">
+      <div class="card-title">CREDENCIAIS</div>
+      <div class="card-sub">Insira seu usuário e senha</div>
 
-    {% if form.non_field_errors %}
-      <div class="alert-pill">
-        <span class="pill-icon">⚠</span>
-        <div class="pill-text">
-          <strong>Acesso negado</strong>
-          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-        </div>
-      </div>
-    {% endif %}
-
-    <form method="post" action="">
-      {% csrf_token %}
-
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label for="{{ form.username.id_for_label }}">Usuário</label>
-          {{ form.username }}
-          {% if form.username.errors %}
-            <ul class="errorlist">
-              {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
-            </ul>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.password.id_for_label }}">Senha</label>
-          <div class="pw-row">
-            {{ form.password }}
-            <button class="pw-toggle" id="toggle-pw" type="button">MOSTRAR</button>
+      {% if form.non_field_errors %}
+        <div class="alert-pill">
+          <span class="pill-icon">⚠</span>
+          <div class="pill-text">
+            <strong>Acesso negado</strong>
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
           </div>
-          {% if form.password.errors %}
-            <ul class="errorlist">
-              {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
-            </ul>
-          {% endif %}
         </div>
-
-      </div>
-
-      <div class="forgot-row" style="margin-top:10px;">
-        <a href="#" class="forgot-link">Esqueci minha senha</a>
-      </div>
-
-      {# next field oculto — necessário para o LoginView redirecionar corretamente #}
-      {% if next %}
-        <input type="hidden" name="next" value="{{ next }}">
       {% endif %}
 
-      <button class="btn-confirm" type="submit">ENTRAR</button>
+      <form method="post" action="">
+        {% csrf_token %}
 
-    </form>
+        <div class="form-grid">
 
-    <hr class="divider">
-    <div class="login-link">Não tem conta? <a href="{% url 'users:register' %}">Criar conta</a></div>
+          <div class="form-group full">
+            <label for="{{ form.username.id_for_label }}">Usuário</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+              <ul class="errorlist">
+                {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
 
+          <div class="form-group full">
+            <label for="{{ form.password.id_for_label }}">Senha</label>
+            <div class="pw-row">
+              {{ form.password }}
+              <button class="pw-toggle" id="toggle-pw" type="button">MOSTRAR</button>
+            </div>
+            {% if form.password.errors %}
+              <ul class="errorlist">
+                {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+        </div>
+
+        <div class="forgot-row">
+          <a href="#" class="forgot-link">Esqueci minha senha</a>
+        </div>
+
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button class="btn-confirm" type="submit">ENTRAR</button>
+
+      </form>
+
+      <hr class="divider">
+      <div class="login-link">Não tem conta? <a href="{% url 'user:register' %}">Criar conta</a></div>
+
+    </div>
   </div>
 </div>
 
