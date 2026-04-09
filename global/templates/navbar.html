@@ -7,8 +7,9 @@
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
-    {% if user %}
+    {% if user.is_authenticated %}
     <a href="{% url 'servicos:home' %}" class="btn-admin">
+      {{ user.username }}
       <i class="fa-solid fa-shield-halved"></i>Admin
     </a>
     <form method="POST" action="{% url 'user:logout' %}">

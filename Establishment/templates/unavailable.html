@@ -18,11 +18,14 @@
         <a href="{% url 'servicos:home' %}" class="btn-admin">
           <i class="fa-solid"></i>Fazer pagamento
         </a>
-      {% else %}
+      {% endif %}
+
+      {% if incomplete %}
         <a href="{% url 'servicos:home' %}" class="btn-admin">
           <i class="fa-solid"></i>Concluir configuração
         </a>
       {% endif %}
+  
 
     {% endif %}
   </p>

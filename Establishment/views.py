@@ -12,7 +12,7 @@ class PublicAgenda(View):
             return render(request, 'unavailable.html', context=context)  
         
         except EstablishmentIncomplete:
-            context = {"msg": "Configurações incompletas. Entre em contato com o estabelecimento para mais informações."}
+            context = {"msg": "Configurações incompletas. Entre em contato com o estabelecimento para mais informações.", "incomplete": True}
             return render(request, 'unavailable.html', context=context)  
         
         except EstablishmentInactive:
