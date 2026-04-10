@@ -6,6 +6,8 @@ SECRET_KEY = 'django-insecure-fx64mlz4jmzm$p^*&s6k@s6@yz(t1hdhk^9s1)6nh3=bm89590
 
 DEBUG = True
 
+LOGIN_URL = 'user:login'
+
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -16,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
-    'Establishment',
+    'establishment',
     'servicos',
 ]
 

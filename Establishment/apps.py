@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class EstablishmentConfig(AppConfig):
-    name = 'Establishment'
+    name = 'establishment'

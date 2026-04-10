@@ -1,12 +1,11 @@
 import json
-
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, View
 from .services import AppointmentService
 from django.contrib import messages
 
-
-class ServicosView(TemplateView):
+class ServicosView(LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 
 

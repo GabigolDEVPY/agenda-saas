@@ -1,7 +1,7 @@
 from servicos.forms import AppointmentForm
 from datetime import datetime, timedelta
 from .models import Appointment
-from Establishment.services import HomeService
+from establishment.services import HomeService
 import json
 
 

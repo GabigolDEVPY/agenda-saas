@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     establishment = models.ForeignKey(
-        "Establishment.Establishment",
+        "establishment.Establishment",
         on_delete=models.CASCADE,
         related_name="users",
         null=True,
