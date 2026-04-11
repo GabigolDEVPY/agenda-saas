@@ -14,19 +14,19 @@ class AppointmentService:
             erro = next(iter(form.errors.values()))[0]
             return erro, False
 
-        user     = form.cleaned_data['user']
-        date     = form.cleaned_data['date']
-        time     = form.cleaned_data['time']
-        service  = form.cleaned_data['service']
+        user = form.cleaned_data['user']
+        date = form.cleaned_data['date']
+        time = form.cleaned_data['time']
+        service = form.cleaned_data['service']
 
         horario_str = time.strftime("%H:%M")
-        user_id     = str(user.id)
-        data_str    = str(date)
+        user_id = str(user.id)
+        data_str = str(date)
 
         duration_snapshot = service.time_duration
 
         novo_inicio = datetime.combine(date, time)
-        novo_fim    = novo_inicio + timedelta(minutes=duration_snapshot)
+        novo_fim = novo_inicio + timedelta(minutes=duration_snapshot)
 
         agendamentos_json = json.loads(
             HomeService.get_agendamentos([user])
@@ -36,7 +36,7 @@ class AppointmentService:
 
         for ag in agendamentos_dia:
             ag_inicio = datetime.combine(date, datetime.strptime(ag['inicio'], "%H:%M").time())
-            ag_fim    = datetime.combine(date, datetime.strptime(ag['fim'],    "%H:%M").time())
+            ag_fim = datetime.combine(date, datetime.strptime(ag['fim'],    "%H:%M").time())
 
             if novo_inicio < ag_fim and novo_fim > ag_inicio:
                 return None, {
@@ -51,29 +51,29 @@ class AppointmentService:
         cfg    = config.get(user_id, {})
 
         hora_inicio_min = _to_min(cfg.get('hora_inicio', '09:00'))
-        hora_fim_min    = _to_min(cfg.get('hora_fim',    '18:00'))
+        hora_fim_min = _to_min(cfg.get('hora_fim',    '18:00'))
         slot_inicio_min = _to_min(horario_str)
-        slot_fim_min    = slot_inicio_min + duration_snapshot
+        slot_fim_min = slot_inicio_min + duration_snapshot
 
         slot_interval = cfg.get('slot_interval', 30)
-        offset        = slot_inicio_min - hora_inicio_min
+        offset = slot_inicio_min - hora_inicio_min
 
         if offset % slot_interval != 0:
             return None, {
-                "status":  "error",
+                "status": "error",
                 "horario": horario_str,
-                "title":   "Horário Inválido",
+                "title": "Horário Inválido",
                 "message": "Esse horário não corresponde a um slot disponível",
-                "uid":     str(user.establishment.uid),
+                "uid": str(user.establishment.uid),
             }
 
         if slot_inicio_min < hora_inicio_min or slot_fim_min > hora_fim_min:
             return None, {
-                "status":  "error",
+                "status": "error",
                 "horario": horario_str,
-                "title":   "Horário Inválido",
+                "title": "Horário Inválido",
                 "message": "Esse horário está fora do horário de funcionamento",
-                "uid":     str(user.establishment.uid),
+                "uid": str(user.establishment.uid),
             }
 
         appointment = form.save(commit=False)
@@ -81,11 +81,11 @@ class AppointmentService:
         appointment.save()
 
         return None, {
-            "status":  "success",
+            "status": "success",
             "horario": horario_str,
-            "title":   "Agendamento criado!",
+            "title": "Agendamento criado!",
             "message": f"Seu horário para {service.name} às {horario_str} foi reservado com sucesso.",
-            "uid":     str(user.establishment.uid),
+            "uid": str(user.establishment.uid),
         }
 
 

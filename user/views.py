@@ -14,6 +14,7 @@ class UserLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        self.request.session['uid'] = None  # Limpa o UID da sessão ao fazer login
         context["hide_navbar"] = True
         return context
     
@@ -21,6 +22,7 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
         if hasattr(user, 'establishment') and user.establishment:
+            self.request.session['uid'] = user.establishment.uid
             return reverse(
                 "establishment:public_agenda",
                 kwargs={"uid": user.establishment.uid}

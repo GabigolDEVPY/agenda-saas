@@ -998,3 +998,4 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   cursor: pointer; padding: 4px 6px;
 }
 .pw-toggle:hover { color: var(--accent-dark); }
+

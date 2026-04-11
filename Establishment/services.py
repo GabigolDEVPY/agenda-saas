@@ -12,12 +12,13 @@ class HomeService:
     def get_context_establishment(uid):
         establishment = Establishment.objects.filter(uid=uid).first()
         if not establishment:
+            print(f"Estabelecimento com UID {uid} não encontrado.")
             raise EstablishmentNotFound()
         
         users = establishment.users.all()
         if not users:
+            print(f"Estabelecimento {establishment.name} sem usuários associados.")
             raise EstablishmentIncomplete()
-
         context = {
             'uid': uid,
             "users": users,
@@ -39,6 +40,7 @@ class HomeService:
         for user in users:
             diverses = Diverses.objects.filter(user=user).first()
             if not diverses:
+                print(f"Estabelecimento {user.establishment.name} sem configuração de horário.")
                 raise EstablishmentIncomplete()
             result[str(user.id)] = {
                 "hora_inicio":   "09:00",

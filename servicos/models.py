@@ -27,7 +27,7 @@ class Appointment(models.Model):
     time = models.TimeField()
     duration = models.IntegerField(help_text="Duração em minutos")
     client_name = models.CharField(max_length=40)
-    phone = models.CharField(max_length=11)
+    phone = models.CharField(max_length=15)
     observation = models.TextField(blank=True, null=True, max_length=150)
     total = models.DecimalField(max_digits=7, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)

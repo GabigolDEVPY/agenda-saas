@@ -6,11 +6,13 @@ from .services import AppointmentService
 from django.contrib import messages
 
 class ServicosView(LoginRequiredMixin, TemplateView):
+
     template_name = 'admin.html'
 
 
 class CreateAppointmentView(View):
     def post(self, request):
+        print(request.POST)
         errors, result = AppointmentService.create_appointment(request.POST)
 
         if not result:

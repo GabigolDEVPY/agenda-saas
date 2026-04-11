@@ -1,13 +1,18 @@
 <header>
-  <div class="logo">
+  <a class="logo" href="#">
     <div class="logo-icon-box"><i class="fa-solid fa-scissors"></i></div>
     <div>
       <div class="logo-text">BarberBlack</div>
       <div class="logo-sub">Est. 2018 · Premium</div>
     </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
+  </a>
+
+  <!-- Desktop -->
+  <div class="nav-actions-desktop" style="display:flex;align-items:center;gap:10px;">
     {% if user.is_authenticated %}
+    <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+      <i class="fa-solid fa-store"></i>Página Inicial
+    </a>
     <a href="{% url 'servicos:home' %}" class="btn-admin">
       <i class="fa-solid fa-shield-halved"></i>Admin
     </a>
@@ -23,4 +28,73 @@
     </a>
     {% endif %}
   </div>
+
+  <!-- Mobile: botão 3 pontos -->
+  <button class="nav-mobile-btn" id="nav-mobile-btn" type="button"
+          onclick="toggleMobileMenu()"
+          aria-label="Menu">
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+  </button>
 </header>
+
+<!-- Dropdown mobile -->
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  {% if user.is_authenticated %}
+  <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+    <i class="fa-solid fa-store"></i>Página Inicial
+  </a>
+  <a href="{% url 'servicos:home' %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+    <i class="fa-solid fa-shield-halved"></i>Admin
+  </a>
+  <form method="POST" action="{% url 'user:logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-logout" style="width:100%;justify-content:flex-start;">
+      <i class="fa-solid fa-right-from-bracket"></i> Sair
+    </button>
+  </form>
+  {% else %}
+  <a href="{% url 'user:login' %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+    <i class="fa-solid fa-user"></i>Entrar
+  </a>
+  {% endif %}
+</div>
+
+<style>
+.nav-mobile-btn {
+  display: none;
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 6px; width: 36px; height: 36px;
+  align-items: center; justify-content: center;
+  font-size: 16px; color: var(--text-2); cursor: pointer;
+  transition: all .15s;
+}
+.nav-mobile-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.nav-mobile-menu {
+  display: none;
+  flex-direction: column; gap: 8px;
+  position: absolute; top: 64px; right: 16px; z-index: 100;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px;
+  box-shadow: var(--shadow-md); min-width: 200px;
+}
+.nav-mobile-menu.open { display: flex; }
+
+@media (max-width: 640px) {
+  .nav-actions-desktop { display: none !important; }
+  .nav-mobile-btn { display: flex; }
+}
+</style>
+
+<script>
+function toggleMobileMenu() {
+  document.getElementById('nav-mobile-menu').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('nav-mobile-menu');
+  var btn = document.getElementById('nav-mobile-btn');
+  if (!menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+</script>

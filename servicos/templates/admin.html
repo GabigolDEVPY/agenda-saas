@@ -329,9 +329,17 @@
       <div class="section-title">Estabelecimento</div>
       <div class="section-sub">Informações exibidas para os clientes no agendamento</div>
     </div>
-    <button type="submit" form="form-estabelecimento" class="btn-primary">
-      <i class="fa-solid fa-floppy-disk"></i> Salvar
-    </button>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="btn-primary" onclick="copyLink(this)" type="button">
+        <i class="fa-solid fa-share-nodes"></i>
+        <span>Copiar link</span>
+      </button>
+      <button type="submit" form="form-estabelecimento" class="btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i> Salvar
+      </button>
+    </div>
+
   </div>
 
   <form method="POST" id="form-estabelecimento" action="">

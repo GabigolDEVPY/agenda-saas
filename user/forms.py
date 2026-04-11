@@ -6,7 +6,8 @@ from django import forms
 class CustomUserCreationForm(UserCreationForm):
     establishment_name = forms.CharField(
         label="Nome do Estabelecimento",
-        widget=forms.TextInput(attrs={"class": "form-control"})
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+        max_length=30
     )
 
     class Meta(UserCreationForm.Meta):
@@ -26,7 +27,7 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
 
-            from Establishment.models import Establishment
+            from establishment.models import Establishment
             establishment = Establishment.objects.create(
                 user=user,
                 name=self.cleaned_data["establishment_name"]
