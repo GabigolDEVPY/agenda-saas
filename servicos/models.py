@@ -8,7 +8,7 @@ class Service(models.Model):
         on_delete=models.CASCADE,
         related_name='services',
     )
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=40)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     time_duration = models.IntegerField(help_text="Duração em minutos")
 
@@ -28,7 +28,7 @@ class Appointment(models.Model):
     duration = models.IntegerField(help_text="Duração em minutos")
     client_name = models.CharField(max_length=40)
     phone = models.CharField(max_length=15)
-    observation = models.TextField(blank=True, null=True, max_length=150)
+    observation = models.TextField(blank=True, null=True, max_length=100)
     total = models.DecimalField(max_digits=7, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 

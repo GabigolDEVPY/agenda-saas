@@ -12,7 +12,6 @@ class ServicosView(LoginRequiredMixin, TemplateView):
 
 class CreateAppointmentView(View):
     def post(self, request):
-        print(request.POST)
         errors, result = AppointmentService.create_appointment(request.POST)
 
         if not result:
