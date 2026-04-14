@@ -15,28 +15,15 @@ class CreateAppointmentView(View):
         errors, result = AppointmentService.create_appointment(request.POST)
 
         if not result:
-            messages.error(request, json.dumps({
-                "status": "error",
-                "title": "Erro de validação",
-                "message": str(errors)
-            }))
+            messages.error(request, json.dumps({"status": "error","title": "Erro de validação","message": str(errors) }))
             return redirect(request.META.get("HTTP_REFERER"))
 
         if result and result.get("status") == "success":
             uid = result["uid"]
-            messages.success(request, json.dumps({
-                "status": result["status"],
-                "horario": result["horario"],
-                "title": result["title"],
-                "message": result["message"]
-            }))
+            messages.success(request, json.dumps({"status": result["status"],"horario": result["horario"],"title": result["title"],"message": result["message"]}))
 
         elif result:
             uid = result["uid"]
-            messages.error(request, json.dumps({
-                "status": result["status"],
-                "title": result["title"],
-                "message": result["message"]
-            }))
-
+            messages.error(request, json.dumps({"status": result["status"],"title": result["title"], "message": result["message"]}))
+            
         return redirect("establishment:public_agenda", uid=uid)
