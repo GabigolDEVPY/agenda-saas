@@ -2,6 +2,7 @@ from servicos.forms import AppointmentForm
 from datetime import datetime, timedelta
 from .models import Appointment
 from establishment.services import HomeService
+from django.db import transaction
 import json
 
 
@@ -22,45 +23,31 @@ class AppointmentService:
         horario_str = time.strftime("%H:%M")
         user_id = str(user.id)
         data_str = str(date)
-
         duration_snapshot = service.time_duration
-
         novo_inicio = datetime.combine(date, time)
         novo_fim = novo_inicio + timedelta(minutes=duration_snapshot)
 
-        agendamentos_json = json.loads(
-            HomeService.get_agendamentos([user])
-        )
-
-        agendamentos_dia = agendamentos_json.get(user_id, {}).get(data_str, [])
-
-        for ag in agendamentos_dia:
-            ag_inicio = datetime.combine(date, datetime.strptime(ag['inicio'], "%H:%M").time())
-            ag_fim = datetime.combine(date, datetime.strptime(ag['fim'],    "%H:%M").time())
-
-            if novo_inicio < ag_fim and novo_fim > ag_inicio:
-                return None, {
-                    "status":  "error",
-                    "horario": horario_str,
-                    "title":   "Agendamento Inválido",
-                    "message": "Esse horário conflita com outro agendamento",
-                    "uid":     str(user.establishment.uid),
-                }
-
+        # Validações de grade e expediente (sem lock, só leitura)
         config = json.loads(HomeService.get_config([user]))
-        cfg    = config.get(user_id, {})
+        cfg = config.get(user_id, {})
 
         hora_inicio_min = _to_min(cfg.get('hora_inicio', '09:00'))
         hora_fim_min = _to_min(cfg.get('hora_fim',    '18:00'))
         slot_inicio_min = _to_min(horario_str)
         slot_fim_min = slot_inicio_min + duration_snapshot
-
         slot_interval = cfg.get('slot_interval', 30)
-        offset = slot_inicio_min - hora_inicio_min
 
-        if offset % slot_interval != 0:
+        # Busca términos de agendamentos existentes para permitir continuação natural
+        agendamentos_json = json.loads(HomeService.get_agendamentos([user]))
+        agendamentos_dia = agendamentos_json.get(user_id, {}).get(data_str, [])
+        ends_of_existing = {_to_min(ag['fim']) for ag in agendamentos_dia}
+
+        on_grid  = ((slot_inicio_min - hora_inicio_min) % slot_interval == 0)
+        is_natural_continuation = slot_inicio_min in ends_of_existing
+
+        if not on_grid and not is_natural_continuation:
             return None, {
-                "status": "error",
+                "status":  "error",
                 "horario": horario_str,
                 "title": "Horário Inválido",
                 "message": "Esse horário não corresponde a um slot disponível",
@@ -73,19 +60,39 @@ class AppointmentService:
                 "horario": horario_str,
                 "title": "Horário Inválido",
                 "message": "Esse horário está fora do horário de funcionamento",
-                "uid": str(user.establishment.uid),
+                "uid":     str(user.establishment.uid),
             }
 
-        appointment = form.save(commit=False)
-        appointment.duration = duration_snapshot
-        appointment.save()
+        # Checagem de conflito com lock no banco + save atômico
+        with transaction.atomic():
+            agendamentos_db = Appointment.objects.select_for_update().filter(
+                user=user,
+                date=date,
+            )
+
+            for ag in agendamentos_db:
+                ag_inicio = datetime.combine(date, ag.time)
+                ag_fim    = ag_inicio + timedelta(minutes=ag.duration)
+                if novo_inicio < ag_fim and novo_fim > ag_inicio:
+                    return None, {
+                        "status":  "error",
+                        "horario": horario_str,
+                        "title":   "Agendamento Inválido",
+                        "message": "Esse horário conflita com outro agendamento",
+                        "uid":     str(user.establishment.uid),
+                    }
+
+            appointment          = form.save(commit=False)
+            appointment.duration = duration_snapshot
+            appointment.total    = service.price
+            appointment.save()
 
         return None, {
-            "status": "success",
+            "status":  "success",
             "horario": horario_str,
-            "title": "Agendamento criado!",
+            "title":   "Agendamento criado!",
             "message": f"Seu horário para {service.name} às {horario_str} foi reservado com sucesso.",
-            "uid": str(user.establishment.uid),
+            "uid":     str(user.establishment.uid),
         }
 
 
