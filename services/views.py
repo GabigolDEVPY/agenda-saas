@@ -5,8 +5,7 @@ from django.views.generic import TemplateView, View
 from .services import AppointmentService
 from django.contrib import messages
 
-class ServicosView(LoginRequiredMixin, TemplateView):
-
+class ServicesView(LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 
 

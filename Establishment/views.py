@@ -7,7 +7,6 @@ class PublicAgenda(View):
     def get(self, request, uid):
         try:
             context = HomeService.get_context_establishment(uid)
-            print(context)
             request.session['uid'] = uid  
         except EstablishmentNotFound:
             context = {"msg": "Estabelecimento não encontrado. Verifique o link ou entre em contato com o estabelecimento para mais informações."}

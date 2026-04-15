@@ -1,4 +1,4 @@
-from servicos.forms import AppointmentForm
+from services.forms import AppointmentForm
 from datetime import datetime, timedelta
 from .models import Appointment
 from establishment.services import HomeService

@@ -25,11 +25,11 @@ class HomeService:
             # Configurações de horário por usuário (início, fim, intervalo)
             "config_json":            HomeService.get_config(users),
             # Agendamentos existentes: {user_id: {date: [{inicio, fim}]}}
-            "agendamentos_json":      HomeService.get_agendamentos(users),
+            "agendamentos_json":      HomeService.get_appointments(users),
             # Meses disponíveis
             "meses_disponiveis_json": HomeService.get_available_months(users),
             # Serviços
-            "servicos_json":          HomeService.get_servicos(users),
+            "servicos_json":          HomeService.get_services(users),
         }
         return context
 
@@ -51,7 +51,7 @@ class HomeService:
 
     # ── AGENDAMENTOS EXISTENTES ───────────────────────────────────────────────
     @staticmethod
-    def get_agendamentos(users):
+    def get_appointments(users):
         result = {}
         hoje = datetime.now().date()
 
