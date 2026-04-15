@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-from servicos.models import Appointment, Diverses, MonthAvailability, Service
+from services.models import Appointment, Diverses, MonthAvailability, Service
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 import json
 from django.shortcuts import get_object_or_404
