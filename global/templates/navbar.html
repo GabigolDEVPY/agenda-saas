@@ -13,7 +13,7 @@
     <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
       <i class="fa-solid fa-store"></i>Página Inicial
     </a>
-    <a href="{% url 'servicos:home' %}" class="btn-admin">
+    <a href="{% url 'services:home' %}" class="btn-admin">
       <i class="fa-solid fa-shield-halved"></i>Admin
     </a>
     <form method="POST" action="{% url 'user:logout' %}">
@@ -43,7 +43,7 @@
   <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
     <i class="fa-solid fa-store"></i>Página Inicial
   </a>
-  <a href="{% url 'servicos:home' %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+  <a href="{% url 'services:home' %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
     <i class="fa-solid fa-shield-halved"></i>Admin
   </a>
   <form method="POST" action="{% url 'user:logout' %}">

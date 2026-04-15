@@ -27,7 +27,7 @@ class UserLoginView(LoginView):
                 "establishment:public_agenda",
                 kwargs={"uid": user.establishment.uid}
             )
-        return reverse("servicos:home")
+        return reverse("services:home")
 
 
 class UserRegisterView(CreateView):

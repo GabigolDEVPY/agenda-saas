@@ -15,13 +15,13 @@
     {% if user %}
 
       {% if payment %}
-        <a href="{% url 'servicos:home' %}" class="btn-admin">
+        <a href="{% url 'services:home' %}" class="btn-admin">
           <i class="fa-solid"></i>Fazer pagamento
         </a>
       {% endif %}
 
       {% if incomplete %}
-        <a href="{% url 'servicos:home' %}" class="btn-admin">
+        <a href="{% url 'services:home' %}" class="btn-admin">
           <i class="fa-solid"></i>Concluir configuração
         </a>
       {% endif %}

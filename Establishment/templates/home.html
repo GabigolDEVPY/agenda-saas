@@ -128,7 +128,7 @@
       </div>
     </div>
 
-    <form method="POST" action="{% url 'servicos:agendar' %}" id="form-agendamento">
+    <form method="POST" action="{% url 'services:agendar' %}" id="form-agendamento">
       {% csrf_token %}
       <input type="hidden" name="user"    id="h-barber-id">
       <input type="hidden" name="service"     id="h-services">
