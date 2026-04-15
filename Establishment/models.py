@@ -4,10 +4,10 @@ from django.db import models
 
 class Establishment(models.Model):
     user = models.OneToOneField("user.User", on_delete=models.CASCADE, related_name="owned_establishment")
-    name = models.CharField(max_length=255)
-    uid = models.CharField(max_length=20, unique=True, editable=False)
+    name = models.CharField(max_length=255, null=False, blank=False)
+    uid = models.CharField(max_length=20, unique=True, editable=False, null=False, blank=False)
     cnpj = models.CharField(max_length=14, unique=True)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, null=False, blank=False)
     description = models.TextField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
