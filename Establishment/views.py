@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views import View
 from .services import HomeService
+from . models import Establishment
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
+from django.views.generic import UpdateView
 
 class PublicAgenda(View):
     def get(self, request, uid):
@@ -21,3 +23,17 @@ class PublicAgenda(View):
             return render(request, 'unavailable.html', context=context)
 
         return render(request, 'home.html', context=context)
+    
+class SaveInfosView(UpdateView):
+    model = Establishment
+    fields = ['name', 'description', 'phone', 'cnpj']
+    template_name = 'infos.html'
+    
+    def get_object(self, queryset=None):
+        uid = self.request.session.get('uid')
+        return Establishment.objects.get(uid=uid)
+    
+    def form_valid(self, form):
+        self.object.save()
+        return render(self.request, 'partials/infos.html', context={'establishment': self.object})
+    

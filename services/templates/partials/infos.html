@@ -1,0 +1,28 @@
+   <form id="form-establishment" hx-post="{% url 'establishment:save_infos' %}" hx-target="#form-establishment" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="card">
+        <div class="card-title">Dados do Negócio</div>
+        <div class="card-sub">Identificação pública da sua barbearia</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="est-nome">Nome da barbearia</label>
+            <input value="{{ establishment.name }}" type="text" id="est-nome" name="name" placeholder="Ex: Barbearia Corte &amp; Estilo"/>
+          </div>
+          <div class="form-group">
+            <label for="est-cnpj">CNPJ</label>
+            <input value="{{ establishment.cnpj }}" type="text" id="est-cnpj" name="cnpj" placeholder="00.000.000/0001-00"/>
+          </div>
+          <div class="form-group">
+            <label for="est-tel">Telefone / WhatsApp</label>
+            <input value="{{ establishment.phone }}" type="tel" id="est-tel" name="phone" placeholder="(99) 99999-9999"/>
+          </div>
+          <div class="form-group full">
+            <label for="est-desc">Descrição</label>
+            <textarea id="est-desc" name="description" placeholder="Fale sobre a sua barbearia...">{{ establishment.description }}</textarea>
+          </div>
+          <button type="submit" class="w-25 btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar
+          </button>
+        </div>
+      </div>
+    </form>

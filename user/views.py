@@ -21,11 +21,13 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        if hasattr(user, 'establishment') and user.establishment:
-            self.request.session['uid'] = user.establishment.uid
+        if hasattr(user, 'owned_establishment') and user.owned_establishment:
+            id = user.owned_establishment.uid
+            self.request.session['uid'] = id
+
             return reverse(
                 "establishment:public_agenda",
-                kwargs={"uid": user.establishment.uid}
+                kwargs={"uid": user.owned_establishment.uid}
             )
         return reverse("services:home")
 

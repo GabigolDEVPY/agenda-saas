@@ -1,10 +1,10 @@
 from django.urls import path
-from . views import PublicAgenda
+from . views import PublicAgenda, SaveInfosView
 
 app_name = 'establishment'
 
 urlpatterns = [
     path('e/<str:uid>/', PublicAgenda.as_view(), name='public_agenda'),
-    # path('e/<str:uid>/servicos/', views.services, name='services'),
-    # path('e/<str:uid>/sobre/', views.about, name='about'),
+    path('infos/save/', SaveInfosView.as_view(), name='save_infos'),
 ]
+
