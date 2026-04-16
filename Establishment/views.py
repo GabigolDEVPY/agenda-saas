@@ -27,7 +27,6 @@ class PublicAgenda(View):
 class SaveInfosView(UpdateView):
     model = Establishment
     fields = ['name', 'description', 'phone', 'cnpj']
-    template_name = 'infos.html'
     
     def get_object(self, queryset=None):
         uid = self.request.session.get('uid')
@@ -36,4 +35,17 @@ class SaveInfosView(UpdateView):
     def form_valid(self, form):
         self.object.save()
         return render(self.request, 'partials/infos.html', context={'establishment': self.object})
+    
+
+class SaveAddressView(UpdateView):
+    model = Establishment
+    fields = ['cep', 'cidade', 'estado', 'bairro', 'rua', 'numero_endereco', 'complemento']
+    
+    def get_object(self, queryset=None):
+        uid = self.request.session.get('uid')
+        return Establishment.objects.get(uid=uid)
+    
+    def form_valid(self, form):
+        self.object.save()
+        return render(self.request, 'partials/address.html', context={'establishment': self.object})
     
