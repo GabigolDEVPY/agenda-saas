@@ -446,5 +446,20 @@ function maskTelefone(input) {
   input.value = value;
 }
 
+function maskCNPJ(input) {
+    let value = input.value.replace(/\D/g, "");
+
+    // limita a 14 dígitos
+    value = value.substring(0, 14);
+
+    // aplica a máscara
+    value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    value = value.replace(/(\d{4})(\d)/, "$1-$2");
+
+    input.value = value;
+}
+
 /* ── INIT ── */
 renderCalendar();

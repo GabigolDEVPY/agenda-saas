@@ -4,6 +4,7 @@ from .services import HomeService
 from . models import Establishment
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 from django.views.generic import UpdateView
+from .forms import EstablishmentForm
 
 class PublicAgenda(View):
     def get(self, request, uid):
@@ -26,7 +27,7 @@ class PublicAgenda(View):
     
 class SaveInfosView(UpdateView):
     model = Establishment
-    fields = ['name', 'description', 'phone', 'cnpj']
+    form_class = EstablishmentForm
     
     def get_object(self, queryset=None):
         uid = self.request.session.get('uid')
