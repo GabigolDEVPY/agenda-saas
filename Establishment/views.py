@@ -1,11 +1,11 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from .services import HomeService
-from . models import Establishment
+from . models import Establishment, Address
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 from django.views.generic import UpdateView
-from .forms import EstablishmentForm
+from .forms import EstablishmentForm, AddressForm
 
 class PublicAgenda(View):
     def get(self, request, uid):
@@ -84,15 +84,59 @@ class SaveInfosView(UpdateView):
     
 
 
-class SaveAddressView(UpdateView):
-    model = Establishment
-    fields = ['cep', 'cidade', 'estado', 'bairro', 'rua', 'numero_endereco', 'complemento']
-    
-    def get_object(self, queryset=None):
-        uid = self.request.session.get('uid')
-        return Establishment.objects.get(uid=uid)
-    
-    def form_valid(self, form):
-        self.object.save()
-        return render(self.request, 'partials/address.html', context={'establishment': self.object})
+class SaveAddressView(View):
+    template_name = "partials/address.html"
+
+    def _get_establishment(self):
+        uid = self.request.session.get("uid")
+        return get_object_or_404(Establishment, uid=uid)
+
+    def _build_error_message(self, form):
+        mensagens = []
+
+        for field, errors in form.errors.items():
+            if field == "__all__":
+                mensagens.extend([str(e) for e in errors])
+            else:
+                label = form.fields[field].label or field
+                mensagens.extend([f"{label}: {e}" for e in errors])
+
+        return " | ".join(mensagens) if mensagens else "Verifique os dados do formulário."
+
+    def post(self, request, *args, **kwargs):
+        establishment = self._get_establishment()
+        address_instance = Address.objects.filter(establishment=establishment).first()
+
+        form = AddressForm(request.POST, instance=address_instance)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.establishment = establishment
+            address.save()
+
+            response = render(
+                request,
+                self.template_name,
+                {"establishment": establishment, "address": address, "form": form},
+            )
+            response["HX-Trigger"] = json.dumps({
+                "notify": {
+                    "type": "success",
+                    "message": "Endereço salvo com sucesso!"
+                }
+            })
+            return response
+
+        response = render(
+            request,
+            self.template_name,
+            {"establishment": establishment, "address": address_instance, "form": form},
+            status=400,
+        )
+        response["HX-Trigger"] = json.dumps({
+            "notify": {
+                "type": "error",
+                "message": self._build_error_message(form)
+            }
+        })
+        return response
     

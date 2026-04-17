@@ -1,5 +1,5 @@
 from django import forms
-from .models import Establishment
+from .models import Establishment, Address
 import re
 
 
@@ -76,3 +76,41 @@ class EstablishmentForm(forms.ModelForm):
         digito2 = calcular_digito(cnpj[:12] + digito1, pesos_2)
 
         return cnpj[-2:] == digito1 + digito2
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = [
+            "zip_code",
+            "city",
+            "state",
+            "neighborhood",
+            "street",
+            "number",
+            "complement",
+        ]
+        labels = {
+            "zip_code": "CEP",
+            "city": "Cidade",
+            "state": "Estado",
+            "neighborhood": "Bairro",
+            "street": "Rua / Avenida",
+            "number": "Número",
+            "complement": "Complemento",
+        }
+
+    def _only_digits(self, value):
+        return re.sub(r"\D", "", value or "")
+
+    def clean_zip_code(self):
+        cep = self._only_digits(self.cleaned_data.get("zip_code"))
+        if len(cep) != 8:
+            raise forms.ValidationError("CEP inválido. Use 8 dígitos.")
+        return f"{cep[:5]}-{cep[5:]}"
+
+    def clean_state(self):
+        state = (self.cleaned_data.get("state") or "").strip().upper()
+        if len(state) != 2 or not state.isalpha():
+            raise forms.ValidationError("Estado inválido. Use a UF com 2 letras (ex: SP).")
+        return state

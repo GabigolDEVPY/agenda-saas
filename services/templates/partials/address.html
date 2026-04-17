@@ -1,36 +1,40 @@
- <form id="form-address" hx-post="{% url 'establishment:save_address' %}" hx-target="#form-address" hx-swap="innerHTML">
+<form id="form-address" hx-post="{% url 'establishment:save_address' %}" hx-target="#form-address" hx-swap="innerHTML">
+    {% csrf_token %}
     <div class="card">
         <div class="card-title">Endereço</div>
         <div class="card-sub">Localização física do estabelecimento</div>
         <div class="form-grid">
             <div class="form-group">
                 <label for="est-cep">CEP</label>
-                <input type="text" id="est-cep" name="cep" placeholder="00000-000"/>
+                <input type="text" id="est-cep" name="zip_code" maxlength="9" oninput="maskCEP(this)" value="{{ address.zip_code|default:'' }}" placeholder="00000-000"/>
             </div>
             <div class="form-group">
                 <label for="est-cidade">Cidade</label>
-                <input type="text" id="est-cidade" name="cidade" placeholder="Ex: São Paulo"/>
+                <input type="text" id="est-cidade" name="city" value="{{ address.city|default:'' }}" placeholder="Ex: São Paulo"/>
             </div>
             <div class="form-group">
                 <label for="est-estado">Estado</label>
-                <input type="text" id="est-estado" name="estado" placeholder="SP"/>
+                <input type="text" id="est-estado" name="state" maxlength="2" style="text-transform: uppercase;" value="{{ address.state|default:'' }}" placeholder="SP"/>
             </div>
             <div class="form-group">
                 <label for="est-bairro">Bairro</label>
-                <input type="text" id="est-bairro" name="bairro" placeholder="Ex: Centro"/>
+                <input type="text" id="est-bairro" name="neighborhood" value="{{ address.neighborhood|default:'' }}" placeholder="Ex: Centro"/>
             </div>
             <div class="form-group">
                 <label for="est-rua">Rua / Avenida</label>
-                <input type="text" id="est-rua" name="rua" placeholder="Ex: Av. Paulista"/>
+                <input type="text" id="est-rua" name="street" value="{{ address.street|default:'' }}" placeholder="Ex: Av. Paulista"/>
             </div>
             <div class="form-group">
                 <label for="est-numero">Número</label>
-                <input type="text" id="est-numero" name="numero_endereco" placeholder="1234"/>
+                <input type="text" id="est-numero" name="number" value="{{ address.number|default:'' }}" placeholder="1234"/>
             </div>
             <div class="form-group full">
                 <label for="est-complemento">Complemento</label>
-                <input type="text" id="est-complemento" name="complemento" placeholder="Sala, andar, bloco..."/>
+                <input type="text" id="est-complemento" name="complement" value="{{ address.complement|default:'' }}" placeholder="Sala, andar, bloco..."/>
             </div>
+            <button type="submit" class="btn-primary btn-save-establishment">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar
+            </button>
         </div>
     </div>
 </form>

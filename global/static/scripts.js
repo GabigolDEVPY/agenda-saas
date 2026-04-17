@@ -461,6 +461,18 @@ function maskCNPJ(input) {
     input.value = value;
 }
 
+function maskCEP(input) {
+    let value = input.value.replace(/\D/g, "");
+
+    // limita a 8 dígitos
+    value = value.substring(0, 8);
+
+    // aplica a máscara 00000-000
+    value = value.replace(/^(\d{5})(\d)/, "$1-$2");
+
+    input.value = value;
+}
+
 (function () {
   var popup = document.getElementById("feedback-popup");
   var timer = null;

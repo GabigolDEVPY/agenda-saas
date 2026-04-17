@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, View
 from .services import AppointmentService
-from establishment.models import Establishment
+from establishment.models import Establishment, Address
 from django.contrib import messages
 
 class ServicesView(LoginRequiredMixin, TemplateView):
@@ -12,7 +12,9 @@ class ServicesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         uid = self.request.session.get('uid')
-        context['establishment'] = Establishment.objects.filter(uid=uid).first()
+        establishment = Establishment.objects.filter(uid=uid).first()
+        context['establishment'] = establishment
+        context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
         return context
 
 
