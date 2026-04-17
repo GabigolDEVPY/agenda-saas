@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 from services.models import Appointment, Diverses, MonthAvailability, Service
-from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
+from  ..exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 import json
 from django.shortcuts import get_object_or_404
-from .models import Establishment
+from ..models import Establishment
 
 
 class HomeService:

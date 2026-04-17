@@ -1,7 +1,7 @@
 from services.forms import AppointmentForm
 from datetime import datetime, timedelta
 from .models import Appointment
-from establishment.services import HomeService
+from establishment.services.services import HomeService
 from django.db import transaction
 import json
 
