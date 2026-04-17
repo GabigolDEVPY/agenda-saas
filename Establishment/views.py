@@ -34,6 +34,31 @@ class SaveInfosView(UpdateView):
     form_class = EstablishmentForm
     template_name = "partials/infos.html"
 
+    def get_object(self):
+        return self.request.user.owned_establishment
+
+    def form_valid(self, form):
+        establishment = form.save()
+        response = render(self.request, self.template_name, {"establishment": establishment, "form": form},)
+        response["HX-Trigger"] = json.dumps({ "notify": {"type": "success","message": "Informações salvas com sucesso!"}})
+        return response
+
+    def form_invalid(self, form):
+        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form}, status=400,)
+        response["HX-Trigger"] = json.dumps({"notify": {"type": "error","message": "Erro ao salvar. Verifique os dados."}})
+        return response
+    
+
+
+class SaveAddressView(View):
+    template_name = "partials/address.html"
+
     def post(self, request, *args, **kwargs):
-        UpdateService.save_address(request)
-        return super().post(request, *args, **kwargs)
+        success, form, address = UpdateService.save_address(request)
+        establishment = request.user.owned_establishment
+
+        response = render(request,self.template_name,{"establishment": establishment,"address": address,"form": form},status=200 if success else 400)
+        
+        response["HX-Trigger"] = json.dumps({"notify": {"type": "success" if success else "error","message": "Endereço salvo com sucesso!" if success else "Erro ao salvar endereço."}})
+
+        return response
