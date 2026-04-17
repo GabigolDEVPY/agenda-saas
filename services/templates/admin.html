@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-<body>
+<div class="admin-page">
 
 <!-- HERO
 <div class="hero">
@@ -811,11 +811,42 @@
   font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
 }
 .hf-times {
-  display: flex; align-items: center; gap: 8px; flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
-.hf-times input[type="time"] { flex: 1; }
+.hf-times input[type="time"] {
+  width: 100%;
+  min-width: 0;
+}
 .hf-sep {
   font-size: 11px; color: var(--gray); flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .hf-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .hf-day-label {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .hf-times {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .hf-sep {
+    justify-self: start;
+    padding-left: 2px;
+  }
 }
 </style>
 
@@ -932,7 +963,7 @@ buildMonthList = function() {};
         '<input type="checkbox" name="hf_' + dia.key + '_aberto" id="hf-' + dia.key + '-aberto"' + (d.aberto ? ' checked' : '') + '/>' +
         '<span class="toggle-track"></span>' +
       '</label>' +
-      '<div class="hf-times" id="hf-' + dia.key + '-times" style="display:' + (d.aberto ? 'flex' : 'none') + ';">' +
+      '<div class="hf-times" id="hf-' + dia.key + '-times" style="display:' + (d.aberto ? 'grid' : 'none') + ';">' +
         '<input type="time" name="hf_' + dia.key + '_abertura" value="' + d.abertura + '"/>' +
         '<span class="hf-sep">até</span>' +
         '<input type="time" name="hf_' + dia.key + '_fechamento" value="' + d.fechamento + '"/>' +
@@ -946,7 +977,7 @@ buildMonthList = function() {};
     var closedEl = row.querySelector('#hf-' + dia.key + '-closed');
 
     checkbox.addEventListener('change', function() {
-      timesEl.style.display  = this.checked ? 'flex' : 'none';
+      timesEl.style.display  = this.checked ? 'grid' : 'none';
       closedEl.style.display = this.checked ? 'none' : 'flex';
     });
 
@@ -957,5 +988,6 @@ buildMonthList = function() {};
 /* Init */
 buildPickMonthList();
 </script>
-</body>
+  <div id="feedback-popup" class="feedback-popup"></div>
+</div>
 {% endblock content %}

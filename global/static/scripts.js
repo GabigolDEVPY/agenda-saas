@@ -461,5 +461,33 @@ function maskCNPJ(input) {
     input.value = value;
 }
 
+(function () {
+  var popup = document.getElementById("feedback-popup");
+  var timer = null;
+
+  if (popup && popup.parentElement !== document.body) {
+    document.body.appendChild(popup);
+  }
+
+  function showPopup(type, message) {
+    if (!popup || !message) return;
+
+    popup.className = "feedback-popup " + (type || "error");
+    popup.textContent = message;
+    popup.classList.add("is-visible");
+
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      popup.classList.remove("is-visible");
+    }, 3500);
+  }
+
+  // Evento disparado automaticamente pelo HX-Trigger
+  document.body.addEventListener("notify", function (evt) {
+    var detail = evt.detail || {};
+    showPopup(detail.type, detail.message);
+  });
+})();
+
 /* ── INIT ── */
 renderCalendar();

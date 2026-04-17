@@ -4,59 +4,64 @@ import re
 
 
 class EstablishmentForm(forms.ModelForm):
-
     class Meta:
         model = Establishment
         fields = [
-            "user",
             "name",
             "cnpj",
             "phone",
             "description",
         ]
 
-    # 🔹 VALIDAR TELEFONE
+    def _only_digits(self, value):
+        return re.sub(r"\D", "", value or "")
+
+    def _format_phone(self, phone_digits):
+        # 10: (99) 9999-9999 | 11: (99) 99999-9999
+        if len(phone_digits) == 10:
+            return f"({phone_digits[:2]}) {phone_digits[2:6]}-{phone_digits[6:]}"
+        return f"({phone_digits[:2]}) {phone_digits[2:7]}-{phone_digits[7:]}"
+
+    def _format_cnpj(self, cnpj_digits):
+        # 00.000.000/0000-00
+        return (
+            f"{cnpj_digits[:2]}.{cnpj_digits[2:5]}.{cnpj_digits[5:8]}/"
+            f"{cnpj_digits[8:12]}-{cnpj_digits[12:]}"
+        )
+
     def clean_phone(self):
         print("Validando telefone...")
-        phone = self.cleaned_data.get("phone")
+        phone = self._only_digits(self.cleaned_data.get("phone"))
 
         if not phone:
-            print("Telefone é obrigatório.")
             raise forms.ValidationError("Telefone é obrigatório.")
 
-        phone = re.sub(r"\D", "", phone)
-
         if len(phone) not in [10, 11]:
-            print("Telefone deve ter 10 ou 11 dígitos (DDD + número).")
             raise forms.ValidationError("Telefone inválido. Use DDD + número.")
 
-        # opcional: validar DDD não começar com 0
-        if phone[:2] == "00":
-            print("DDD não pode começar com 0.")
+        if phone[:2].startswith("0"):
             raise forms.ValidationError("DDD inválido.")
 
-        return phone
+        # Salva mascarado no banco
+        return self._format_phone(phone)
 
     def clean_cnpj(self):
-        cnpj = self.cleaned_data.get("cnpj")
+        cnpj = self._only_digits(self.cleaned_data.get("cnpj"))
 
         if not cnpj:
             raise forms.ValidationError("CNPJ é obrigatório.")
-
-        cnpj = re.sub(r"\D", "", cnpj)
 
         if len(cnpj) != 14:
             raise forms.ValidationError("CNPJ deve ter 14 dígitos.")
 
         if cnpj == cnpj[0] * 14:
-            print("CNPJ com todos os dígitos iguais é inválido.")
             raise forms.ValidationError("CNPJ inválido.")
 
         if not self.validar_cnpj(cnpj):
-            print("CNPJ falhou na validação de dígitos verificadores.")
             raise forms.ValidationError("CNPJ inválido.")
 
-        return cnpj
+        # Salva mascarado no banco
+        return self._format_cnpj(cnpj)
 
     def validar_cnpj(self, cnpj):
         def calcular_digito(cnpj_parcial, pesos):
