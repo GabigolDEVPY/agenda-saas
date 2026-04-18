@@ -50,15 +50,21 @@ class SaveInfosView(UpdateView):
     
 
 
-class SaveAddressView(View):
+class SaveAddressView(UpdateView):
+    model = Address
+    form_class = AddressForm
     template_name = "partials/address.html"
 
-    def post(self, request, *args, **kwargs):
-        success, form, address = UpdateService.save_address(request)
-        establishment = request.user.owned_establishment
+    def get_object(self):
+        return self.request.user.owned_establishment.address
 
-        response = render(request,self.template_name,{"establishment": establishment,"address": address,"form": form},status=200 if success else 400)
-        
-        response["HX-Trigger"] = json.dumps({"notify": {"type": "success" if success else "error","message": "Endereço salvo com sucesso!" if success else "Erro ao salvar endereço."}})
-
+    def form_valid(self, form):
+        address = form.save()
+        response = render(self.request, self.template_name, {"address": address, "form": form},)
+        response["HX-Trigger"] = json.dumps({ "notify": {"type": "success","message": "Endereço salvo com sucesso!"}})
         return response
+
+    def form_invalid(self, form):
+        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form}, status=400,)
+        response["HX-Trigger"] = json.dumps({"notify": {"type": "error","message": "Erro ao salvar endereço."}})
+        return response 
