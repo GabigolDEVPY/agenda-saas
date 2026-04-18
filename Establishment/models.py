@@ -22,11 +22,11 @@ class Establishment(models.Model):
 
 class Address(models.Model):
     establishment = models.OneToOneField(Establishment, on_delete=models.CASCADE, related_name="address")
-    street = models.CharField(max_length=255, null=False, blank=False)
-    number = models.CharField(max_length=10, null=False, blank=False)
+    street = models.CharField(max_length=100, null=False, blank=False)
+    number = models.BigIntegerField(null=False, blank=False)
     complement = models.CharField(max_length=255, blank=True, null=True)
-    neighborhood = models.CharField(max_length=255, null=False, blank=False)
-    city = models.CharField(max_length=255, null=False, blank=False)
+    neighborhood = models.CharField(max_length=100, null=False, blank=False)
+    city = models.CharField(max_length=50, null=False, blank=False)
     state = models.CharField(max_length=2, null=False, blank=False)
     zip_code = models.CharField(max_length=10, null=False, blank=False)
 

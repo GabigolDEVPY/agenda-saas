@@ -1,12 +1,11 @@
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.views import View
 from .services.services import HomeService
 from . models import Establishment, Address
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 from django.views.generic import UpdateView
 from .forms import EstablishmentForm, AddressForm
-from .services.updates_services import UpdateService
 
 class PublicAgenda(View):
     def get(self, request, uid):
