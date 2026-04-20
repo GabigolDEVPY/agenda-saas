@@ -1132,3 +1132,132 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
     width: 100%;
   }
 }
+
+/* ── STEPPER ── */
+.stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: fit-content;
+}
+.stepper-wrap input[type="number"] {
+  width: 72px;
+  text-align: center;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  -moz-appearance: textfield;
+}
+.stepper-wrap input[type="number"]::-webkit-inner-spin-button,
+.stepper-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+.stepper-btn {
+  width: 40px; height: 42px;
+  background: var(--black-3);
+  border: 1px solid var(--black-4);
+  color: var(--gold);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.stepper-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.stepper-btn:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+.stepper-btn:hover { background: var(--black-4); border-color: var(--gold); }
+.stepper-btn:active { transform: scale(.95); }
+
+/* ── FUNCIONÁRIOS ── */
+.employees-list { display: flex; flex-direction: column; gap: 10px; }
+.employee-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-3); border: 1px solid var(--black-4);
+  border-radius: var(--radius); padding: 14px 18px;
+  gap: 12px; transition: border-color .2s;
+}
+.employee-card:hover { border-color: rgba(245,197,24,.25); }
+.emp-left { display: flex; align-items: center; gap: 14px; }
+.emp-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--black-4); border: 1px solid rgba(245,197,24,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--gold); flex-shrink: 0;
+}
+.emp-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.emp-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.emp-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ── PICK MONTH LIST ── */
+.month-pick-list { display: flex; flex-direction: column; gap: 8px; }
+.month-pick-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-3); border: 1px solid var(--black-4);
+  border-radius: var(--radius); padding: 13px 16px;
+  cursor: pointer; transition: all .2s;
+}
+.month-pick-item:hover { border-color: rgba(245,197,24,.4); color: var(--gold); }
+.month-pick-item span { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; }
+
+/* ── OPEN MONTHS (agenda panel) ── */
+.open-month-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black-2); border: 1px solid rgba(245,197,24,.2);
+  border-radius: var(--radius); padding: 14px 18px;
+  margin-bottom: 10px; cursor: pointer; transition: border-color .2s;
+}
+.open-month-bar:hover { border-color: rgba(245,197,24,.5); }
+.open-month-bar-left { display: flex; align-items: center; gap: 12px; }
+.open-month-bar-icon {
+  width: 36px; height: 36px; border-radius: 6px;
+  background: rgba(245,197,24,.1); border: 1px solid rgba(245,197,24,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--gold); flex-shrink: 0;
+}
+
+/* ── HORÁRIOS DE FUNCIONAMENTO ── */
+.hf-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--black-4);
+}
+.hf-row:last-child { border-bottom: none; }
+.hf-day-label {
+  min-width: 86px; flex-shrink: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+}
+.hf-times {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.hf-times input[type="time"] {
+  width: 100%;
+  min-width: 0;
+}
+.hf-sep {
+  font-size: 11px; color: var(--gray); flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .hf-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .hf-day-label {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .hf-times {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .hf-sep {
+    justify-self: start;
+    padding-left: 2px;
+  }
+}

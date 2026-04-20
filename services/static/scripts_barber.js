@@ -392,6 +392,141 @@ function openDeleteService(btn){
   openModal('modal-delete-confirm');
 }
 
+var openedMonths = [];
+
+function buildPickMonthList() {
+  var el = document.getElementById('month-pick-list');
+  el.innerHTML = '';
+  var now = new Date();
+  var curM = now.getMonth();
+  var curY = now.getFullYear();
+
+  for (var i = 0; i < 12; i++) {
+    var m = (curM + i) % 12;
+    var y = curY + Math.floor((curM + i) / 12);
+    var label = MONTHS_PT[m] + ' ' + y;
+    var alreadyOpen = openedMonths.some(function(o){ return o.m === m && o.y === y; });
+
+    var item = document.createElement('div');
+    item.className = 'month-pick-item';
+    item.dataset.m = m;
+    item.dataset.y = y;
+    item.innerHTML =
+      '<span>' + label + '</span>' +
+      (alreadyOpen
+        ? '<span style="font-size:11px;color:var(--gold);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px;"><i class="fa-solid fa-check" style="margin-right:4px;"></i>Aberta</span>'
+        : '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:12px;"></i>');
+
+    item.addEventListener('click', function() {
+      var m2 = parseInt(this.dataset.m);
+      var y2 = parseInt(this.dataset.y);
+      if (!openedMonths.some(function(o){ return o.m === m2 && o.y === y2; })) {
+        openedMonths.push({ m: m2, y: y2 });
+        renderOpenMonthsList();
+      }
+      closeModal('modal-pick-month');
+      openMonthModal(m2, y2);
+    });
+    el.appendChild(item);
+  }
+}
+
+function renderOpenMonthsList() {
+  var el = document.getElementById('open-months-list');
+  el.innerHTML = '';
+  if (!openedMonths.length) return;
+
+  openedMonths.forEach(function(o) {
+    var label = MONTHS_PT[o.m] + ' ' + o.y;
+    var prefix = o.y + '-' + pad(o.m + 1) + '-';
+    var offs = DIAS_OFF.filter(function(d){ return d.startsWith(prefix); }).length;
+
+    var bar = document.createElement('div');
+    bar.className = 'open-month-bar';
+    bar.innerHTML =
+      '<div class="open-month-bar-left">' +
+        '<div class="open-month-bar-icon"><i class="fa-regular fa-calendar-days"></i></div>' +
+        '<div>' +
+          '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;letter-spacing:2px;">' + label + '</div>' +
+          '<div style="font-size:11px;color:var(--gray);margin-top:2px;">' +
+            (offs > 0 ? offs + ' dia(s) com folga' : 'Sem folgas configuradas') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:13px;"></i>';
+
+    bar.addEventListener('click', function() {
+      openMonthModal(o.m, o.y);
+    });
+    el.appendChild(bar);
+  });
+}
+
+buildMonthList = function() {};
+
+/* ══════════════════════════════════════
+   HORÁRIOS DE FUNCIONAMENTO — Estabelecimento
+══════════════════════════════════════ */
+(function buildHorariosFuncionamento() {
+  var dias = [
+    { key: 'dom', label: 'Domingo' },
+    { key: 'seg', label: 'Segunda' },
+    { key: 'ter', label: 'Terça'   },
+    { key: 'qua', label: 'Quarta'  },
+    { key: 'qui', label: 'Quinta'  },
+    { key: 'sex', label: 'Sexta'   },
+    { key: 'sab', label: 'Sábado'  },
+  ];
+  var defaults = {
+    dom: { aberto: false, abertura: '08:00', fechamento: '18:00' },
+    seg: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    ter: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    qua: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    qui: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    sex: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+    sab: { aberto: true,  abertura: '09:00', fechamento: '18:00' },
+  };
+
+  var wrap = document.getElementById('horarios-funcionamento');
+  if (!wrap) return;
+
+  dias.forEach(function(dia) {
+    var d = defaults[dia.key];
+
+    var row = document.createElement('div');
+    row.className = 'hf-row';
+
+    row.innerHTML =
+      '<div class="hf-day-label">' + dia.label + '</div>' +
+      '<label class="toggle" style="flex-shrink:0;">' +
+        '<input type="checkbox" name="hf_' + dia.key + '_aberto" id="hf-' + dia.key + '-aberto"' + (d.aberto ? ' checked' : '') + '/>' +
+        '<span class="toggle-track"></span>' +
+      '</label>' +
+      '<div class="hf-times" id="hf-' + dia.key + '-times" style="display:' + (d.aberto ? 'grid' : 'none') + ';">' +
+        '<input type="time" name="hf_' + dia.key + '_abertura" value="' + d.abertura + '"/>' +
+        '<span class="hf-sep">até</span>' +
+        '<input type="time" name="hf_' + dia.key + '_fechamento" value="' + d.fechamento + '"/>' +
+      '</div>' +
+      '<div id="hf-' + dia.key + '-closed" style="display:' + (d.aberto ? 'none' : 'flex') + ';align-items:center;">' +
+        '<span class="badge badge-alert">Fechado</span>' +
+      '</div>';
+
+    var checkbox = row.querySelector('#hf-' + dia.key + '-aberto');
+    var timesEl  = row.querySelector('#hf-' + dia.key + '-times');
+    var closedEl = row.querySelector('#hf-' + dia.key + '-closed');
+
+    checkbox.addEventListener('change', function() {
+      timesEl.style.display  = this.checked ? 'grid' : 'none';
+      closedEl.style.display = this.checked ? 'none' : 'flex';
+    });
+
+    wrap.appendChild(row);
+  });
+})();
+
+/* Init */
+buildPickMonthList();
+
 /* ──────────────────────────────────────────────
    INIT
 ────────────────────────────────────────────── */
