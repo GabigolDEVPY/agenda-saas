@@ -1080,7 +1080,7 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
 
 .admin-page .btn-save-establishment {
   width: auto;
-  max-width: 100%;
+  max-width: 50%;
 }
 
 @media (max-width: 767px) {
