@@ -38,3 +38,9 @@
         </div>
     </div>
 </form>
+{% if msg %}
+    <script>
+        console.log("{{ msg }}");
+        showToast("{{ msg }}", "{{ type }}");
+    </script>
+{% endif %}

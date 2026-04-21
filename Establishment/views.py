@@ -38,13 +38,11 @@ class SaveInfosView(UpdateView):
 
     def form_valid(self, form):
         establishment = form.save()
-        response = render(self.request, self.template_name, {"establishment": establishment, "form": form},)
-        response["HX-Trigger"] = json.dumps({ "notify": {"type": "success","message": "Informações salvas com sucesso!"}})
+        response = render(self.request, self.template_name, {"establishment": establishment, "form": form, "msg": "Informações salvas com sucesso!", "type": "success"})
         return response
 
     def form_invalid(self, form):
-        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form}, status=400,)
-        response["HX-Trigger"] = json.dumps({"notify": {"type": "error","message": "Erro ao salvar. Verifique os dados."}})
+        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form, "msg": "Erro ao salvar informações.", "type": "error"})
         return response
     
 
@@ -59,11 +57,9 @@ class SaveAddressView(UpdateView):
 
     def form_valid(self, form):
         address = form.save()
-        response = render(self.request, self.template_name, {"address": address, "form": form},)
-        response["HX-Trigger"] = json.dumps({ "notify": {"type": "success","message": "Endereço salvo com sucesso!"}})
+        response = render(self.request, self.template_name, {"address": address, "form": form, "msg": "Endereço salvo com sucesso!", "type": "success"})
         return response
 
     def form_invalid(self, form):
-        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form}, status=400,)
-        response["HX-Trigger"] = json.dumps({"notify": {"type": "error","message": "Erro ao salvar endereço."}})
+        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form, "msg": "Erro ao salvar endereço.", "type": "error"})
         return response 

@@ -524,6 +524,16 @@ buildMonthList = function() {};
   });
 })();
 
+function openModal(message) {
+    const modal = document.getElementById("modal");
+    const text = document.getElementById("modal-text");
+
+    if (!modal || !text) return;
+
+    text.innerText = message;
+    modal.classList.add("open");
+}
+
 /* Init */
 buildPickMonthList();
 
