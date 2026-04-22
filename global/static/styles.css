@@ -288,7 +288,6 @@ header {
   font-family: var(--font); font-size: 13px; font-weight: 600;
   letter-spacing: .2px; padding: 10px 20px;
   cursor: pointer; transition: all .15s;
-  display: inline-flex; align-items: center; gap: 8px;
 }
 .btn-primary:hover { background: var(--bg-5); border-color: var(--border-strong); }
 
@@ -1094,7 +1093,7 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
 
 .admin-page .btn-save-establishment {
   width: auto;
-  max-width: 50%;
+  max-width: 25%;
 }
 
 @media (max-width: 767px) {
@@ -1160,7 +1159,17 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   border-radius: 0;
   border-left: none;
   border-right: none;
+
+  /* compatibilidade */
+  appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* remove os botões no Chrome/Edge/Safari */
+.stepper-wrap input[type="number"]::-webkit-outer-spin-button,
+.stepper-wrap input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .stepper-wrap input[type="number"]::-webkit-inner-spin-button,
 .stepper-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
