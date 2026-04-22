@@ -95,7 +95,7 @@ class HomeService:
 
     # ── SERVIÇOS ──────────────────────────────────────────────────────────────
     @staticmethod
-    def get_servicos(users):
+    def get_services(users):
         result = {}
         for user in users:
             result[str(user.id)] = [

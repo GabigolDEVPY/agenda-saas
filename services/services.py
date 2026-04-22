@@ -38,7 +38,7 @@ class AppointmentService:
         slot_interval = cfg.get('slot_interval', 30)
 
         # Busca términos de agendamentos existentes para permitir continuação natural
-        agendamentos_json = json.loads(HomeService.get_agendamentos([user]))
+        agendamentos_json = json.loads(HomeService.get_appointments([user]))
         agendamentos_dia = agendamentos_json.get(user_id, {}).get(data_str, [])
         ends_of_existing = {_to_min(ag['fim']) for ag in agendamentos_dia}
 
