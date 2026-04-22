@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-from services.models import Appointment, Diverses, MonthAvailability, Service
-from  ..exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
+from services.models import Appointment, Diverses, MonthAvailability
+from  ..exceps_establishment import EstablishmentNotFound,  EstablishmentIncomplete
 import json
-from django.shortcuts import get_object_or_404
 from ..models import Establishment
 
 
@@ -23,13 +22,13 @@ class HomeService:
             'uid': uid,
             "users": users,
             # Configurações de horário por usuário (início, fim, intervalo)
-            "config_json":            HomeService.get_config(users),
+            "config_json": HomeService.get_config(users),
             # Agendamentos existentes: {user_id: {date: [{inicio, fim}]}}
-            "agendamentos_json":      HomeService.get_appointments(users),
+            "agendamentos_json": HomeService.get_appointments(users),
             # Meses disponíveis
             "meses_disponiveis_json": HomeService.get_available_months(users),
             # Serviços
-            "servicos_json":          HomeService.get_services(users),
+            "servicos_json": HomeService.get_services(users),
         }
         return context
 
@@ -43,8 +42,8 @@ class HomeService:
                 print(f"Estabelecimento {user.establishment.name} sem configuração de horário.")
                 raise EstablishmentIncomplete()
             result[str(user.id)] = {
-                "hora_inicio":   "09:00",
-                "hora_fim":      "18:00",
+                "hora_inicio": "09:00",
+                "hora_fim": "18:00",
                 "interval_time": diverses.interval_time,
             }
         return json.dumps(result)
@@ -66,11 +65,11 @@ class HomeService:
 
             for ag in agendamentos:
                 inicio_dt = datetime.combine(ag.date, ag.time)
-                fim_dt    = inicio_dt + timedelta(minutes=ag.duration)
+                fim_dt = inicio_dt + timedelta(minutes=ag.duration)
 
                 dias[str(ag.date)].append({
                     "inicio": ag.time.strftime("%H:%M"),
-                    "fim":    fim_dt.strftime("%H:%M"),
+                    "fim": fim_dt.strftime("%H:%M"),
                 })
 
             result[str(user.id)] = {
@@ -100,9 +99,9 @@ class HomeService:
         for user in users:
             result[str(user.id)] = [
                 {
-                    "id":      s.id,
-                    "nome":    s.name,
-                    "preco":   str(s.price),
+                    "id": s.id,
+                    "nome": s.name,
+                    "preco": str(s.price),
                     "duracao": s.time_duration,
                 }
                 for s in user.services.all()
