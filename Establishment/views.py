@@ -6,6 +6,8 @@ from . models import Establishment, Address
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 from django.views.generic import UpdateView
 from .forms import EstablishmentForm, AddressForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .services.form_services import get_msg_form_invalid
 
 class PublicAgenda(View):
     def get(self, request, uid):
@@ -28,7 +30,7 @@ class PublicAgenda(View):
     
 
 
-class SaveInfosView(UpdateView):
+class SaveInfosView(LoginRequiredMixin, UpdateView):
     model = Establishment
     form_class = EstablishmentForm
     template_name = "partials/infos.html"
@@ -37,17 +39,19 @@ class SaveInfosView(UpdateView):
         return self.request.user.owned_establishment
 
     def form_valid(self, form):
+        print(self.request.user.owned_establishment.__dict__)
         establishment = form.save()
         response = render(self.request, self.template_name, {"establishment": establishment, "form": form, "msg": "Informações salvas com sucesso!", "type": "success"})
         return response
 
     def form_invalid(self, form):
-        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form, "msg": "Erro ao salvar informações.", "type": "error"})
+        msg = get_msg_form_invalid(self, form)
+        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form, "msg": msg, "type": "error"})
         return response
     
 
 
-class SaveAddressView(UpdateView):
+class SaveAddressView(LoginRequiredMixin, UpdateView):
     model = Address
     form_class = AddressForm
     template_name = "partials/address.html"
@@ -61,5 +65,6 @@ class SaveAddressView(UpdateView):
         return response
 
     def form_invalid(self, form):
-        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form, "msg": "Erro ao salvar endereço.", "type": "error"})
+        msg = get_msg_form_invalid(self, form)
+        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form, "msg": msg, "type": "error"})
         return response 

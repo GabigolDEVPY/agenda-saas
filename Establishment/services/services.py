@@ -107,3 +107,4 @@ class HomeService:
                 for s in user.services.all()
             ]
         return json.dumps(result)
+    
