@@ -22,7 +22,6 @@ class AdminService:
         context['establishment'] = establishment
         context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
         context['operating_hours'] = json.dumps(AdminService.get_operating_hours(view, establishment))
-        print(context['operating_hours'])
 
         return context
 
