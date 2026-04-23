@@ -2,19 +2,16 @@ import json
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, View
-from .services import AppointmentService
+from .services import AppointmentService, AdminService
 from establishment.models import Establishment, Address
 from django.contrib import messages
+
 
 class ServicesView(LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        uid = self.request.session.get('uid')
-        establishment = Establishment.objects.filter(uid=uid).first()
-        context['establishment'] = establishment
-        context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
+        context = AdminService.get_context_admin(self, **kwargs)
         return context
 
 

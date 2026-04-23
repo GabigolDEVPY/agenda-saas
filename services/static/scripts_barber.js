@@ -1,11 +1,11 @@
 /* ══════════════════════════════════════════════
    DADOS — No Django, injete:
-     var DIAS_OFF   = {{ dias_off_json|safe }};   // ex: ["2026-03-10","2026-03-15"]
-     var HORARIOS   = {{ horarios_json|safe }};   // ex: {"2026-03-20":["09:00","10:00",...]}
+     var DIAS_OFF   = {{ dias_off_json|safe }};
+     var HORARIOS   = {{ horarios_json|safe }};
    Por ora usamos defaults vazios.
 ══════════════════════════════════════════════ */
-var DIAS_OFF = [];   // array de datas "YYYY-MM-DD" marcadas como folga
-var HORARIOS = {};   // objeto: data -> array de horários bloqueados (desativados)
+var DIAS_OFF = [];
+var HORARIOS = {};
 
 /* Horários padrão gerados (30 min, 09-20h) */
 var DEFAULT_SLOTS = [];
@@ -64,58 +64,12 @@ function showToast(msg, type){
 var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-function buildMonthList(){
-  var el = document.getElementById('month-list');
-  el.innerHTML = '';
-  var now = new Date();
-  var curM = now.getMonth(); // 0-11
-  var curY = now.getFullYear();
-
-  // Mostrar mês atual + próximos 11
-  for(var i=0; i<12; i++){
-    var m = (curM + i) % 12;
-    var y = curY + Math.floor((curM + i) / 12);
-    var label = MONTHS_PT[m] + ' ' + y;
-
-    // Contar dias off neste mês
-    var prefix = y+'-'+pad(m+1)+'-';
-    var offs = DIAS_OFF.filter(function(d){ return d.startsWith(prefix); }).length;
-
-    var badge = offs === 0
-      ? '<span class="month-badge badge-gray">Sem folgas</span>'
-      : '<span class="month-badge badge-alert">'+offs+' folga'+(offs>1?'s':'')+'</span>';
-
-    var item = document.createElement('div');
-    item.className = 'month-item';
-    item.dataset.month = m;
-    item.dataset.year  = y;
-    item.innerHTML =
-      '<div class="month-left">'+
-        '<div class="month-icon"><i class="fa-regular fa-calendar-days"></i></div>'+
-        '<div>'+
-          '<div class="month-name">'+label+'</div>'+
-          '<div class="month-stat">'+(i===0?'Mês atual':'')+(offs>0?' · '+offs+' dia(s) configurado(s)':'')+'</div>'+
-        '</div>'+
-      '</div>'+
-      '<div style="display:flex;align-items:center;gap:10px;">'+
-        badge+
-        '<i class="fa-solid fa-chevron-right month-chevron"></i>'+
-      '</div>';
-
-    item.addEventListener('click', function(){
-      openMonthModal(parseInt(this.dataset.month), parseInt(this.dataset.year));
-    });
-    el.appendChild(item);
-  }
-}
-
 /* ──────────────────────────────────────────────
    MODAL MESES — estado
 ────────────────────────────────────────────── */
 var mState = {
   month: 0, year: 0,
   selectedDay: null,
-  // dayData: { "YYYY-MM-DD": { off: bool, slots: ["09:00",...] } }
   dayData: {}
 };
 
@@ -125,7 +79,6 @@ function openMonthModal(m, y){
   mState.selectedDay = null;
   mState.dayData = {};
 
-  // Carrega DIAS_OFF e HORARIOS para este mês
   var prefix = y+'-'+pad(m+1)+'-';
   DIAS_OFF.forEach(function(d){
     if(d.startsWith(prefix)){
@@ -137,7 +90,7 @@ function openMonthModal(m, y){
   Object.keys(HORARIOS).forEach(function(d){
     if(d.startsWith(prefix)){
       if(!mState.dayData[d]) mState.dayData[d] = { off: false, slots: DEFAULT_SLOTS.slice() };
-      mState.dayData[d].slots = HORARIOS[d]; // horários ATIVOS (não bloqueados)
+      mState.dayData[d].slots = HORARIOS[d];
     }
   });
 
@@ -153,11 +106,10 @@ function renderMonthCal(){
   var el = document.getElementById('m-cal-days');
   el.innerHTML = '';
   var m = mState.month, y = mState.year;
-  var firstDay = new Date(y, m, 1).getDay(); // 0=dom
+  var firstDay = new Date(y, m, 1).getDay();
   var daysInMonth = new Date(y, m+1, 0).getDate();
   var today = new Date(); today.setHours(0,0,0,0);
 
-  // Blanks
   for(var b=0; b<firstDay; b++){
     var blank = document.createElement('div');
     blank.className = 'm-day empty';
@@ -179,7 +131,7 @@ function renderMonthCal(){
     var data = mState.dayData[dateStr];
     if(data && data.off) dd.classList.add('off');
 
-    if(mState.selectedDay === dateStr) dd.classList.add('today'); // highlight selected
+    if(mState.selectedDay === dateStr) dd.classList.add('today');
 
     dd.innerHTML = '<span class="m-day-num">'+d+'</span>';
 
@@ -195,7 +147,6 @@ function renderMonthCal(){
 function selectDay(dateStr, dayNum){
   mState.selectedDay = dateStr;
 
-  // Highlight
   document.querySelectorAll('#m-cal-days .m-day').forEach(function(d){
     d.style.outline = '';
   });
@@ -301,32 +252,11 @@ function updateDayCalClass(dateStr, isOff){
   if(isOff) el.classList.add('off'); else el.classList.remove('off');
 }
 
-function saveMonthConfig(){
-  /* Não faz nada aqui — o submit do form-month chama prepareMonthForm() antes */
-}
-
-function prepareMonthForm(){
-  /* Monta os hidden inputs com o estado atual antes do form submeter */
-  var diasOff = [];
-  var horariosConfig = {};
-  Object.keys(mState.dayData).forEach(function(dateStr){
-    var d = mState.dayData[dateStr];
-    if(d.off) diasOff.push(dateStr);
-    else if(d.slots.length) horariosConfig[dateStr] = d.slots;
-  });
-  document.getElementById('fm-ano').value      = mState.year;
-  document.getElementById('fm-mes').value      = mState.month + 1;
-  document.getElementById('fm-dias-off').value = JSON.stringify(diasOff);
-  document.getElementById('fm-horarios').value = JSON.stringify(horariosConfig);
-  /* O form submete normalmente após este return */
-}
-
 /* ──────────────────────────────────────────────
    HORÁRIOS PADRÃO
 ────────────────────────────────────────────── */
 var DAYS_LABEL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 var defaultWorkDays = { 0:false, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true };
-var defaultHours = { start:'09:00', end:'20:00', lunchStart:'12:00', lunchEnd:'13:00', lunchBreak: false };
 
 function buildDefaultHoursCard(){
   var card = document.getElementById('default-hours-card');
@@ -359,13 +289,11 @@ function toggleWorkDay(dow, el){
   buildDefaultHoursCard();
 }
 function editDayHours(dow){
-  /* Abre um modal menor ou redireciona — implemente conforme seu fluxo */
   showToast('Edição de horário para '+DAYS_LABEL[dow], '');
 }
 
 /* ──────────────────────────────────────────────
    SERVIÇOS — preenche modais via data-attributes
-   Nenhuma requisição JS aqui: o submit do form cuida de tudo.
 ────────────────────────────────────────────── */
 function openEditService(btn){
   var d = btn.dataset;
@@ -376,32 +304,29 @@ function openEditService(btn){
   document.getElementById('es-duracao').value = d.duracao;
   document.getElementById('es-icone').value   = d.icone;
   document.getElementById('es-ativo').checked = d.ativo === '1';
-  /* Action dinâmico: /barbeiro/servicos/<id>/editar/ */
-  document.getElementById('form-edit-service').action =
-    '/barbeiro/servicos/' + d.id + '/editar/';
   openModal('modal-edit-service');
 }
 
 function openDeleteService(btn){
   var d = btn.dataset;
-  document.getElementById('del-id').value   = d.id;
+  document.getElementById('del-id').value = d.id;
   document.getElementById('del-nome').textContent = '"' + d.nome + '"';
-  /* Action dinâmico: /barbeiro/servicos/<id>/excluir/ */
-  document.getElementById('form-delete-service').action =
-    '/barbeiro/servicos/' + d.id + '/excluir/';
   openModal('modal-delete-confirm');
 }
 
+/* ──────────────────────────────────────────────
+   PICK MONTH
+────────────────────────────────────────────── */
 var openedMonths = [];
 
-function buildPickMonthList() {
+function buildPickMonthList(){
   var el = document.getElementById('month-pick-list');
   el.innerHTML = '';
   var now = new Date();
   var curM = now.getMonth();
   var curY = now.getFullYear();
 
-  for (var i = 0; i < 12; i++) {
+  for(var i=0; i<12; i++){
     var m = (curM + i) % 12;
     var y = curY + Math.floor((curM + i) / 12);
     var label = MONTHS_PT[m] + ' ' + y;
@@ -417,10 +342,10 @@ function buildPickMonthList() {
         ? '<span style="font-size:11px;color:var(--gold);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px;"><i class="fa-solid fa-check" style="margin-right:4px;"></i>Aberta</span>'
         : '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:12px;"></i>');
 
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function(){
       var m2 = parseInt(this.dataset.m);
       var y2 = parseInt(this.dataset.y);
-      if (!openedMonths.some(function(o){ return o.m === m2 && o.y === y2; })) {
+      if(!openedMonths.some(function(o){ return o.m === m2 && o.y === y2; })){
         openedMonths.push({ m: m2, y: y2 });
         renderOpenMonthsList();
       }
@@ -431,12 +356,12 @@ function buildPickMonthList() {
   }
 }
 
-function renderOpenMonthsList() {
+function renderOpenMonthsList(){
   var el = document.getElementById('open-months-list');
   el.innerHTML = '';
-  if (!openedMonths.length) return;
+  if(!openedMonths.length) return;
 
-  openedMonths.forEach(function(o) {
+  openedMonths.forEach(function(o){
     var label = MONTHS_PT[o.m] + ' ' + o.y;
     var prefix = o.y + '-' + pad(o.m + 1) + '-';
     var offs = DIAS_OFF.filter(function(d){ return d.startsWith(prefix); }).length;
@@ -455,19 +380,17 @@ function renderOpenMonthsList() {
       '</div>' +
       '<i class="fa-solid fa-chevron-right" style="color:var(--gray);font-size:13px;"></i>';
 
-    bar.addEventListener('click', function() {
+    bar.addEventListener('click', function(){
       openMonthModal(o.m, o.y);
     });
     el.appendChild(bar);
   });
 }
 
-buildMonthList = function() {};
-
 /* ══════════════════════════════════════
    HORÁRIOS DE FUNCIONAMENTO — Estabelecimento
 ══════════════════════════════════════ */
-(function buildHorariosFuncionamento() {
+(function buildHorariosFuncionamento(){
   var dias = [
     { key: 'dom', label: 'Domingo' },
     { key: 'seg', label: 'Segunda' },
@@ -477,46 +400,176 @@ buildMonthList = function() {};
     { key: 'sex', label: 'Sexta'   },
     { key: 'sab', label: 'Sábado'  },
   ];
-  var defaults = {
-    dom: { aberto: false, abertura: '08:00', fechamento: '18:00' },
-    seg: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-    ter: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-    qua: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-    qui: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-    sex: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-    sab: { aberto: true,  abertura: '09:00', fechamento: '18:00' },
-  };
 
+  // var defaults = {
+  //   dom: { aberto: false, abertura: '08:00', fechamento: '18:00' },
+  //   seg: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+  //   ter: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+  //   qua: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+  //   qui: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+  //   sex: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
+  //   sab: { aberto: true,  abertura: '09:00', fechamento: '18:00' },
+  // };
+  
+  var defaults = operatingHours
+  console.log('Horários carregados:', defaults);
+
+  /* Slots disponíveis: 06:00 até 23:00, de 30 em 30 min */
+  var TIME_SLOTS = [];
+  for (var h = 6; h <= 23; h++) {
+    TIME_SLOTS.push(pad(h) + ':00');
+    if (h < 23) TIME_SLOTS.push(pad(h) + ':30');
+  }
+
+  /* Estado: qual dropdown está aberto no momento */
+  var activeDropdown = null;
+
+  function closeActiveDropdown() {
+    if (activeDropdown) {
+      activeDropdown.style.display = 'none';
+      activeDropdown = null;
+    }
+  }
+
+  /* Fecha ao clicar fora */
+  document.addEventListener('click', function(e) {
+    if (activeDropdown && !activeDropdown.contains(e.target) && !e.target.closest('.hf-time-btn')) {
+      closeActiveDropdown();
+    }
+  });
+
+  function buildTimeDropdown(key, tipo, currentValue, hiddenInput) {
+    var drop = document.createElement('div');
+    drop.className = 'hf-time-dropdown';
+    drop.style.cssText = 'display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:999;' +
+      'background:var(--surface,#1a1a1a);border:1px solid var(--border,#333);border-radius:8px;' +
+      'max-height:220px;overflow-y:auto;min-width:90px;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+
+    TIME_SLOTS.forEach(function(slot) {
+      var opt = document.createElement('div');
+      opt.className = 'hf-time-opt';
+      opt.textContent = slot;
+      opt.style.cssText = 'padding:8px 16px;cursor:pointer;font-size:13px;font-family:monospace;' +
+        'transition:background .15s;' + (slot === currentValue ? 'color:var(--gold,#c9a84c);font-weight:700;' : '');
+
+      opt.addEventListener('mouseenter', function() { this.style.background = 'rgba(255,255,255,.07)'; });
+      opt.addEventListener('mouseleave', function() { this.style.background = ''; });
+
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
+        /* Atualiza o hidden input */
+        hiddenInput.value = slot;
+        /* Atualiza o label do botão */
+        var btn = hiddenInput.closest('.hf-time-wrap').querySelector('.hf-time-btn');
+        btn.querySelector('.hf-time-label').textContent = slot;
+        closeActiveDropdown();
+      });
+
+      drop.appendChild(opt);
+    });
+
+    return drop;
+  }
+
+  function buildTimeWrap(key, tipo, value) {
+    var wrap = document.createElement('div');
+    wrap.className = 'hf-time-wrap';
+    wrap.style.cssText = 'position:relative;display:inline-block;';
+
+    /* Input hidden — é isso que o form vai submeter */
+    var hidden = document.createElement('input');
+    hidden.type  = 'hidden';
+    hidden.name  = 'hf_' + key + '_' + tipo;
+    hidden.value = value;
+    wrap.appendChild(hidden);
+
+    /* Botão visível */
+    var btn = document.createElement('button');
+    btn.type      = 'button';
+    btn.className = 'hf-time-btn';
+    btn.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;' +
+      'background:var(--surface2,#242424);border:1px solid var(--border,#333);border-radius:6px;' +
+      'color:var(--text,#fff);font-size:13px;font-family:monospace;cursor:pointer;transition:border-color .2s;';
+    btn.innerHTML = '<span class="hf-time-label">' + value + '</span>' +
+                   '<i class="fa-solid fa-chevron-down" style="font-size:10px;opacity:.6;"></i>';
+
+    btn.addEventListener('mouseenter', function() { this.style.borderColor = 'var(--gold,#c9a84c)'; });
+    btn.addEventListener('mouseleave', function() { this.style.borderColor = 'var(--border,#333)'; });
+
+    var drop = buildTimeDropdown(key, tipo, value, hidden);
+    wrap.appendChild(drop);
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = drop.style.display !== 'none';
+      closeActiveDropdown();
+      if (!isOpen) {
+        drop.style.display = 'block';
+        activeDropdown = drop;
+        /* Scroll até o item selecionado */
+        var selected = drop.querySelector('.hf-time-opt[style*="gold"]');
+        if (selected) selected.scrollIntoView({ block: 'center' });
+      }
+    });
+
+    wrap.insertBefore(btn, hidden);
+    return wrap;
+  }
+
+  /* ── Monta as linhas ── */
   var wrap = document.getElementById('horarios-funcionamento');
   if (!wrap) return;
 
   dias.forEach(function(dia) {
     var d = defaults[dia.key];
-
     var row = document.createElement('div');
     row.className = 'hf-row';
 
-    row.innerHTML =
-      '<div class="hf-day-label">' + dia.label + '</div>' +
-      '<label class="toggle" style="flex-shrink:0;">' +
-        '<input type="checkbox" name="hf_' + dia.key + '_aberto" id="hf-' + dia.key + '-aberto"' + (d.aberto ? ' checked' : '') + '/>' +
-        '<span class="toggle-track"></span>' +
-      '</label>' +
-      '<div class="hf-times" id="hf-' + dia.key + '-times" style="display:' + (d.aberto ? 'grid' : 'none') + ';">' +
-        '<input type="time" name="hf_' + dia.key + '_abertura" value="' + d.abertura + '"/>' +
-        '<span class="hf-sep">até</span>' +
-        '<input type="time" name="hf_' + dia.key + '_fechamento" value="' + d.fechamento + '"/>' +
-      '</div>' +
-      '<div id="hf-' + dia.key + '-closed" style="display:' + (d.aberto ? 'none' : 'flex') + ';align-items:center;">' +
-        '<span class="badge badge-alert">Fechado</span>' +
-      '</div>';
+    /* Label do dia */
+    var label = document.createElement('div');
+    label.className = 'hf-day-label';
+    label.textContent = dia.label;
+    row.appendChild(label);
 
-    var checkbox = row.querySelector('#hf-' + dia.key + '-aberto');
-    var timesEl  = row.querySelector('#hf-' + dia.key + '-times');
-    var closedEl = row.querySelector('#hf-' + dia.key + '-closed');
+    /* Toggle aberto/fechado */
+    var toggleLabel = document.createElement('label');
+    toggleLabel.className = 'toggle';
+    toggleLabel.style.flexShrink = '0';
+    toggleLabel.innerHTML =
+      '<input type="checkbox" name="hf_' + dia.key + '_aberto" id="hf-' + dia.key + '-aberto"' +
+      (d.aberto ? ' checked' : '') + '/>' +
+      '<span class="toggle-track"></span>';
+    row.appendChild(toggleLabel);
 
+    /* Container dos horários */
+    var timesEl = document.createElement('div');
+    timesEl.id = 'hf-' + dia.key + '-times';
+    timesEl.className = 'hf-times';
+    timesEl.style.display = d.aberto ? 'flex' : 'none';
+    timesEl.style.alignItems = 'center';
+    timesEl.style.gap = '15px';
+
+    timesEl.appendChild(buildTimeWrap(dia.key, 'abertura',    d.abertura));
+
+    var sep = document.createElement('span');
+    sep.className = 'hf-sep';
+    sep.textContent = 'até';
+    timesEl.appendChild(sep);
+
+    timesEl.appendChild(buildTimeWrap(dia.key, 'fechamento', d.fechamento));
+    row.appendChild(timesEl);
+
+    /* Badge "Fechado" */
+    var closedEl = document.createElement('div');
+    closedEl.id = 'hf-' + dia.key + '-closed';
+    closedEl.style.cssText = 'display:' + (d.aberto ? 'none' : 'flex') + ';align-items:center;';
+    closedEl.innerHTML = '<span class="badge badge-alert">Fechado</span>';
+    row.appendChild(closedEl);
+
+    /* Evento do toggle */
+    var checkbox = toggleLabel.querySelector('input');
     checkbox.addEventListener('change', function() {
-      timesEl.style.display  = this.checked ? 'grid' : 'none';
+      timesEl.style.display  = this.checked ? 'flex' : 'none';
       closedEl.style.display = this.checked ? 'none' : 'flex';
     });
 
@@ -524,21 +577,8 @@ buildMonthList = function() {};
   });
 })();
 
-function openModal(message) {
-    const modal = document.getElementById("modal");
-    const text = document.getElementById("modal-text");
-
-    if (!modal || !text) return;
-
-    text.innerText = message;
-    modal.classList.add("open");
-}
-
-/* Init */
-buildPickMonthList();
-
 /* ──────────────────────────────────────────────
    INIT
 ────────────────────────────────────────────── */
-buildMonthList();
+buildPickMonthList();
 buildDefaultHoursCard();

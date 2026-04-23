@@ -255,10 +255,10 @@
 {% endfor %}
 
 <script>
-  var CONFIG_POR_BARBEIRO            = {{ config_json|safe }};
-  var AGENDAMENTOS_POR_BARBEIRO      = {{ agendamentos_json|safe }};
+  var CONFIG_POR_BARBEIRO = {{ config_json|safe }};
+  var AGENDAMENTOS_POR_BARBEIRO = {{ agendamentos_json|safe }};
   var MESES_DISPONIVEIS_POR_BARBEIRO = {{ meses_disponiveis_json|safe }};
-  var SERVICOS_POR_BARBEIRO          = {{ servicos_json|safe }};
+  var SERVICOS_POR_BARBEIRO = {{ servicos_json|safe }};
   var _bsEl = document.getElementById('booking-success-data');
   var BOOKING_SUCCESS = _bsEl ? JSON.parse(JSON.parse(_bsEl.textContent)) : null;
 </script>

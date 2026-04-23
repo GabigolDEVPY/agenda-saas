@@ -286,7 +286,7 @@ header {
   border: 1px solid var(--border-dark);
   border-radius: 6px;
   font-family: var(--font); font-size: 13px; font-weight: 600;
-  letter-spacing: .2px; padding: 10px 20px;
+  letter-spacing: .2px; padding: 10px 10px;
   cursor: pointer; transition: all .15s;
 }
 .btn-primary:hover { background: var(--bg-5); border-color: var(--border-strong); }
