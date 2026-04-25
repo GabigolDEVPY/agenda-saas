@@ -9,16 +9,6 @@
     { key: 'sab', label: 'Sábado'  },
   ];
 
-  // var defaults = {
-  //   dom: { aberto: false, abertura: '08:00', fechamento: '18:00' },
-  //   seg: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-  //   ter: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-  //   qua: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-  //   qui: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-  //   sex: { aberto: true,  abertura: '08:00', fechamento: '20:00' },
-  //   sab: { aberto: true,  abertura: '09:00', fechamento: '18:00' },
-  // };
-  
   var defaults = operatingHours
   console.log(defaults)
 
@@ -220,9 +210,12 @@ function RequestChangeDay(dayKey) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
-      console.log('Dia atualizado:', dayKey);
+    if (data.status === 'success') {
+      console.log(data.message)
+      showToast(data.message);
     }
   })
   .catch(err => console.error('Erro ao atualizar:', err));
 }
+
+
