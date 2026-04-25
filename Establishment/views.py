@@ -73,13 +73,7 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
 
 
 
-
-
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
-        print(request.body)
-        result = OperationDayService.update_operating_hours(day=request.body, user=request.user, establishment=request.user.owned_establishment)
-        # Lógica para salvar os horários de funcionamento
-        # Você pode acessar os dados enviados via request.POST ou request.body
-        # e atualizar o modelo de horários de funcionamento do estabelecimento
-        return JsonResponse({"status": "success", "message": "Horários de funcionamento atualizados com sucesso!"})
+        result = OperationDayService.update_operating_hours(data=request.body, user=request.user, establishment=request.user.owned_establishment)
+        return JsonResponse(result)

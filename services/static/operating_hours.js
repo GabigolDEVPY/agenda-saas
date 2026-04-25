@@ -61,6 +61,7 @@
         var btn = hiddenInput.closest('.hf-time-wrap').querySelector('.hf-time-btn');
         btn.querySelector('.hf-time-label').textContent = slot;
         closeActiveDropdown();
+        RequestChangeDay(key, "update_time");
       });
 
       drop.appendChild(opt);
@@ -169,7 +170,7 @@
     checkbox.addEventListener('change', function() {
       timesEl.style.display  = this.checked ? 'flex' : 'none';
       closedEl.style.display = this.checked ? 'none' : 'flex';
-      RequestChangeDay(dia.key)
+      RequestChangeDay(dia.key, 'update_day')
     });
 
     wrap.appendChild(row);
@@ -178,7 +179,7 @@
 
 
 
-function RequestChangeDay(dayKey) {
+function RequestChangeDay(dayKey, type) {
   // Função interna pra pegar o CSRF do cookie
   function getCSRFToken() {
     let cookieValue = null;
@@ -206,13 +207,16 @@ function RequestChangeDay(dayKey) {
     },
     body: JSON.stringify({
       day: dayKey,
+      abertura: abertura,
+      fechamento: fechamento,
+      type: type 
     })
   })
   .then(response => response.json())
   .then(data => {
     if (data.status === 'success') {
-      console.log(data.message)
-      showToast(data.message);
+    } else if (data.status === 'error') {
+      showToast(data.message, data.status);
     }
   })
   .catch(err => console.error('Erro ao atualizar:', err));
