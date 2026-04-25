@@ -20,6 +20,7 @@
   // };
   
   var defaults = operatingHours
+  console.log(defaults)
 
   /* Slots disponíveis: 06:00 até 23:00, de 30 em 30 min */
   var TIME_SLOTS = [];
@@ -178,8 +179,50 @@
     checkbox.addEventListener('change', function() {
       timesEl.style.display  = this.checked ? 'flex' : 'none';
       closedEl.style.display = this.checked ? 'none' : 'flex';
+      RequestChangeDay(dia.key)
     });
 
     wrap.appendChild(row);
   });
 })();
+
+
+
+function RequestChangeDay(dayKey) {
+  // Função interna pra pegar o CSRF do cookie
+  function getCSRFToken() {
+    let cookieValue = null;
+    const cookies = document.cookie.split(';');
+
+    cookies.forEach(cookie => {
+      const c = cookie.trim();
+      if (c.startsWith('csrftoken=')) {
+        cookieValue = c.substring('csrftoken='.length);
+      }
+    });
+
+    return cookieValue;
+  }
+
+  var aberto    = document.getElementById('hf-' + dayKey + '-aberto').checked;
+  var abertura  = document.querySelector('[name="hf_' + dayKey + '_abertura"]')?.value;
+  var fechamento = document.querySelector('[name="hf_' + dayKey + '_fechamento"]')?.value;
+
+  fetch('/establishment/operating/day-alter', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: JSON.stringify({
+      day: dayKey,
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Dia atualizado:', dayKey);
+    }
+  })
+  .catch(err => console.error('Erro ao atualizar:', err));
+}

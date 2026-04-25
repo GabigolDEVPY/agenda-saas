@@ -8,6 +8,8 @@ from django.views.generic import UpdateView
 from .forms import EstablishmentForm, AddressForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
+from .services.operation_day_service import OperationDayService
+from django.http import JsonResponse
 
 class PublicAgenda(View):
     def get(self, request, uid):
@@ -68,3 +70,16 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
         msg = get_msg_form_invalid(self, form)
         response = render( self.request, self.template_name, {"address": self.get_object(), "form": form, "msg": msg, "type": "error"})
         return response 
+
+
+
+
+
+class SaveOperatingHoursView(LoginRequiredMixin, View):
+    def post(self, request):
+        print(request.body)
+        result = OperationDayService.update_operating_hours(day=request.body)
+        # Lógica para salvar os horários de funcionamento
+        # Você pode acessar os dados enviados via request.POST ou request.body
+        # e atualizar o modelo de horários de funcionamento do estabelecimento
+        return JsonResponse({"status": "success", "message": "Horários de funcionamento atualizados com sucesso!"})
