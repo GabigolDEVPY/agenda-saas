@@ -41,7 +41,6 @@ class SaveInfosView(LoginRequiredMixin, UpdateView):
         return self.request.user.owned_establishment
 
     def form_valid(self, form):
-        print(self.request.user.owned_establishment.__dict__)
         establishment = form.save()
         response = render(self.request, self.template_name, {"establishment": establishment, "form": form, "msg": "Informações salvas com sucesso!", "type": "success"})
         return response
@@ -75,5 +74,5 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
 
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
-        result = OperationDayService.update_operating_hours(data=request.body, user=request.user, establishment=request.user.owned_establishment)
+        result = OperationDayService.update_operating_hours(data=request.body, user=request.user)
         return JsonResponse(result)

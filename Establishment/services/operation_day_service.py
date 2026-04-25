@@ -1,30 +1,56 @@
+from datetime import datetime
 import json
 
 class OperationDayService:
     @staticmethod
-    def update_operating_hours(data, user, establishment):
-        if not user.is_owner and not user.establishment == establishment:
-            return {"status": "error", "message": "Usuário não é dono do estabelecimento e não pode atualizar os horários de funcionamento."}
-        dict_data = json.loads(data)
+    def update_operating_hours(data, user):
+        establishment = user.owned_establishment
+        if not establishment:
+            return {"status": "error", "message": "Estabelecimento não encontrado."}
+        
+        dict_data = data if isinstance(data, dict) else json.loads(data) 
         type = dict_data.get('type')
         DAY_MAP = {
             'seg': 0,'ter': 1,'qua': 2,'qui': 3,'sex': 4,'sab': 5,'dom': 6,
         }
-        day_number = DAY_MAP.get(dict_data['day'])
-        day_user = establishment.operating_hours.get(day_of_week=day_number)
+        day_key = dict_data.get('day')
+        if not day_key:
+            return {"status": "error", "message": "Dia da semana é obrigatório."}
+        day_number = DAY_MAP.get(day_key) 
 
+        if day_number is None:
+            return {"status": "error", "message": "Dia da semana inválido."}
+        
+        day_user = establishment.operating_hours.filter(day_of_week=day_number).first()
+        if not day_user:
+            return {"status": "error", "message": "Dia não encontrado."}
+        
         if type == "update_day":
-
-            day_user.is_closed = False if day_user.is_closed else True
+            day_user.is_closed = not day_user.is_closed
             day_user.save()
+            return {"status": "success", "message": "Dia atualizado com sucesso!"}
         
         elif type == "update_time":
-
-            abertura = dict_data.get('abertura')
-            fechamento = dict_data.get('fechamento')
-            if not abertura or not fechamento:
-                return {"status": "error", "message": "Horário de abertura e fechamento são obrigatórios para atualizar os horários."}
+            if day_user.is_closed:
+                return {"status": "error", "message": "Não é possível alterar horários de um dia fechado."} 
+                 
             
-            day_user.open_time = abertura
-            day_user.close_time = fechamento
+        
+            try:
+                abertura = datetime.strptime(dict_data.get('abertura'), "%H:%M").time()
+                fechamento = datetime.strptime(dict_data.get('fechamento'), "%H:%M").time()
+                if not abertura or not fechamento:
+                    return {"status": "error", "message": "Horário de abertura e fechamento são obrigatórios para atualizar os horários."}
+                
+                if abertura >= fechamento:
+                    return {"status": "error", "message": "Horário de abertura deve ser antes do fechamento."}
+                day_user.open_time = abertura
+                day_user.close_time = fechamento
+                
+            except ValueError:
+                return {"status": "error", "message": "Formato de horário inválido. Use HH:MM."}
+    
             day_user.save()
+            return {"status": "success", "message": "Horário atualizado com sucesso!"}
+        else:
+            return {"status": "error", "message": "Tipo de atualização inválido."}
