@@ -71,7 +71,7 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
         return response 
 
 
-
+# api view para atualizar horários de funcionamento
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
         result = OperationDayService.update_operating_hours(data=request.body, user=request.user)
