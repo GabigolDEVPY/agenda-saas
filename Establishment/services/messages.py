@@ -10,6 +10,7 @@ ERRORS = {
     "TIME_INVALID_FORMAT": "Formato de horário inválido. Use HH:MM.",
     "TIME_INVALID_RANGE": "Horário de abertura deve ser antes do fechamento.",
     "TYPE_INVALID": "Tipo de atualização inválido.",
+    "ESTABLISHMENT_INCOMPLETE": "Configurações incompletas. Entre em contato com o estabelecimento para mais informações.",
 }
 
 SUCCESS = {

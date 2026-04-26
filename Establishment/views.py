@@ -5,29 +5,20 @@ from .services.services import HomeService
 from . models import Establishment, Address
 from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
 from django.views.generic import UpdateView
-from .forms import EstablishmentForm, AddressForm
+from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
 from .services.operation_day_service import OperationDayService
 from django.http import JsonResponse
 
+
+
 class PublicAgenda(View):
     def get(self, request, uid):
-        try:
-            context = HomeService.get_context_establishment(uid)
-            request.session['uid'] = uid  
-        except EstablishmentNotFound:
-            context = {"msg": "Estabelecimento não encontrado. Verifique o link ou entre em contato com o estabelecimento para mais informações."}
+        context = HomeService.get_context_establishment(uid)
+        request.session['uid'] = uid  
+        if context.get("incomplete") == "True":
             return render(request, 'unavailable.html', context=context)  
-        
-        except EstablishmentIncomplete:
-            context = {"msg": "Configurações incompletas. Entre em contato com o estabelecimento para mais informações.", "incomplete": True}
-            return render(request, 'unavailable.html', context=context)  
-        
-        except EstablishmentInactive:
-            context = {"msg": "Estabelecimento inativo. Entre em contato com o estabelecimento para mais informações.", "payment": True}
-            return render(request, 'unavailable.html', context=context)
-
         return render(request, 'home.html', context=context)
     
 
@@ -74,5 +65,12 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
 # api view para atualizar horários de funcionamento
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
-        result = OperationDayService.update_operating_hours(data=request.body, user=request.user)
+        data = json.loads(request.body)
+
+        form = OperatingHoursForm(data=data)
+
+        if not form.is_valid():
+            return JsonResponse({"status": "error", "message": form.errors})
+
+        result = OperationDayService.update_operating_hours(clean_data=form.cleaned_data, user=request.user)
         return JsonResponse(result)

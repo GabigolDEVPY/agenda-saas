@@ -1,23 +1,20 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 from services.models import Appointment, Diverses, MonthAvailability
-from  ..exceps_establishment import EstablishmentNotFound,  EstablishmentIncomplete
 import json
 from ..models import Establishment
-
+from establishment.services.messages import ERRORS, SUCCESS
 
 class HomeService:
     @staticmethod
     def get_context_establishment(uid):
         establishment = Establishment.objects.filter(uid=uid).first()
         if not establishment:
-            print(f"Estabelecimento com UID {uid} não encontrado.")
-            raise EstablishmentNotFound()
+            return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": "True"}
         
         users = establishment.users.all()
         if not users:
-            print(f"Estabelecimento {establishment.name} sem usuários associados.")
-            raise EstablishmentIncomplete()
+            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": "True"}
         context = {
             'uid': uid,
             "users": users,
@@ -39,8 +36,7 @@ class HomeService:
         for user in users:
             diverses = Diverses.objects.filter(user=user).first()
             if not diverses:
-                print(f"Estabelecimento {user.establishment.name} sem configuração de horário.")
-                raise EstablishmentIncomplete()
+                return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": "True"}
             result[str(user.id)] = {
                 "hora_inicio": "09:00",
                 "hora_fim": "18:00",
@@ -96,8 +92,10 @@ class HomeService:
     @staticmethod
     def get_services(users):
         result = {}
+        has_service = False  # <- controle
+
         for user in users:
-            result[str(user.id)] = [
+            services = [
                 {
                     "id": s.id,
                     "nome": s.name,
@@ -106,5 +104,15 @@ class HomeService:
                 }
                 for s in user.services.all()
             ]
+
+            if services:
+                has_service = True  # encontrou pelo menos 1
+
+            result[str(user.id)] = services
+
+        print("SERVIÇOS:", result)
+
+        if not has_service:
+            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
+
         return json.dumps(result)
-    

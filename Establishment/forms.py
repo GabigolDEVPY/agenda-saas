@@ -114,3 +114,21 @@ class AddressForm(forms.ModelForm):
         if len(state) != 2 or not state.isalpha():
             raise forms.ValidationError("Estado inválido. Use a UF com 2 letras (ex: SP).")
         return state
+
+class OperatingHoursForm(forms.Form):
+    type = forms.CharField()
+    day = forms.CharField()
+    abertura = forms.TimeField(required=False)
+    fechamento = forms.TimeField(required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+
+        if cleaned.get("type") == "update_time":
+            if not cleaned.get("abertura") or not cleaned.get("fechamento"):
+                raise forms.ValidationError("Horários são obrigatórios")
+
+            if cleaned["abertura"] >= cleaned["fechamento"]:
+                raise forms.ValidationError("Horário inválido")
+
+        return cleaned
