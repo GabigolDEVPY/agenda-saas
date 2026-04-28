@@ -47,3 +47,12 @@ class OperatingHours(models.Model):
 
     def __str__(self):
         return f"{self.establishment.name} - {self.get_day_of_week_display()}: {self.open_time} - {self.close_time}"
+    
+
+class GeneralPreference(models.Model):
+    establishment = models.OneToOneField(Establishment, on_delete=models.CASCADE, related_name="general_preferences")
+    show_address_publicly = models.BooleanField(default=True)
+    show_phone_publicly = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"General Preferences for {self.establishment.name}"

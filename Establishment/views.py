@@ -2,8 +2,7 @@ import json
 from django.shortcuts import render
 from django.views import View
 from .services.services import HomeService
-from . models import Establishment, Address
-from  . exceps_establishment import EstablishmentNotFound, EstablishmentInactive, EstablishmentIncomplete
+from .models import Establishment, Address
 from django.views.generic import UpdateView
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,8 +15,7 @@ from django.http import JsonResponse
 class PublicAgenda(View):
     def get(self, request, uid):
         context = HomeService.get_context_establishment(uid)
-        request.session['uid'] = uid  
-        if context.get("incomplete") is True:
+        if context.get("incomplete"):
             return render(request, 'unavailable.html', context=context)  
         return render(request, 'home.html', context=context)
     
@@ -65,7 +63,10 @@ class SaveAddressView(LoginRequiredMixin, UpdateView):
 # api view para atualizar horários de funcionamento
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON data."})
 
         form = OperatingHoursForm(data=data)
 
