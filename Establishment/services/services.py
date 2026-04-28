@@ -92,7 +92,7 @@ class HomeService:
     @staticmethod
     def get_services(users):
         result = {}
-        has_service = False  # <- controle
+        has_service = False
 
         for user in users:
             services = [
@@ -105,14 +105,9 @@ class HomeService:
                 for s in user.services.all()
             ]
 
-            if services:
-                has_service = True  # encontrou pelo menos 1
 
             result[str(user.id)] = services
 
-        print("SERVIÇOS:", result)
 
-        if not has_service:
-            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
 
         return json.dumps(result)
