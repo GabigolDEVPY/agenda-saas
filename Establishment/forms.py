@@ -115,6 +115,9 @@ class AddressForm(forms.ModelForm):
             raise forms.ValidationError("Estado inválido. Use a UF com 2 letras (ex: SP).")
         return state
 
+
+
+
 class OperatingHoursForm(forms.Form):
     type = forms.CharField()
     day = forms.CharField()

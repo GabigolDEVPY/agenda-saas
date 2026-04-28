@@ -17,7 +17,7 @@ class PublicAgenda(View):
     def get(self, request, uid):
         context = HomeService.get_context_establishment(uid)
         request.session['uid'] = uid  
-        if context.get("incomplete") == "True":
+        if context.get("incomplete") is True:
             return render(request, 'unavailable.html', context=context)  
         return render(request, 'home.html', context=context)
     

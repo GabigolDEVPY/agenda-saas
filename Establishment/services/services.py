@@ -10,11 +10,11 @@ class HomeService:
     def get_context_establishment(uid):
         establishment = Establishment.objects.filter(uid=uid).first()
         if not establishment:
-            return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": "True"}
+            return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
         
         users = establishment.users.all()
         if not users:
-            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": "True"}
+            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
         context = {
             'uid': uid,
             "users": users,
@@ -36,7 +36,7 @@ class HomeService:
         for user in users:
             diverses = Diverses.objects.filter(user=user).first()
             if not diverses:
-                return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": "True"}
+                return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
             result[str(user.id)] = {
                 "hora_inicio": "09:00",
                 "hora_fim": "18:00",
