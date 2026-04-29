@@ -12,7 +12,7 @@ DEBUG = os.getenv("DEBUG")
 
 LOGIN_URL = 'user:login'
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
