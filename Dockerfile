@@ -26,13 +26,14 @@ COPY . .
 RUN mkdir -p /app/static /app/media && \
     chown -R appuser:appuser /app
 
-USER appuser
-
+    
 EXPOSE 8000
-
+    
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+USER appuser
 
 ENTRYPOINT ["/entrypoint.sh"]
 
