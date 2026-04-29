@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: django_app
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+
+volumes:
+  static_volume:
+  media_volume:
+
