@@ -8,11 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-fx64mlz4jmzm$p^*&s6k@s6@yz(t1hdhk^9s1)6nh3=bm89590'
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG")
 
 LOGIN_URL = 'user:login'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS")]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
