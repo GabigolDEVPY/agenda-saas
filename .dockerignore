@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+.env/
+.env.*
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.swp
+*.tmp
+
+# Testes / cobertura
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Node (se usar frontend junto)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Secrets / configs sensíveis
+.env
+*.pem
+*.key

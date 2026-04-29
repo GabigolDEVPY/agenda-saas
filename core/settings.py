@@ -12,7 +12,7 @@ DEBUG = os.getenv("DEBUG")
 
 LOGIN_URL = 'user:login'
 
-ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -78,10 +78,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'pt-br'
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-STATICFILES_DIRS = [BASE_DIR / 'global' / 'static']
+DATA_DIR = BASE_DIR.parent / 'data' / 'web'
+
+STATIC_ROOT = DATA_DIR / 'static'
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/MEDIA/'
+MEDIA_ROOT = DATA_DIR / 'media'
+
+
+STATICFILES_DIRS = [BASE_DIR / 'global' / 'static']
