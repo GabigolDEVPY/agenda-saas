@@ -83,13 +83,12 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-DATA_DIR = BASE_DIR.parent / 'data' / 'web'
 
-STATIC_ROOT = DATA_DIR / 'static'
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/MEDIA/'
-MEDIA_ROOT = DATA_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 STATICFILES_DIRS = [BASE_DIR / 'global' / 'static']
