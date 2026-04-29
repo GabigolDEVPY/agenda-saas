@@ -1,8 +1,9 @@
-FROM python:3.14-alpine:3.22
+FROM python:3.12-slim
 LABEL maintainer="Gabigoldark"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH=/app
 
 WORKDIR /app
 
@@ -20,7 +21,7 @@ RUN pip install --upgrade pip && \
 RUN adduser --disabled-password --no-create-home appuser
 
 
-COPY ..
+COPY . .
 
 RUN mkdir -p /app/static /app/media && \
     chown -R appuser:appuser /app
