@@ -18,7 +18,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-RUN adduser --disabled-password --no-create-home appuser
+RUN adduser --disabled-password --gecos "" appuser
 
 
 COPY . .
