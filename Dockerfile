@@ -18,7 +18,8 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 RUN adduser --disabled-password --no-create-home appuser
-    
+
+
 COPY ..
 
 RUN mkdir -p /app/static /app/media && \
