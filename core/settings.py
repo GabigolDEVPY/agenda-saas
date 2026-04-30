@@ -8,7 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-fx64mlz4jmzm$p^*&s6k@s6@yz(t1hdhk^9s1)6nh3=bm89590'
 
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", "FALSE").lower() == "True"
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+]
 
 LOGIN_URL = 'user:login'
 
