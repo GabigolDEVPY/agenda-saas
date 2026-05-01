@@ -15,6 +15,7 @@ class HomeService:
         users = establishment.users.all()
         if not users:
             return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
+        
         context = {
             'uid': uid,
             "users": users,
@@ -26,6 +27,9 @@ class HomeService:
             "meses_disponiveis_json": HomeService.get_available_months(users),
             # Serviços
             "servicos_json": HomeService.get_services(users),
+            #establishment infos
+            # "establishment_infos": 
+            # 
         }
         return context
 
