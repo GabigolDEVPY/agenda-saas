@@ -3,7 +3,7 @@ from collections import defaultdict
 from services.models import Appointment, Diverses, MonthAvailability
 import json
 from ..models import Establishment
-from establishment.services.messages import ERRORS, SUCCESS
+from establishment.services.messages import ERRORS
 
 class HomeService:
     @staticmethod
@@ -19,21 +19,13 @@ class HomeService:
         context = {
             'uid': uid,
             "users": users,
-            # Configurações de horário por usuário (início, fim, intervalo)
             "config_json": HomeService.get_config(users),
-            # Agendamentos existentes: {user_id: {date: [{inicio, fim}]}}
             "agendamentos_json": HomeService.get_appointments(users),
-            # Meses disponíveis
             "meses_disponiveis_json": HomeService.get_available_months(users),
-            # Serviços
             "servicos_json": HomeService.get_services(users),
-            #establishment infos
-            # "establishment_infos": 
-            # 
         }
         return context
 
-    # ── CONFIGURAÇÃO DE HORÁRIO ───────────────────────────────────────────────
     @staticmethod
     def get_config(users):
         result = {}
@@ -48,7 +40,6 @@ class HomeService:
             }
         return json.dumps(result)
 
-    # ── AGENDAMENTOS EXISTENTES ───────────────────────────────────────────────
     @staticmethod
     def get_appointments(users):
         result = {}
@@ -79,7 +70,6 @@ class HomeService:
 
         return json.dumps(result)
 
-    # ── MESES DISPONÍVEIS ─────────────────────────────────────────────────────
     @staticmethod
     def get_available_months(users):
         result = {}
@@ -92,7 +82,6 @@ class HomeService:
             ]
         return json.dumps(result)
 
-    # ── SERVIÇOS ──────────────────────────────────────────────────────────────
     @staticmethod
     def get_services(users):
         result = {}
