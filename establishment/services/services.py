@@ -7,26 +7,6 @@ from establishment.services.messages import ERRORS
 
 class HomeService:
     @staticmethod
-    def get_context_establishment(uid):
-        establishment = Establishment.objects.filter(uid=uid).first()
-        if not establishment:
-            return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
-        
-        users = establishment.users.all()
-        if not users:
-            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
-        
-        context = {
-            'uid': uid,
-            "users": users,
-            "config_json": HomeService.get_config(users),
-            "agendamentos_json": HomeService.get_appointments(users),
-            "meses_disponiveis_json": HomeService.get_available_months(users),
-            "servicos_json": HomeService.get_services(users),
-        }
-        return context
-
-    @staticmethod
     def get_config(users):
         result = {}
         for user in users:
@@ -98,9 +78,39 @@ class HomeService:
                 for s in user.services.all()
             ]
 
-
             result[str(user.id)] = services
 
-
-
         return json.dumps(result)
+
+    @staticmethod
+    def get_infos_establishment(establishment):
+        result = {
+            "location": establishment.address,
+            "phone": establishment.phone,
+            "operating_hours": establishment.operating_hours.all()
+        }
+        print(result)
+        return result
+
+
+    @staticmethod
+    def get_context_establishment(uid):
+        establishment = Establishment.objects.filter(uid=uid).first()
+        if not establishment:
+            return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
+        
+        users = establishment.users.all()
+        if not users:
+            return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
+        
+        context = {
+            'uid': uid,
+            "users": users,
+            "config_json": HomeService.get_config(users),
+            "agendamentos_json": HomeService.get_appointments(users),
+            "meses_disponiveis_json": HomeService.get_available_months(users),
+            "servicos_json": HomeService.get_services(users),
+            "infos": HomeService.get_infos_establishment(establishment)
+        }
+        return context
+

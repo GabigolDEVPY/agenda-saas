@@ -153,11 +153,23 @@
     <div class="info-pills">
       <div class="info-pill">
         <div class="pill-icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div class="pill-text"><strong>Localização</strong>Av. Principal, 123 — Centro</div>
+        <div class="pill-text"><strong>Localização</strong>{{ infos.address}}</div>
       </div>
       <div class="info-pill">
         <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
-        <div class="pill-text"><strong>Dúvidas?</strong>(99) 99999-9999</div>
+        <div class="pill-text"><strong>Dúvidas?</strong>{{ infos.phone }}</div>
+      </div>
+      <div class="info-pill">
+        <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
+        <div class="pill-text"><strong>Horários de Funcionamento?</strong>
+        <div class="pill-text">
+          {% for day in infos.operating_hours %}
+            {% if not day.is_closed %}
+              <span style="display:block;">{{ day.get_day_of_week_display}}: {{ day.open_time }} às {{ day.close_time }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        </div>
       </div>
       <div class="info-pill">
         <div class="pill-icon"><i class="fa-solid fa-credit-card"></i></div>
