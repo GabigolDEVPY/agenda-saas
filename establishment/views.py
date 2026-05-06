@@ -41,23 +41,29 @@ class SaveInfosView(LoginRequiredMixin, UpdateView):
     
 
 
-class SaveAddressView(LoginRequiredMixin, UpdateView):
-    model = Address
-    form_class = AddressForm
-    template_name = "partials/address.html"
+@login_required
+def save_address(request):
+    address = request.user.owned_establishment.address
 
-    def get_object(self):
-        return self.request.user.owned_establishment.address
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
 
-    def form_valid(self, form):
-        address = form.save()
-        response = render(self.request, self.template_name, {"address": address, "form": form, "msg": "Endereço salvo com sucesso!", "type": "success"})
-        return response
-
-    def form_invalid(self, form):
-        msg = get_msg_form_invalid(self, form)
-        response = render( self.request, self.template_name, {"address": self.get_object(), "form": form, "msg": msg, "type": "error"})
-        return response 
+        if form.is_valid():
+            address = form.save()
+            return render(request, "partials/address.html", {
+                "address": address,
+                "form": form,
+                "msg": "Endereço salvo com sucesso!",
+                "type": "success"
+            })
+        else:
+            msg = get_msg_form_invalid(request, form)
+            return render(request, "partials/address.html", {
+                "address": address,
+                "form": form,
+                "msg": msg,
+                "type": "error"
+            })
 
 
 # api view para atualizar horários de funcionamento
