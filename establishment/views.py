@@ -5,7 +5,7 @@ from .services.services import HomeService
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
-from .services.operation_day_service import OperationDayService
+from .services.services import OperationDayService
 from django.http import JsonResponse
 
 
