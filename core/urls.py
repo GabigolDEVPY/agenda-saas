@@ -9,6 +9,7 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('services/', include('services.urls')),
     path('establishment/', include('establishment.urls')),
+    path('client-portal/', include('client_portal.urls')),
 ]
 
 if settings.DEBUG:
