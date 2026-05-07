@@ -10,7 +10,7 @@
   <!-- Desktop -->
   <div class="nav-actions-desktop" style="display:flex;align-items:center;gap:10px;">
     {% if user.is_authenticated %}
-    <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+    <a href="{% url 'client_portal:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
       <i class="fa-solid fa-store"></i>Página Inicial
     </a>
     <a href="{% url 'services:home' %}" class="btn-admin">
@@ -40,7 +40,7 @@
 <!-- Dropdown mobile -->
 <div class="nav-mobile-menu" id="nav-mobile-menu">
   {% if user.is_authenticated %}
-  <a href="{% url 'establishment:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
+  <a href="{% url 'client_portal:public_agenda' uid %}" class="btn-admin" style="width:100%;justify-content:flex-start;">
     <i class="fa-solid fa-store"></i>Página Inicial
   </a>
   <a href="{% url 'services:home' %}" class="btn-admin" style="width:100%;justify-content:flex-start;">

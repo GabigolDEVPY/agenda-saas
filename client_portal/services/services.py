@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 from services.models import Appointment, Diverses, MonthAvailability
 import json
-from ..models import Establishment
+from establishment.models import Establishment
 from establishment.services.messages import ERRORS
 
 class HomeService:

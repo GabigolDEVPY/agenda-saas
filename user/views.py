@@ -26,7 +26,7 @@ class UserLoginView(LoginView):
             self.request.session['uid'] = id
 
             return reverse(
-                "establishment:public_agenda",
+                "client_portal:public_agenda",
                 kwargs={"uid": user.owned_establishment.uid}
             )
         return reverse("services:home")
