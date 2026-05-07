@@ -2,13 +2,13 @@ import json
 from django.shortcuts import render
 from django.views import View
 from .services.services import HomeService
-from .models import Establishment, Address
-from django.views.generic import UpdateView
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
 from .services.operation_day_service import OperationDayService
 from django.http import JsonResponse
+
+
 
 
 
@@ -21,52 +21,42 @@ class PublicAgenda(View):
     
 
 
-class SaveInfosView(LoginRequiredMixin, UpdateView):
-    model = Establishment
-    form_class = EstablishmentForm
-    template_name = "partials/infos.html"
 
-    def get_object(self):
+class SaveInfosView(LoginRequiredMixin, View):
+    def post(self, request):
+        establishment = request.user.owned_establishment
+
+        if request.method == "POST":
+            form = EstablishmentForm(request.POST, instance=establishment)
+
+            if form.is_valid():
+                establishment = form.save()
+                return render(request, "partials/infos.html", {"establishment": establishment,"form": form,"msg": "Informações salvas com sucesso!","type": "success"})
+            else:
+                msg = get_msg_form_invalid(request, form)
+                return render(request, "partials/infos.html", {"establishment": establishment,"form": form,"msg": msg,"type": "error"})
         return self.request.user.owned_establishment
 
-    def form_valid(self, form):
-        establishment = form.save()
-        response = render(self.request, self.template_name, {"establishment": establishment, "form": form, "msg": "Informações salvas com sucesso!", "type": "success"})
-        return response
-
-    def form_invalid(self, form):
-        msg = get_msg_form_invalid(self, form)
-        response = render( self.request, self.template_name, {"establishment": self.get_object(), "form": form, "msg": msg, "type": "error"})
-        return response
-    
 
 
-@login_required
-def save_address(request):
-    address = request.user.owned_establishment.address
 
-    if request.method == "POST":
-        form = AddressForm(request.POST, instance=address)
+class SaveAddressView(LoginRequiredMixin, View):
+    def post(self, request):
+        address = request.user.owned_establishment.address
 
-        if form.is_valid():
-            address = form.save()
-            return render(request, "partials/address.html", {
-                "address": address,
-                "form": form,
-                "msg": "Endereço salvo com sucesso!",
-                "type": "success"
-            })
-        else:
-            msg = get_msg_form_invalid(request, form)
-            return render(request, "partials/address.html", {
-                "address": address,
-                "form": form,
-                "msg": msg,
-                "type": "error"
-            })
+        if request.method == "POST":
+            form = AddressForm(request.POST, instance=address)
+
+            if form.is_valid():
+                address = form.save()
+                return render(request, "partials/address.html", {"address": address,"form": form,"msg": "Endereço salvo com sucesso!","type": "success"})
+            else:
+                msg = get_msg_form_invalid(request, form)
+                return render(request, "partials/address.html", {"address": address,"form": form,"msg": msg,"type": "error"})
 
 
-# api view para atualizar horários de funcionamento
+
+
 class SaveOperatingHoursView(LoginRequiredMixin, View):
     def post(self, request):
         try:
