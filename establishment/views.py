@@ -1,7 +1,6 @@
 import json
 from django.shortcuts import render
 from django.views import View
-from .services.services import HomeService
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
@@ -11,14 +10,6 @@ from django.http import JsonResponse
 
 
 
-
-class PublicAgenda(View):
-    def get(self, request, uid):
-        context = HomeService.get_context_establishment(uid)
-        if context.get("incomplete"):
-            return render(request, 'unavailable.html', context=context)  
-        return render(request, 'home.html', context=context)
-    
 
 
 

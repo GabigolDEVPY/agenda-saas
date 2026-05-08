@@ -1,5 +1,5 @@
 from django.urls import path
-from . views import PublicAgenda, SaveAddressView, SaveInfosView, SaveOperatingHoursView
+from . views import SaveAddressView, SaveInfosView, SaveOperatingHoursView
 
 app_name = 'establishment'
 
