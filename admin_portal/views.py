@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from . services import AdminService
 
-# Create your views here.
+
+
+class ServicesView(LoginRequiredMixin, TemplateView):
+    template_name = 'admin.html'
+
+    def get_context_data(self, **kwargs):
+        context = AdminService.get_context_admin(self, **kwargs)
+        return context
+

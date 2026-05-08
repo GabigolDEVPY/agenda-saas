@@ -10,9 +10,6 @@ from django.http import JsonResponse
 
 
 
-
-
-
 class SaveInfosView(LoginRequiredMixin, View):
     def post(self, request):
         establishment = request.user.owned_establishment

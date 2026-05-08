@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'establishment',
     'services',
     'appointment',
-    'client_portal'
+    'client_portal',
+    'admin_portal',
 ]
 
 MIDDLEWARE = [
