@@ -1,5 +1,5 @@
 from django import forms
-from .models import Appointment
+from ..services.models import Appointment
 import re
 
 

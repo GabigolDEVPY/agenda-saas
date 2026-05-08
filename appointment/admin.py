@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Service, Appointment, MonthAvailability, HoursUnavailable, Diverses
+from ..services.models import Service, Appointment, MonthAvailability, HoursUnavailable, Diverses
 
 
 @admin.register(Service)
