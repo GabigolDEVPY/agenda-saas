@@ -1,11 +1,8 @@
 import json
 from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, View
+from django.views.generic import View
 from .services import AppointmentService
-from establishment.models import Establishment, Address
 from django.contrib import messages
-
 
 
 

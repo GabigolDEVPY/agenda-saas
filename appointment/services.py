@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 from .models import Appointment
 from django.db import transaction
 import json
-from establishment.models import Establishment, Address, OperatingHours
-
+from client_portal.services.services import HomeService
 
 
 class AppointmentService:

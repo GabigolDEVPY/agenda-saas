@@ -1,10 +1,6 @@
 from django.contrib import admin
-from .models import Service, Appointment, MonthAvailability, HoursUnavailable, Diverses
+from .models import Appointment, MonthAvailability, HoursUnavailable, Diverses
 
-
-@admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'time_duration', 'user')
 
 
 @admin.register(Appointment)
