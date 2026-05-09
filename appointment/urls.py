@@ -1,5 +1,5 @@
 from django.urls import path
-from . views import ServicesView, CreateAppointmentView
+from . views import CreateAppointmentView
 
 
 app_name = 'appointment'

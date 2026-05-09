@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'appointment',
     'client_portal',
     'admin_portal',
+    'services',
 ]
 
 MIDDLEWARE = [
