@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     'establishment',
-    'services',
     'appointment',
     'client_portal',
     'admin_portal',

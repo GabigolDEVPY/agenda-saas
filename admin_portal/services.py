@@ -1,12 +1,9 @@
 from appointment.forms import AppointmentForm
 from datetime import datetime, timedelta
-from services.models import Appointment
+from appointment.models import Appointment
 from django.db import transaction
 import json
 from establishment.models import Establishment, Address, OperatingHours
-
-
-
 
 
 
