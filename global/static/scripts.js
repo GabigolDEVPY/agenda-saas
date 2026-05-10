@@ -154,7 +154,7 @@ function renderServiceList(servicos) {
   list.innerHTML = '';
 
   if (!servicos.length) {
-    list.innerHTML = '<p class="time-empty">Nenhum serviço disponível para este barbeiro</p>';
+    list.innerHTML = '<p class="time-empty">Nenhum serviço disponível para este profissional</p>';
     return;
   }
 
@@ -406,7 +406,7 @@ function injetarOverlayCalendario() {
     '<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;text-align:center;">' +
       '<i class="fa-solid fa-lock" style="font-size:2rem;color:#c8a96e;opacity:.9;"></i>' +
       '<p style="color:#e8e0d5;font-size:.9rem;line-height:1.5;max-width:220px;margin:0;">' +
-        'Selecione o <strong>barbeiro</strong> e pelo menos um <strong>serviço</strong> para ver os horários disponíveis' +
+        'Selecione o <strong>profissional</strong> e pelo menos um <strong>serviço</strong> para ver os horários disponíveis' +
       '</p>' +
     '</div>';
   ov.style.cssText =
@@ -420,7 +420,7 @@ function injetarOverlayCalendario() {
 /* ── MODAL SERVIÇOS ── */
 function abrirModalServicos() {
   if (!document.getElementById('h-barber-id').value) {
-    alert('Selecione um barbeiro primeiro.');
+    alert('Selecione um profissional primeiro.');
     return;
   }
   openModal('modal-service');

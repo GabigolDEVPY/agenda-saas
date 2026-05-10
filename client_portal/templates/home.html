@@ -12,7 +12,7 @@
 <div class="hero">
   <div class="hero-label">Seu estilo, nossa arte</div>
   <h1 class="hero-title">AGENDE SEU <span>HORÁRIO</span></h1>
-  <p class="hero-desc">Escolha o barbeiro, serviço e horário ideal para você</p>
+  <p class="hero-desc">Escolha o profissional, serviço e horário ideal para você</p>
 </div>
 
 <!-- MAIN — 2 colunas no desktop -->
@@ -21,14 +21,14 @@
   <!-- COLUNA ESQUERDA -->
   <div style="display:flex;flex-direction:column;gap:18px;">
 
-    <!-- BARBEIRO -->
+    <!-- PROFISSIONAL -->
     <div class="card">
-      <div class="card-title">Barbeiro</div>
+      <div class="card-title">Profissional</div>
       <div class="card-sub">Escolha o profissional de sua preferência</div>
       <button class="select-trigger" id="btn-barber" type="button" onclick="openModal('modal-barber')">
         <div class="trigger-left">
-          <i class="fa-solid fa-scissors trigger-icon"></i>
-          <span id="barber-display" class="trigger-placeholder">Selecionar barbeiro</span>
+          <i class="fa-solid fa-user-tie trigger-icon"></i>
+          <span id="barber-display" class="trigger-placeholder">Selecionar profissional</span>
         </div>
         <i class="fa-solid fa-chevron-right trigger-arrow"></i>
       </button>
@@ -91,7 +91,7 @@
         </div>
         <div class="form-group full">
           <label for="obs">Observações (opcional)</label>
-          <textarea id="obs" name="observacoes" maxlength="100" placeholder="Alguma preferência para o barbeiro..."></textarea>
+          <textarea id="obs" name="observacoes" maxlength="100" placeholder="Alguma preferência para o profissional..."></textarea>
         </div>
       </div>
     </div>
@@ -105,7 +105,7 @@
       <div class="summary-header"><i class="fa-solid fa-receipt" style="margin-right:8px;"></i>Resumo</div>
       <div class="summary-body">
         <div class="summary-row">
-          <div class="summary-key">Barbeiro</div>
+          <div class="summary-key">Profissional</div>
           <div class="summary-val gold" id="sum-barber">—</div>
         </div>
         <div class="summary-row">
@@ -178,12 +178,12 @@
 </div><!-- /main -->
 
 
-<!-- MODAL — BARBEIRO -->
+<!-- MODAL — PROFISSIONAL -->
 <div class="overlay" id="modal-barber" onclick="closeOnBg(event,'modal-barber')">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-scissors" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>Barbeiro</div>
+      <div class="modal-head-title"><i class="fa-solid fa-user-tie" style="margin-right:8px;font-size:14px;color:var(--accent);"></i>Profissional</div>
       <button class="modal-close" type="button" onclick="closeModal('modal-barber')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -192,8 +192,8 @@
         <div class="barber-option"
              data-id="{{ user.id }}"
              data-name="{{ user.username }}"
-             onclick="selectBarber(this)">
-          <div class="b-avatar"><i class="fa-solid fa-scissors"></i></div>
+              onclick="selectBarber(this)">
+          <div class="b-avatar"><i class="fa-solid fa-user-tie"></i></div>
           <div class="b-info">
             <div class="b-name">{{ user.username }}</div>
           </div>
@@ -220,7 +220,7 @@
     </div>
     <div class="modal-body">
       <div class="service-list">
-        <!-- populado via JS ao selecionar barbeiro -->
+        <!-- populado via JS ao selecionar profissional -->
       </div>
       <button class="modal-btn" id="btn-ok-service" type="button"
               onclick="closeModal('modal-service')" disabled>
