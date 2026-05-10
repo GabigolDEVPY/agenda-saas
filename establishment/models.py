@@ -8,7 +8,6 @@ class Establishment(models.Model):
     uid = models.CharField(max_length=20, unique=True, editable=False, null=False, blank=False)
     cnpj = models.CharField(max_length=18, unique=True, blank=True)
     phone = models.CharField(max_length=15, null=False, blank=False)
-    description = models.TextField(max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.uid:

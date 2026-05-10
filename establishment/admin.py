@@ -4,7 +4,7 @@ from .models import Establishment, OperatingHours, Address, GeneralPreference
 
 @admin.register(Establishment)
 class EstablishmentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uid', 'user', 'cnpj', 'phone', 'description')
+    list_display = ('name', 'uid', 'user', 'cnpj', 'phone')
 
 @admin.register(OperatingHours)
 class OperatingHoursAdmin(admin.ModelAdmin):

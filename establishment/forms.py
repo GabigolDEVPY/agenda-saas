@@ -10,7 +10,6 @@ class EstablishmentForm(forms.ModelForm):
             "name",
             "cnpj",
             "phone",
-            "description",
         ]
 
     def _only_digits(self, value):

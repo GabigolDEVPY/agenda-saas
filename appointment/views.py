@@ -22,4 +22,4 @@ class CreateAppointmentView(View):
             uid = result["uid"]
             messages.error(request, json.dumps({"status": result["status"],"title": result["title"], "message": result["message"]}))
             
-        return redirect("establishment:public_agenda", uid=uid)
+        return redirect("client_portal:public_agenda", uid=uid)
