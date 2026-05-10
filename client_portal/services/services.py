@@ -112,5 +112,6 @@ class HomeService:
             "servicos_json": HomeService.get_services(users),
             "infos": HomeService.get_infos_establishment(establishment)
         }
+        print(context["servicos_json"])
         return context
 

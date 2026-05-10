@@ -82,9 +82,9 @@ class AppointmentService:
                         "uid":     str(user.establishment.uid),
                     }
 
-            appointment          = form.save(commit=False)
+            appointment = form.save(commit=False)
             appointment.duration = duration_snapshot
-            appointment.total    = service.price
+            appointment.total = service.price
             appointment.save()
 
         return None, {

@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
 from .services.services import OperationDayService
 from django.http import JsonResponse
+from django.db import transaction
 
 
 
@@ -57,5 +58,6 @@ class SaveOperatingHoursView(LoginRequiredMixin, View):
         if not form.is_valid():
             return JsonResponse({"status": "error", "message": form.errors})
 
-        result = OperationDayService.update_operating_hours(clean_data=form.cleaned_data, user=request.user)
+        with transaction.atomic():
+            result = OperationDayService.update_operating_hours(clean_data=form.cleaned_data, user=request.user)
         return JsonResponse(result)
