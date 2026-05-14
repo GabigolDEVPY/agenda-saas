@@ -17,11 +17,6 @@
         <label for="est-tel">Telefone / WhatsApp</label>
         <input value="{{ establishment.phone }}" maxlength="15" type="tel" id="est-tel" oninput="maskTelefone(this); checkConfirm()" name="phone" placeholder="(99) 99999-9999"/>
       </div>
-
-      <div class="form-group full">
-        <label for="est-desc">Descrição</label>
-        <textarea id="est-desc" maxlength="200" name="description" placeholder="Fale sobre a sua empresa...">{{ establishment.description }}</textarea>
-      </div>
       <button type="submit" class="btn-primary btn-save-establishment">
         <i class="fa-solid"></i> Salvar
       </button>
