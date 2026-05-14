@@ -155,10 +155,12 @@
         <div class="pill-icon"><i class="fa-solid fa-location-dot"></i></div>
         <div class="pill-text"><strong>Localização</strong>{{ infos.location.street }}, {{ infos.location.number }}, {{ infos.location.neighborhood }}</div>
       </div>
-      <div class="info-pill">
-        <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
-        <div class="pill-text"><strong>Dúvidas?</strong>{{ infos.phone }}</div>
-      </div>
+      {% if gereral_preferences.show_phone_publicly %}
+        <div class="info-pill">
+          <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
+          <div class="pill-text"><strong>Dúvidas?</strong>{{ infos.phone }}</div>
+        </div>
+      {% endif %}
       <div class="info-pill">
         <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
         <div class="pill-text"><strong>Horários de Funcionamento?</strong>

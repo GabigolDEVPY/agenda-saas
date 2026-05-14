@@ -16,4 +16,4 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(GeneralPreference)
 class GeneralPreferenceAdmin(admin.ModelAdmin):
-    list_display = ('establishment', 'show_address_publicly', 'show_phone_publicly')
+    list_display = ('establishment', 'open_establishment', 'show_phone_publicly')

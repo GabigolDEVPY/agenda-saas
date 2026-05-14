@@ -110,7 +110,8 @@ class HomeService:
             "agendamentos_json": HomeService.get_appointments(users),
             "meses_disponiveis_json": HomeService.get_available_months(users),
             "servicos_json": HomeService.get_services(users),
-            "infos": HomeService.get_infos_establishment(establishment)
+            "infos": HomeService.get_infos_establishment(establishment),
+            "gereral_preferences": establishment.general_preferences
         }
         print(context["servicos_json"])
         return context
