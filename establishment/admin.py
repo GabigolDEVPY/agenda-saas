@@ -12,7 +12,7 @@ class OperatingHoursAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ('establishment', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'zip_code')
+    list_display = ('establishment', 'street', 'number', 'neighborhood', 'city', 'state', 'zip_code')
 
 @admin.register(GeneralPreference)
 class GeneralPreferenceAdmin(admin.ModelAdmin):

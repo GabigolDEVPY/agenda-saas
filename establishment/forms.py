@@ -87,7 +87,6 @@ class AddressForm(forms.ModelForm):
             "neighborhood",
             "street",
             "number",
-            "complement",
         ]
         labels = {
             "zip_code": "CEP",
@@ -96,7 +95,6 @@ class AddressForm(forms.ModelForm):
             "neighborhood": "Bairro",
             "street": "Rua / Avenida",
             "number": "Número",
-            "complement": "Complemento",
         }
 
     def _only_digits(self, value):

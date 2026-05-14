@@ -23,7 +23,6 @@ class Address(models.Model):
     establishment = models.OneToOneField(Establishment, on_delete=models.CASCADE, related_name="address")
     street = models.CharField(max_length=60, null=False, blank=False)
     number = models.BigIntegerField(null=False, blank=False)
-    complement = models.CharField(max_length=120, blank=True, null=True)
     neighborhood = models.CharField(max_length=50, null=False, blank=False)
     city = models.CharField(max_length=40, null=False, blank=False)
     state = models.CharField(max_length=2, null=False, blank=False)
