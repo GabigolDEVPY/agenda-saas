@@ -35,3 +35,7 @@ class OperationDayService:
         day_user.save()
 
         return {"status": "success", "message": SUCCESS["DAY_UPDATED"]}
+
+    def update_general_preferences(user, data):
+        print("ok")
+        return

@@ -132,3 +132,5 @@ class OperatingHoursForm(forms.Form):
                 raise forms.ValidationError("Horário inválido")
 
         return cleaned
+    
+

@@ -62,18 +62,15 @@ class SaveOperatingHoursView(LoginRequiredMixin, View):
             result = OperationDayService.update_operating_hours(clean_data=form.cleaned_data, user=request.user)
         return JsonResponse(result)
     
-class SaveOperatingHoursView(LoginRequiredMixin, View):
+
+
+class GeneralPreferencesView(LoginRequiredMixin, View):
     def post(self, request):
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"status": "error", "message": "Invalid JSON data."})
 
-        form = OperatingHoursForm(data=data)
-
-        if not form.is_valid():
-            return JsonResponse({"status": "error", "message": form.errors})
-
         with transaction.atomic():
-            result = OperationDayService.update_operating_hours(clean_data=form.cleaned_data, user=request.user)
+            result = OperationDayService.update_general_preferences(user=request.user, data=data)
         return JsonResponse(result)
