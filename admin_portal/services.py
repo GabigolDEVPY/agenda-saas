@@ -1,5 +1,5 @@
 import json
-from establishment.models import Establishment, Address, OperatingHours
+from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
 
 
 
@@ -14,6 +14,7 @@ class AdminService:
         context['establishment'] = establishment
         context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
         context['operating_hours'] = json.dumps(AdminService.get_operating_hours(view, establishment))
+        context['gereral_preferences'] = establishment.general_preferences
 
         return context
 

@@ -4,7 +4,7 @@ from django.views import View
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services.form_services import get_msg_form_invalid
-from .services.services import OperationDayService
+from .services.services import OperationDayService, GerenalPreferencesService
 from django.http import JsonResponse
 from django.db import transaction
 
@@ -67,10 +67,10 @@ class SaveOperatingHoursView(LoginRequiredMixin, View):
 class GeneralPreferencesView(LoginRequiredMixin, View):
     def post(self, request):
         try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"status": "error", "message": "Invalid JSON data."})
+            data = json.loads(request.body)        
+            prefs = request.user.establishment.general_preferences
+            result = GerenalPreferencesService.update_general_preferences(prefs=prefs, data=data)
 
-        with transaction.atomic():
-            result = OperationDayService.update_general_preferences(user=request.user, data=data)
-        return JsonResponse(result)
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})

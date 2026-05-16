@@ -35,7 +35,15 @@ class OperationDayService:
         day_user.save()
 
         return {"status": "success", "message": SUCCESS["DAY_UPDATED"]}
-
-    def update_general_preferences(user, data):
-        print("ok")
+    
+class GerenalPreferencesService:
+    @staticmethod
+    def update_general_preferences(prefs, data):
+        field = data.get('field')
+        value = data.get('value')
+        allowed_fields = {'show_phone_publicly', 'open_establishment'}
+        if field not in allowed_fields:
+            return {'status': 'error', 'message': 'Campo inválido.'}
+        setattr(prefs, field, bool(value))
+        prefs.save(update_fields=[field])
         return

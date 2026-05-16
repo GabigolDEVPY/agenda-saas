@@ -223,3 +223,53 @@ function RequestChangeDay(dayKey, type) {
 }
 
 
+(function initGeneralPreferences() {
+
+  function getCSRFToken() {
+    let cookieValue = null;
+    document.cookie.split(';').forEach(function(cookie) {
+      const c = cookie.trim();
+      if (c.startsWith('csrftoken=')) {
+        cookieValue = c.substring('csrftoken='.length);
+      }
+    });
+    return cookieValue;
+  }
+
+  function requestUpdatePreference(field, value) {
+    fetch('/establishment/general-preferences/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({
+        field: field,
+        value: value
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'error') {
+        showToast(data.message, data.status);
+      }
+    })
+    .catch(err => console.error('Erro ao atualizar preferências:', err));
+  }
+
+  var checkboxPhone = document.getElementById('gp-exibir-telefone');
+  var checkboxOpen  = document.getElementById('gp-estabelecimento-aberto');
+
+  if (checkboxPhone) {
+    checkboxPhone.addEventListener('change', function() {
+      requestUpdatePreference('show_phone_publicly', this.checked);
+    });
+  }
+
+  if (checkboxOpen) {
+    checkboxOpen.addEventListener('change', function() {
+      requestUpdatePreference('open_establishment', this.checked);
+    });
+  }
+
+})();

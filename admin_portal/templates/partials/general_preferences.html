@@ -2,17 +2,25 @@
     <div class="card-title">Configurações Gerais</div>
     <div class="card-sub">Preferências do estabelecimento</div>
     <div class="toggle-row">
-    <div>
-        <div class="toggle-label">Exibir telefone publicamente</div>
-        <div class="toggle-sub">Número visível para clientes entrarem em contato</div>
-    </div>
-    <label class="toggle"><input type="checkbox" name="exibir_telefone" checked/><span class="toggle-track"></span></label>
+        <div>
+            <div class="toggle-label">Exibir telefone publicamente</div>
+            <div class="toggle-sub">Número visível para clientes entrarem em contato</div>
+        </div>
+        <label class="toggle">
+            <input type="checkbox" name="exibir_telefone" id="gp-exibir-telefone"
+                {% if gereral_preferences.show_phone_publicly %}checked{% endif %}/>
+            <span class="toggle-track"></span>
+        </label>
     </div>
     <div class="toggle-row">
-    <div>
-        <div class="toggle-label">Estabelecimento aberto</div>
-        <div class="toggle-sub">Desative para suspender todos os agendamentos temporariamente</div>
-    </div>
-    <label class="toggle"><input type="checkbox" name="estabelecimento_aberto" checked/><span class="toggle-track"></span></label>
+        <div>
+            <div class="toggle-label">Estabelecimento aberto</div>
+            <div class="toggle-sub">Desative para suspender todos os agendamentos temporariamente</div>
+        </div>
+        <label class="toggle">
+            <input type="checkbox" name="estabelecimento_aberto" id="gp-estabelecimento-aberto"
+                {% if gereral_preferences.open_establishment %}checked{% endif %}/>
+            <span class="toggle-track"></span>
+        </label>
     </div>
 </div>
