@@ -96,9 +96,10 @@ class HomeService:
     @staticmethod
     def get_context_establishment(uid):
         establishment = Establishment.objects.filter(uid=uid).first()
-        if not establishment:
+        if not establishment or not establishment.general_preferences.open_establishment:
             return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
-        
+
+
         users = establishment.users.all()
         if not users:
             return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
