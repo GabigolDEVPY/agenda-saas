@@ -44,7 +44,7 @@ function gerarSlotsDisponiveis(dateKey) {
 
   var inicioMin   = toMin(funcionamento.inicio);
   var fimMin      = toMin(funcionamento.fim);
-  var duracao     = duracaoTotalMin;
+  var duracao     = getDuracaoSelecionada();
   var intervalo   = duracao;
 
   if (duracao <= 0) return [];
@@ -84,6 +84,16 @@ function gerarSlotsDisponiveis(dateKey) {
   });
 
   return slots;
+}
+
+function getDuracaoSelecionada() {
+  var duracao = 0;
+
+  document.querySelectorAll('.service-option.selected').forEach(function(el) {
+    duracao += parseInt(el.dataset.duracao, 10) || 0;
+  });
+
+  return duracao > 0 ? duracao : duracaoTotalMin;
 }
 
 function getFuncionamentoDoDia(dateKey) {
