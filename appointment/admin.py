@@ -20,4 +20,4 @@ class HoursUnavailableAdmin(admin.ModelAdmin):
 
 @admin.register(Diverses)
 class DiversesAdmin(admin.ModelAdmin):
-    list_display = ('user', 'interval_time', 'descricao')
+    list_display = ('user', 'descricao')

@@ -9,7 +9,7 @@ var hoje = new Date(); hoje.setHours(0,0,0,0);
 var calMes = hoje.getMonth();
 var calAno = hoje.getFullYear();
 
-var CONFIG_BARBEIRO    = {};   // {hora_inicio, hora_fim, interval_time}
+var CONFIG_BARBEIRO    = {};   // {hora_inicio, hora_fim, horarios_funcionamento}
 var AGENDAMENTOS_DIA   = {};   // {date: [{inicio, fim}]}
 var MESES_DISPONIVEIS  = [];
 var duracaoTotalMin    = 0;
@@ -30,8 +30,8 @@ function toHHMM(min) {
 }
 
 /* ── GERAÇÃO DINÂMICA DE SLOTS ───────────────────────────────────────────────
-   Para cada passo do intervalo (ex: a cada 30 min), verifica se o serviço
-   selecionado (duracaoTotalMin) cabe no espaço livre até o próximo agendamento.
+   Para cada passo da duracao do servico selecionado, verifica se ele cabe
+   no espaco livre ate o proximo agendamento.
 
    Um slot [inicio, inicio+duracao) é VÁLIDO se não sobrepõe nenhum
    agendamento existente [ag.inicio, ag.fim).
@@ -39,20 +39,40 @@ function toHHMM(min) {
 function gerarSlotsDisponiveis(dateKey) {
   if (!CONFIG_BARBEIRO.hora_inicio) return [];
 
-  var inicioMin   = toMin(CONFIG_BARBEIRO.hora_inicio);
-  var fimMin      = toMin(CONFIG_BARBEIRO.hora_fim);
-  var intervalo   = CONFIG_BARBEIRO.interval_time || 30;
-  var duracao     = duracaoTotalMin > 0 ? duracaoTotalMin : intervalo;
+  var funcionamento = getFuncionamentoDoDia(dateKey);
+  if (!funcionamento || !funcionamento.aberto) return [];
+
+  var inicioMin   = toMin(funcionamento.inicio);
+  var fimMin      = toMin(funcionamento.fim);
+  var duracao     = duracaoTotalMin;
+  var intervalo   = duracao;
+
+  if (duracao <= 0) return [];
 
   var agendamentos = (AGENDAMENTOS_DIA[dateKey] || []).map(function(ag) {
     return { inicio: toMin(ag.inicio), fim: toMin(ag.fim) };
   });
 
-  var slots = [];
+  var candidatos = [];
 
   for (var cursor = inicioMin; cursor + duracao <= fimMin; cursor += intervalo) {
-    var slotInicio = cursor;
-    var slotFim    = cursor + duracao;
+    candidatos.push(cursor);
+  }
+
+  agendamentos.forEach(function(ag) {
+    if (ag.fim >= inicioMin && ag.fim + duracao <= fimMin) {
+      candidatos.push(ag.fim);
+    }
+  });
+
+  candidatos = candidatos
+    .filter(function(valor, indice, lista) { return lista.indexOf(valor) === indice; })
+    .sort(function(a, b) { return a - b; });
+
+  var slots = [];
+
+  candidatos.forEach(function(slotInicio) {
+    var slotFim    = slotInicio + duracao;
 
     var livre = agendamentos.every(function(ag) {
       return slotFim <= ag.inicio || slotInicio >= ag.fim;
@@ -61,9 +81,24 @@ function gerarSlotsDisponiveis(dateKey) {
     if (livre) {
       slots.push(toHHMM(slotInicio));
     }
-  }
+  });
 
   return slots;
+}
+
+function getFuncionamentoDoDia(dateKey) {
+  var horarios = CONFIG_BARBEIRO.horarios_funcionamento || {};
+  if (dateKey) {
+    var dt = new Date(dateKey + 'T00:00:00');
+    var dia = String(dt.getDay());
+    if (horarios[dia]) return horarios[dia];
+  }
+
+  return {
+    aberto: true,
+    inicio: CONFIG_BARBEIRO.hora_inicio,
+    fim: CONFIG_BARBEIRO.hora_fim
+  };
 }
 
 /* ── MODAL ── */
@@ -276,14 +311,12 @@ function renderCalendar() {
     el.textContent = d;
 
     var passado = dt < hoje;
-    var domingo = dt.getDay() === 0;
-
     var semSlot = false;
     if (calendarReady()) {
       semSlot = gerarSlotsDisponiveis(key).length === 0;
     }
 
-    if (passado || domingo || semSlot) {
+    if (passado || semSlot) {
       el.classList.add('past');
     } else {
       if (dt.getTime() === hoje.getTime()) el.classList.add('today');

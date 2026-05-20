@@ -60,10 +60,7 @@ class Diverses(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    interval_time = models.IntegerField(
-        default=30, help_text="Intervalo entre horários em minutos"
-    )
     descricao = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Intervalo: {self.interval_time} minutos"
+        return f"Configuracoes de {self.user}"

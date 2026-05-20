@@ -38,11 +38,15 @@ class AppointmentService:
         config = json.loads(HomeService.get_config([user]))
         cfg = config.get(user_id, {})
 
-        hora_inicio_min = _to_min(cfg.get('hora_inicio', '09:00'))
-        hora_fim_min    = _to_min(cfg.get('hora_fim',    '18:00'))
+        operating_hours = _operating_hours_for_date(cfg, date)
+        if not operating_hours or not operating_hours["aberto"]:
+            return None, _error(uid, horario_str, "Horario Invalido", "Esse dia esta fora do horario de funcionamento")
+
+        hora_inicio_min = _to_min(operating_hours["inicio"])
+        hora_fim_min    = _to_min(operating_hours["fim"])
         slot_inicio_min = _to_min(horario_str)
         slot_fim_min    = slot_inicio_min + duration_snapshot
-        slot_interval   = cfg.get('slot_interval', 30)
+        effective_interval = duration_snapshot
 
         # Verificar horário de funcionamento
         if slot_inicio_min < hora_inicio_min or slot_fim_min > hora_fim_min:
@@ -53,13 +57,12 @@ class AppointmentService:
         agendamentos_dia  = agendamentos_json.get(user_id, {}).get(data_str, [])
         ends_of_existing  = {_to_min(ag['fim']) for ag in agendamentos_dia}
 
-        # Horário válido se: está na grade base OU é múltiplo da duração do serviço OU continuação natural
+        # Horário válido se segue a duração do serviço ou continua um agendamento existente.
         offset = slot_inicio_min - hora_inicio_min
-        on_grid              = (offset % slot_interval == 0)
-        on_service_grid      = (offset % duration_snapshot == 0)
+        on_service_grid      = (offset % effective_interval == 0)
         is_natural_continuation = slot_inicio_min in ends_of_existing
 
-        if not on_grid and not on_service_grid and not is_natural_continuation:
+        if not on_service_grid and not is_natural_continuation:
             return None, _error(uid, horario_str, "Horário Inválido", "Esse horário não corresponde a um slot disponível")
 
         # Checagem de conflito com lock no banco + save atômico
@@ -102,3 +105,18 @@ def _error(uid: str, horario: str, title: str, message: str) -> dict:
 def _to_min(hhmm: str) -> int:
     h, m = hhmm.split(':')
     return int(h) * 60 + int(m)
+
+
+def _operating_hours_for_date(cfg: dict, date):
+    horarios = cfg.get("horarios_funcionamento") or {}
+    js_day = (date.weekday() + 1) % 7
+    day_cfg = horarios.get(str(js_day))
+
+    if day_cfg:
+        return day_cfg
+
+    return {
+        "aberto": True,
+        "inicio": cfg.get("hora_inicio", "09:00"),
+        "fim": cfg.get("hora_fim", "18:00"),
+    }

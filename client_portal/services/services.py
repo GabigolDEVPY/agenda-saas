@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-from appointment.models import Appointment, Diverses, MonthAvailability
+from appointment.models import Appointment, MonthAvailability
 import json
 from establishment.models import Establishment
 from establishment.services.messages import ERRORS
@@ -10,15 +10,45 @@ class HomeService:
     def get_config(users):
         result = {}
         for user in users:
-            diverses = Diverses.objects.filter(user=user).first()
-            if not diverses:
-                return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}
+            establishment = getattr(user, "establishment", None)
+            horarios_funcionamento = HomeService._get_operating_hours_config(establishment)
+            primeiro_dia_aberto = next(
+                (dia for dia in horarios_funcionamento.values() if dia["aberto"]),
+                {"inicio": "09:00", "fim": "18:00"},
+            )
+
             result[str(user.id)] = {
-                "hora_inicio": "09:00",
-                "hora_fim": "18:00",
-                "interval_time": diverses.interval_time,
+                "hora_inicio": primeiro_dia_aberto["inicio"],
+                "hora_fim": primeiro_dia_aberto["fim"],
+                "horarios_funcionamento": horarios_funcionamento,
             }
         return json.dumps(result)
+
+    @staticmethod
+    def _get_operating_hours_config(establishment):
+        defaults = {
+            str(day): {"aberto": day != 0, "inicio": "09:00", "fim": "18:00"}
+            for day in range(7)
+        }
+
+        if not establishment:
+            return defaults
+
+        horarios = defaults.copy()
+        django_to_js_day = {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 0}
+
+        for item in establishment.operating_hours.all():
+            js_day = django_to_js_day.get(item.day_of_week)
+            if js_day is None:
+                continue
+
+            horarios[str(js_day)] = {
+                "aberto": not item.is_closed,
+                "inicio": item.open_time.strftime("%H:%M"),
+                "fim": item.close_time.strftime("%H:%M"),
+            }
+
+        return horarios
 
     @staticmethod
     def get_appointments(users):
