@@ -6,7 +6,6 @@ class Establishment(models.Model):
     user = models.OneToOneField("user.User", on_delete=models.CASCADE, related_name="owned_establishment")
     name = models.CharField(max_length=30, null=False, blank=False)
     uid = models.CharField(max_length=20, unique=True, editable=False, null=False, blank=False)
-    cnpj = models.CharField(max_length=18, unique=True, blank=True)
     phone = models.CharField(max_length=15, null=False, blank=False)
 
     def save(self, *args, **kwargs):
