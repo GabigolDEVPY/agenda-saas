@@ -54,13 +54,3 @@ class HoursUnavailable(models.Model):
             f"{self.hour} - {'Disponível' if self.availability else 'Indisponível'}"
         )
 
-
-class Diverses(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    descricao = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Configuracoes de {self.user}"

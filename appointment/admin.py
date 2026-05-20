@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Appointment, MonthAvailability, HoursUnavailable, Diverses
-
+from .models import Appointment, MonthAvailability, HoursUnavailable
 
 
 @admin.register(Appointment)
@@ -18,6 +17,3 @@ class HoursUnavailableAdmin(admin.ModelAdmin):
     list_display = ('user', 'month', 'day', 'hour', 'availability')
 
 
-@admin.register(Diverses)
-class DiversesAdmin(admin.ModelAdmin):
-    list_display = ('user', 'descricao')

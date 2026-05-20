@@ -3,6 +3,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
 from .models import User
 from .forms import CustomUserCreationForm
+from .services.services import UserServices
+from django.shortcuts import redirect
 
 
 class UserLogoutView(LogoutView):
@@ -42,3 +44,7 @@ class UserRegisterView(CreateView):
         context = super().get_context_data(**kwargs)
         context["hide_navbar"] = True
         return context
+    
+    def form_valid(self, form):
+        UserServices.create_operation_hours(form)
+        return redirect(self.get_success_url)
