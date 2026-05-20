@@ -100,6 +100,7 @@ class HomeService:
             return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
 
 
+
         users = establishment.users.all()
         if not users:
             return {"msg": ERRORS["ESTABLISHMENT_INCOMPLETE"], "incomplete": True}

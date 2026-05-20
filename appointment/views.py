@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.views.generic import View
 from .services import AppointmentService
 from django.contrib import messages
-
+from django.http import HttpResponseBadRequest
 
 
 class CreateAppointmentView(View):
@@ -14,9 +14,10 @@ class CreateAppointmentView(View):
             messages.error(request, json.dumps({"status": "error","title": "Erro de validação","message": str(errors) }))
             return redirect(request.META.get("HTTP_REFERER"))
 
-        if result and result.get("status") == "success":
+        elif result and result.get("status") == "success":
             uid = result["uid"]
             messages.success(request, json.dumps({"status": result["status"],"horario": result["horario"],"title": result["title"],"message": result["message"]}))
+
 
         elif result:
             uid = result["uid"]
