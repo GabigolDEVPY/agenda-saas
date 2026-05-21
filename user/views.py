@@ -46,5 +46,7 @@ class UserRegisterView(CreateView):
         return context
     
     def form_valid(self, form):
-        UserServices.create_operation_hours(form)
-        return redirect(self.get_success_url)
+        response = super().form_valid(form)
+        user = self.object
+        UserServices.create_data_establishment(user)
+        return response

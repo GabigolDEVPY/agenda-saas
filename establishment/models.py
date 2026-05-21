@@ -20,12 +20,12 @@ class Establishment(models.Model):
 
 class Address(models.Model):
     establishment = models.OneToOneField(Establishment, on_delete=models.CASCADE, related_name="address")
-    street = models.CharField(max_length=60, null=False, blank=False)
-    number = models.BigIntegerField(null=False, blank=False)
-    neighborhood = models.CharField(max_length=50, null=False, blank=False)
-    city = models.CharField(max_length=40, null=False, blank=False)
-    state = models.CharField(max_length=2, null=False, blank=False)
-    zip_code = models.CharField(max_length=10, null=False, blank=False)
+    street = models.CharField(max_length=60, null=True, blank=True)
+    number = models.BigIntegerField(null=True, blank=True)
+    neighborhood = models.CharField(max_length=50, null=True, blank=True)
+    city = models.CharField(max_length=40, null=True, blank=True)
+    state = models.CharField(max_length=2, null=True, blank=True)
+    zip_code = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return f"{self.street}, {self.number} - {self.city}/{self.state}"
