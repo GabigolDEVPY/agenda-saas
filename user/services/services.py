@@ -1,4 +1,4 @@
-from establishment.models import OperatingHours, Establishment, GeneralPreference, Address
+from establishment.models import OperatingHours, GeneralPreference, Address
 from datetime import time
 from django.db import transaction
 

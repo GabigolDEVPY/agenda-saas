@@ -4,7 +4,6 @@ from django.views.generic import CreateView
 from .models import User
 from .forms import CustomUserCreationForm
 from .services.services import UserServices
-from django.shortcuts import redirect
 
 
 class UserLogoutView(LogoutView):

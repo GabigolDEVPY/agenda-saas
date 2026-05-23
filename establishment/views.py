@@ -69,7 +69,7 @@ class GeneralPreferencesView(LoginRequiredMixin, View):
         try:
             data = json.loads(request.body)        
             prefs = request.user.establishment.general_preferences
-            result = GerenalPreferencesService.update_general_preferences(prefs=prefs, data=data)
+            GerenalPreferencesService.update_general_preferences(prefs=prefs, data=data)
 
             return JsonResponse({'status': 'success'})
         except Exception as e:

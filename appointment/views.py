@@ -3,7 +3,6 @@ from django.shortcuts import redirect
 from django.views.generic import View
 from .services import AppointmentService
 from django.contrib import messages
-from django.http import HttpResponseBadRequest
 
 
 class CreateAppointmentView(View):
