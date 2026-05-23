@@ -7,11 +7,12 @@ from .services.form_services import get_msg_form_invalid
 from .services.services import OperationDayService, GerenalPreferencesService
 from django.http import JsonResponse
 from django.db import transaction
+from .mixins.mixins import OwnerRequiredMixin
 
 
 
 
-class SaveInfosView(LoginRequiredMixin, View):
+class SaveInfosView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
         establishment = request.user.owned_establishment
 
@@ -29,7 +30,7 @@ class SaveInfosView(LoginRequiredMixin, View):
 
 
 
-class SaveAddressView(LoginRequiredMixin, View):
+class SaveAddressView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
         address = request.user.owned_establishment.address
 
@@ -46,7 +47,7 @@ class SaveAddressView(LoginRequiredMixin, View):
 
 
 
-class SaveOperatingHoursView(LoginRequiredMixin, View):
+class SaveOperatingHoursView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -64,7 +65,7 @@ class SaveOperatingHoursView(LoginRequiredMixin, View):
     
 
 
-class GeneralPreferencesView(LoginRequiredMixin, View):
+class GeneralPreferencesView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
         try:
             data = json.loads(request.body)        
