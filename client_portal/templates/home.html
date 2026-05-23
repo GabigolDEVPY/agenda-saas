@@ -171,11 +171,9 @@
         <div class="pill-icon"><i class="fa-brands fa-whatsapp"></i></div>
         <div class="pill-text"><strong>Horários de Funcionamento?</strong>
         <div class="pill-text">
-          {% for day in infos.operating_hours %}
-            {% if not day.is_closed %}
-              <span style="display:block;">{{ day.get_day_of_week_display}}: {{ day.open_time }} às {{ day.close_time }}</span>
-            {% endif %}
-          {% endfor %}
+        {% for label in infos.operating_hours_grouped %}
+          <span style="display:block;">{{ label }}</span>
+        {% endfor %}
         </div>
         </div>
       </div>

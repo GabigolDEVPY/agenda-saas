@@ -4,6 +4,7 @@ from appointment.models import Appointment, MonthAvailability
 import json
 from establishment.models import Establishment
 from establishment.services.messages import ERRORS
+from .utils import group_operating_hours
 
 class HomeService:
     @staticmethod
@@ -117,9 +118,9 @@ class HomeService:
         result = {
             "location": establishment.address,
             "phone": establishment.phone,
-            "operating_hours": establishment.operating_hours.all()
+            "operating_hours_grouped": group_operating_hours(establishment.operating_hours.all())
         }
-        print(result["location"])
+        print(result["operating_hours_grouped"])
         return result
 
 
