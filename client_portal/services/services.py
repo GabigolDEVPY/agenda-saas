@@ -119,7 +119,7 @@ class HomeService:
             "phone": establishment.phone,
             "operating_hours": establishment.operating_hours.all()
         }
-        print(result)
+        print(result["location"])
         return result
 
 

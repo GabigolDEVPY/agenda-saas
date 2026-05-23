@@ -7,7 +7,8 @@ class UserServices:
     @transaction.atomic 
     def create_data_establishment(user):
         establishment = user.establishment
-        print("criando general preference")
+
+        # criando as preferências gerais
         GeneralPreference.objects.create(
             establishment=establishment,
             open_establishment=True,
@@ -16,6 +17,7 @@ class UserServices:
 
         days = range(7)
 
+        # criando os dias de agenda
         for day in days:
             OperatingHours.objects.create(
                 establishment=establishment,
@@ -24,6 +26,7 @@ class UserServices:
                 close_time=time(18, 0),
                 is_closed=True
             )
+        # criando o endereço
         Address.objects.create(
             establishment=establishment,
         )
