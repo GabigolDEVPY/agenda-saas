@@ -44,21 +44,6 @@ function closeOnBg(e, id){
 }
 
 /* ──────────────────────────────────────────────
-   TOAST
-────────────────────────────────────────────── */
-function showToast(msg, type){
-  var wrap = document.getElementById('toast-wrap');
-  var t = document.createElement('div');
-  t.className = 'toast ' + (type||'');
-  t.innerHTML = (type==='success' ? '<i class="fa-solid fa-check" style="margin-right:8px;"></i>' :
-                 type==='error'   ? '<i class="fa-solid fa-xmark" style="margin-right:8px;"></i>' :
-                 '<i class="fa-solid fa-circle-info" style="margin-right:8px;"></i>') + msg;
-  wrap.appendChild(t);
-  requestAnimationFrame(function(){ t.classList.add('show'); });
-  setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 350); }, 2800);
-}
-
-/* ──────────────────────────────────────────────
    MONTHS LIST
 ────────────────────────────────────────────── */
 var MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
@@ -205,7 +190,6 @@ function markDayOff(){
   getDayData(mState.selectedDay).slots = [];
   updateDayCalClass(mState.selectedDay, true);
   renderTimeGrid(mState.selectedDay);
-  showToast('Dia marcado como folga', 'success');
 }
 function markDayOn(){
   if(!mState.selectedDay) return;
@@ -213,7 +197,6 @@ function markDayOn(){
   getDayData(mState.selectedDay).slots = DEFAULT_SLOTS.slice();
   updateDayCalClass(mState.selectedDay, false);
   renderTimeGrid(mState.selectedDay);
-  showToast('Dia liberado com todos os horários', 'success');
 }
 function setMorningOnly(){
   if(!mState.selectedDay) return;
@@ -221,7 +204,6 @@ function setMorningOnly(){
   d.off = false;
   d.slots = DEFAULT_SLOTS.filter(function(s){ return parseInt(s.split(':')[0]) < 12; });
   renderTimeGrid(mState.selectedDay);
-  showToast('Somente manhã ativada (09h–12h)', 'success');
 }
 function setAfternoonOnly(){
   if(!mState.selectedDay) return;
@@ -229,21 +211,18 @@ function setAfternoonOnly(){
   d.off = false;
   d.slots = DEFAULT_SLOTS.filter(function(s){ return parseInt(s.split(':')[0]) >= 12; });
   renderTimeGrid(mState.selectedDay);
-  showToast('Somente tarde ativada (12h–20h)', 'success');
 }
 function setAllSlots(){
   if(!mState.selectedDay) return;
   var d = getDayData(mState.selectedDay);
   d.off = false; d.slots = DEFAULT_SLOTS.slice();
   renderTimeGrid(mState.selectedDay);
-  showToast('Todos os horários ativados', 'success');
 }
 function clearAllSlots(){
   if(!mState.selectedDay) return;
   var d = getDayData(mState.selectedDay);
   d.off = false; d.slots = [];
   renderTimeGrid(mState.selectedDay);
-  showToast('Todos os horários desativados', '');
 }
 
 function updateDayCalClass(dateStr, isOff){
@@ -289,7 +268,6 @@ function toggleWorkDay(dow, el){
   buildDefaultHoursCard();
 }
 function editDayHours(dow){
-  showToast('Edição de horário para '+DAYS_LABEL[dow], '');
 }
 
 /* ──────────────────────────────────────────────

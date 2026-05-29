@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.views import View
 from .forms import EstablishmentForm, AddressForm, OperatingHoursForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .services.form_services import get_msg_form_invalid
 from .services.services import OperationDayService, GerenalPreferencesService
 from django.http import JsonResponse
 from django.db import transaction
@@ -21,10 +20,10 @@ class SaveInfosView(LoginRequiredMixin, OwnerRequiredMixin, View):
 
             if form.is_valid():
                 establishment = form.save()
-                return render(request, "partials/infos.html", {"establishment": establishment,"form": form,"msg": "Informações salvas com sucesso!","type": "success"})
+                form = EstablishmentForm(instance=establishment)
+                return render(request, "partials/establishment/infos.html", {"establishment": establishment, "form": form})
             else:
-                msg = get_msg_form_invalid(request, form)
-                return render(request, "partials/infos.html", {"establishment": establishment,"form": form,"msg": msg,"type": "error"})
+                return render(request, "partials/establishment/infos.html", {"establishment": establishment, "form": form})
         return self.request.user.owned_establishment
 
 
@@ -39,10 +38,10 @@ class SaveAddressView(LoginRequiredMixin, OwnerRequiredMixin, View):
 
             if form.is_valid():
                 address = form.save()
-                return render(request, "partials/address.html", {"address": address,"form": form,"msg": "Endereço salvo com sucesso!","type": "success"})
+                form = AddressForm(instance=address)
+                return render(request, "partials/establishment/address.html", {"address": address, "form": form})
             else:
-                msg = get_msg_form_invalid(request, form)
-                return render(request, "partials/address.html", {"address": address,"form": form,"msg": msg,"type": "error"})
+                return render(request, "partials/establishment/address.html", {"address": address, "form": form})
 
 
 

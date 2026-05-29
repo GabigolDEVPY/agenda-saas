@@ -310,6 +310,9 @@
 
 </div>
 
+
+
+
 <!-- ══════════════════════════════════════
      PANEL: ESTABELECIMENTO
 ══════════════════════════════════════ -->
@@ -333,15 +336,15 @@
   <div>
     
     <!-- DADOS DO NEGÓCIO -->
-    {% include "partials/infos.html" %}
+    {% include "partials/establishment/infos.html" %}
     <!-- ENDEREÇO -->
-    {% include "partials/address.html" %}
+    {% include "partials/establishment/address.html" %}
 
     <!-- HORÁRIO DE FUNCIONAMENTO -->
-    {% include "partials/operating_hours.html" %}
+    {% include "partials/establishment/operating_hours.html" %}
 
     <!-- CONFIGURAÇÕES GERAIS -->
-    {% include "partials/general_preferences.html" %}
+    {% include "partials/establishment/general_preferences.html" %}
 
   </div>
 
@@ -678,9 +681,6 @@
   </div>
 </div>
 
-
-<!-- TOAST -->
-<div class="toast-wrap" id="toast-wrap"></div>
 
 <script src="{% static 'scripts_barber.js' %}?v=service-duration-slots-20260519"></script>
 <script src="{% static 'operating_hours.js' %}"></script>

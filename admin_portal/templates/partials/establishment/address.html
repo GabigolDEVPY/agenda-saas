@@ -1,0 +1,66 @@
+<form id="form-address" hx-post="{% url 'establishment:save_address' %}" hx-target="#form-address" hx-swap="innerHTML">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-title">Endereço</div>
+        <div class="card-sub">Localização física do estabelecimento</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="est-cep">CEP</label>
+                <input type="text" id="est-cep" name="zip_code" maxlength="9" oninput="maskCEP(this)" value="{% if form %}{{ form.zip_code.value|default:'' }}{% else %}{{ address.zip_code|default:'' }}{% endif %}" placeholder="00000-000"/>
+                {% if form.zip_code.errors %}
+                    {% for error in form.zip_code.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="est-cidade">Cidade</label>
+                <input type="text" id="est-cidade" maxlength="40" name="city" value="{% if form %}{{ form.city.value|default:'' }}{% else %}{{ address.city|default:'' }}{% endif %}" placeholder="Ex: São Paulo"/>
+                {% if form.city.errors %}
+                    {% for error in form.city.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="est-estado">Estado</label>
+                <input type="text" id="est-estado" name="state" maxlength="2" style="text-transform: uppercase;" value="{% if form %}{{ form.state.value|default:'' }}{% else %}{{ address.state|default:'' }}{% endif %}" placeholder="SP"/>
+                {% if form.state.errors %}
+                    {% for error in form.state.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="est-bairro">Bairro</label>
+                <input type="text" id="est-bairro" maxlength="50" name="neighborhood" value="{% if form %}{{ form.neighborhood.value|default:'' }}{% else %}{{ address.neighborhood|default:'' }}{% endif %}" placeholder="Ex: Centro"/>
+                {% if form.neighborhood.errors %}
+                    {% for error in form.neighborhood.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="est-rua">Rua / Avenida</label>
+                <input type="text" id="est-rua" maxlength="60" name="street" value="{% if form %}{{ form.street.value|default:'' }}{% else %}{{ address.street|default:'' }}{% endif %}" placeholder="Ex: Av. Paulista"/>
+                {% if form.street.errors %}
+                    {% for error in form.street.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="est-numero">Número</label>
+                <input type="number" id="est-numero" name="number" min="0" step="1" value="{% if form %}{{ form.number.value|default:'' }}{% else %}{{ address.number|default:'' }}{% endif %}" placeholder="1234"/>
+                {% if form.number.errors %}
+                    {% for error in form.number.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="submit" class="btn-primary btn-save-establishment">
+                <i class="fa-solid"></i> Salvar
+            </button>
+        </div>
+    </div>
+</form>

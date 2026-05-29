@@ -216,7 +216,7 @@ function RequestChangeDay(dayKey, type) {
   .then(data => {
     if (data.status === 'success') {
     } else if (data.status === 'error') {
-      showToast(data.message, data.status);
+      console.error(data.message);
     }
   })
   .catch(err => console.error('Erro ao atualizar:', err));
@@ -251,7 +251,7 @@ function RequestChangeDay(dayKey, type) {
     .then(response => response.json())
     .then(data => {
       if (data.status === 'error') {
-        showToast(data.message, data.status);
+        console.error(data.message);
       }
     })
     .catch(err => console.error('Erro ao atualizar preferências:', err));
