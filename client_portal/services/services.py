@@ -130,6 +130,9 @@ class HomeService:
         if not establishment or not establishment.general_preferences.open_establishment:
             return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
 
+        address = getattr(establishment, "address", None)
+        if not address or not address.completed:
+            return {"msg": "Concluir configuração.", "incomplete": True, "uid": uid}
 
 
         users = establishment.users.all()

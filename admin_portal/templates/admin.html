@@ -25,8 +25,11 @@
     <button class="nav-tab" onclick="switchTab('perfil', this)">
       <i class="fa-solid fa-circle-user"></i>Perfil
     </button>
-    <button class="nav-tab" onclick="switchTab('estabelecimento', this)">
+    <button class="nav-tab nav-tab-with-badge" onclick="switchTab('estabelecimento', this)">
       <i class="fa-solid fa-store"></i>Estabelecimento
+      {% if establishment_config_incomplete %}
+        <span class="tab-badge">1</span>
+      {% endif %}
     </button>
   </div>
 </div>
@@ -252,18 +255,6 @@
           <label for="p-nome">Nome de exibição</label>
           <input type="text" id="p-nome" name="nome" value="Carlos Silva" placeholder="Seu nome"/>
         </div>
-        <div class="form-group">
-          <label for="p-tel">WhatsApp</label>
-          <input type="tel" id="p-tel" name="telefone" placeholder="(99) 99999-9999"/>
-        </div>
-        <div class="form-group full">
-          <label for="p-esp">Especialidade</label>
-          <input type="text" id="p-esp" name="especialidade" value="Corte Clássico · Barba" placeholder="Ex: Corte Degradê, Barba..."/>
-        </div>
-        <div class="form-group full">
-          <label for="p-bio">Bio</label>
-          <textarea id="p-bio" name="bio" placeholder="Conte um pouco sobre você...">10 anos de experiência. Especialista em cortes clássicos e modernos.</textarea>
-        </div>
       </div>
     </div>
 
@@ -285,24 +276,12 @@
       <div class="card-sub">Preferências do seu painel</div>
       <div class="toggle-row">
         <div>
-          <div class="toggle-label">Aceitar agendamentos online</div>
-          <div class="toggle-sub">Clientes podem agendar pelo site</div>
-        </div>
-        <label class="toggle"><input type="checkbox" name="aceitar_agendamentos" checked/><span class="toggle-track"></span></label>
-      </div>
-      <div class="toggle-row">
-        <div>
           <div class="toggle-label">Confirmar manualmente</div>
           <div class="toggle-sub">Você aprova cada agendamento antes de confirmar</div>
         </div>
         <label class="toggle"><input type="checkbox" name="confirmar_manualmente"/><span class="toggle-track"></span></label>
       </div>
       <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Lembrete WhatsApp</div>
-          <div class="toggle-sub">Enviar lembrete ao cliente 2h antes</div>
-        </div>
-        <label class="toggle"><input type="checkbox" name="lembrete_whatsapp" checked/><span class="toggle-track"></span></label>
       </div>
     </div>
 
@@ -684,6 +663,12 @@
 
 <script src="{% static 'scripts_barber.js' %}?v=service-duration-slots-20260519"></script>
 <script src="{% static 'operating_hours.js' %}"></script>
+<script>
+  if (new URLSearchParams(window.location.search).get('tab') === 'estabelecimento') {
+    var establishmentTab = document.querySelector('[onclick*="estabelecimento"]');
+    if (establishmentTab) switchTab('estabelecimento', establishmentTab);
+  }
+</script>
 
 </div>
 {% endblock content %}

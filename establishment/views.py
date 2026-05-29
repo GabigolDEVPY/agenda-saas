@@ -37,7 +37,9 @@ class SaveAddressView(LoginRequiredMixin, OwnerRequiredMixin, View):
             form = AddressForm(request.POST, instance=address)
 
             if form.is_valid():
-                address = form.save()
+                address = form.save(commit=False)
+                address.completed = True
+                address.save()
                 form = AddressForm(instance=address)
                 return render(request, "partials/establishment/address.html", {"address": address, "form": form})
             else:

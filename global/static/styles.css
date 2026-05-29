@@ -185,6 +185,22 @@ header {
 }
 .nav-tab:hover { color: var(--text-2); }
 .nav-tab.active { color: var(--text); border-bottom-color: var(--text-2); }
+.nav-tab-with-badge { position: relative; }
+.tab-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
 
 /* ═══════════════════════════════════════════
    LAYOUT MAIN

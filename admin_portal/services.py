@@ -13,6 +13,7 @@ class AdminService:
 
         context['establishment'] = establishment
         context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
+        context['establishment_config_incomplete'] = not context['address'] or not context['address'].completed
         context['operating_hours'] = json.dumps(AdminService.get_operating_hours(view, establishment))
         context['gereral_preferences'] = establishment.general_preferences
 

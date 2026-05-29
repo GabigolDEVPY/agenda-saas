@@ -62,6 +62,11 @@ class AddressForm(forms.ModelForm):
             "number": "Número",
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.required = True
+
     def _only_digits(self, value):
         return re.sub(r"\D", "", value or "")
 
