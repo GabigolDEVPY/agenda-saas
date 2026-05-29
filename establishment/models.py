@@ -26,6 +26,7 @@ class Address(models.Model):
     city = models.CharField(max_length=40, null=True, blank=True)
     state = models.CharField(max_length=2, null=True, blank=True)
     zip_code = models.CharField(max_length=10, null=True, blank=True)
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.street}, {self.number} - {self.city}/{self.state}"
