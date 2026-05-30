@@ -15,4 +15,12 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
     
+class Preferences(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="preferences")
+    max_appointments = models.IntegerField(default=8)
+    confirm_manually_appointments = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Preferences"
+    
 

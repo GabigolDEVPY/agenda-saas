@@ -1,0 +1,32 @@
+<form
+  id="profile-max-appointments-form"
+  hx-post="{% url 'user:change_max_appointments' %}"
+  hx-target="#profile-max-appointments-form"
+  hx-swap="outerHTML"
+  hx-trigger="change"
+>
+  {% csrf_token %}
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="p-limite">Max. agendamentos por dia</label>
+      <select
+        id="p-limite"
+        name="max_appointments"
+      >
+        {% for option in max_appointment_options %}
+          <option
+            value="{{ option }}"
+            {% if form and form.max_appointments.value|stringformat:"s" == option|stringformat:"s" %}selected{% elif not form and preferences.max_appointments == option %}selected{% endif %}
+          >
+            {{ option }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.max_appointments.errors %}
+        {% for error in form.max_appointments.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</form>

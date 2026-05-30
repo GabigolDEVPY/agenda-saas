@@ -238,54 +238,28 @@
       <div class="section-title">Meu Perfil</div>
       <div class="section-sub">Informações exibidas para os clientes</div>
     </div>
-    <button type="submit" form="form-perfil" class="btn-primary">
-      <i class="fa-solid fa-floppy-disk"></i> Salvar
-    </button>
   </div>
-
-  <form method="POST" id="form-perfil" action="">
-    {% csrf_token %}
 
     <!-- DADOS PESSOAIS -->
     <div class="card">
       <div class="card-title">Dados Pessoais</div>
       <div class="card-sub">Visível para os clientes no agendamento</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="p-nome">Nome de exibição</label>
-          <input type="text" id="p-nome" name="nome" value="Carlos Silva" placeholder="Seu nome"/>
-        </div>
-      </div>
+      {% include "partials/profile/personal_data.html" %}
     </div>
 
     <!-- ATENDIMENTO -->
     <div class="card">
       <div class="card-title">Atendimento</div>
       <div class="card-sub">Configurações de agenda pessoal</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="p-limite">Máx. agendamentos por dia</label>
-          <input type="number" id="p-limite" name="limite_dia" placeholder="8" min="1" step="1"/>
-        </div>
-      </div>
+      {% include "partials/profile/max_appointments.html" %}
     </div>
 
     <!-- CONFIGURAÇÕES -->
     <div class="card">
       <div class="card-title">Configurações</div>
       <div class="card-sub">Preferências do seu painel</div>
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Confirmar manualmente</div>
-          <div class="toggle-sub">Você aprova cada agendamento antes de confirmar</div>
-        </div>
-        <label class="toggle"><input type="checkbox" name="confirmar_manualmente"/><span class="toggle-track"></span></label>
-      </div>
-      <div class="toggle-row">
-      </div>
+      {% include "partials/profile/confirm_manually_appointments.html" %}
     </div>
-
-  </form>
 
 </div>
 

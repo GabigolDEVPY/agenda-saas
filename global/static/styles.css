@@ -307,6 +307,19 @@ header {
 }
 .btn-primary:hover { background: var(--bg-5); border-color: var(--border-strong); }
 
+.btn-profile-save {
+  width: fit-content;
+  min-width: 96px;
+  max-width: none;
+  padding: 8px 12px;
+  justify-self: start;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .btn-ghost {
   background: none; color: var(--text-2);
   border: 1px solid var(--border);
@@ -420,6 +433,7 @@ select option { background: var(--bg-2); color: var(--text); }
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; padding: 12px 0;
   border-bottom: 1px solid var(--border);
+  margin: 0;
 }
 .toggle-row:last-child { border-bottom: none; }
 .toggle-label { font-size: 13px; font-weight: 500; color: var(--text); }
@@ -1241,6 +1255,7 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
 .hf-row {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 0; border-bottom: 1px solid var(--border);
+  margin: 0;
 }
 .hf-row:last-child { border-bottom: none; }
 .hf-day-label {

@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-title">Horário de Funcionamento</div>
     <div class="card-sub">Dias e horários em que o estabelecimento está aberto</div>
-    <div id="horarios-funcionamento"></div>
+    <div id="horarios-funcionamento" data-csrf="{{ csrf_token }}"></div>
 </div>
 <script>
     var operatingHours = {{ operating_hours|safe }}

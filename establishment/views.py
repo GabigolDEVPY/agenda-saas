@@ -50,10 +50,13 @@ class SaveAddressView(LoginRequiredMixin, OwnerRequiredMixin, View):
 
 class SaveOperatingHoursView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"status": "error", "message": "Invalid JSON data."})
+        if request.content_type == "application/json":
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({"status": "error", "message": "Invalid JSON data."})
+        else:
+            data = request.POST
 
         form = OperatingHoursForm(data=data)
 
@@ -69,9 +72,22 @@ class SaveOperatingHoursView(LoginRequiredMixin, OwnerRequiredMixin, View):
 class GeneralPreferencesView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def post(self, request):
         try:
-            data = json.loads(request.body)        
+            if request.content_type == "application/json":
+                data = json.loads(request.body)
+            else:
+                data = {
+                    "field": request.POST.get("field"),
+                    "value": request.POST.get("value") == "true",
+                }
             prefs = request.user.establishment.general_preferences
             GerenalPreferencesService.update_general_preferences(prefs=prefs, data=data)
+
+            if request.headers.get("HX-Request"):
+                return render(
+                    request,
+                    "partials/establishment/general_preferences.html",
+                    {"gereral_preferences": prefs},
+                )
 
             return JsonResponse({'status': 'success'})
         except Exception as e:

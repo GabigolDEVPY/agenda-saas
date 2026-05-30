@@ -1,0 +1,23 @@
+<form
+  id="profile-confirm-manually-form"
+  hx-post="{% url 'user:change_confirm_manually_appointments' %}"
+  hx-target="#profile-confirm-manually-form"
+  hx-swap="outerHTML"
+  hx-trigger="change"
+>
+  {% csrf_token %}
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">Confirmar manualmente</div>
+      <div class="toggle-sub">Voce aprova cada agendamento antes de confirmar</div>
+    </div>
+    <label class="toggle">
+      <input
+        type="checkbox"
+        name="confirm_manually_appointments"
+        {% if preferences.confirm_manually_appointments %}checked{% endif %}
+      />
+      <span class="toggle-track"></span>
+    </label>
+  </div>
+</form>

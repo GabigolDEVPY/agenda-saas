@@ -1,5 +1,6 @@
 import json
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
+from user.models import Preferences
 
 
 
@@ -16,6 +17,9 @@ class AdminService:
         context['establishment_config_incomplete'] = not context['address'] or not context['address'].completed
         context['operating_hours'] = json.dumps(AdminService.get_operating_hours(view, establishment))
         context['gereral_preferences'] = establishment.general_preferences
+        context['profile_user'] = view.request.user
+        context['preferences'], _ = Preferences.objects.get_or_create(user=view.request.user)
+        context['max_appointment_options'] = range(1, 31)
 
         return context
 

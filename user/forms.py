@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import Preferences, User
 from django import forms
 
 
@@ -36,3 +36,25 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
 
         return user
+
+
+class ProfileDisplayNameForm(forms.Form):
+    display_name = forms.CharField(max_length=150, required=True)
+
+    def clean_display_name(self):
+        display_name = (self.cleaned_data.get("display_name") or "").strip()
+        if not display_name:
+            raise forms.ValidationError("Informe um nome de exibicao.")
+        return " ".join(display_name.split())
+
+
+class MaxAppointmentsForm(forms.ModelForm):
+    class Meta:
+        model = Preferences
+        fields = ["max_appointments"]
+
+    def clean_max_appointments(self):
+        max_appointments = self.cleaned_data.get("max_appointments")
+        if max_appointments is None or max_appointments < 1:
+            raise forms.ValidationError("Use pelo menos 1 agendamento por dia.")
+        return max_appointments

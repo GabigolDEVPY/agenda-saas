@@ -1,0 +1,24 @@
+<form id="profile-name-form" hx-post="{% url 'user:change_name' %}" hx-target="#profile-name-form" hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="p-nome">Nome de exibicao</label>
+      <input
+        type="text"
+        id="p-nome"
+        name="display_name"
+        maxlength="150"
+        value="{% if form %}{{ form.display_name.value|default:'' }}{% elif profile_user.get_full_name %}{{ profile_user.get_full_name }}{% else %}{{ profile_user.username }}{% endif %}"
+        placeholder="Seu nome"
+      />
+      {% if form.display_name.errors %}
+        {% for error in form.display_name.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      {% endif %}
+      <button type="submit" class="btn-primary btn-save-establishment btn-profile-save">
+        <i class="fa-solid fa-floppy-disk"></i> Salvar
+      </button>
+    </div>
+  </div>
+</form>

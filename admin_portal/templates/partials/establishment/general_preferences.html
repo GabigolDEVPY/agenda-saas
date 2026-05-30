@@ -1,26 +1,54 @@
-<div class="card">
-    <div class="card-title">Configurações Gerais</div>
-    <div class="card-sub">Preferências do estabelecimento</div>
-    <div class="toggle-row">
+<div class="card" id="general-preferences-card">
+    <div class="card-title">Configuracoes Gerais</div>
+    <div class="card-sub">Preferencias do estabelecimento</div>
+    <form
+        class="toggle-row"
+        hx-post="{% url 'establishment:general_preference_update' %}"
+        hx-target="#general-preferences-card"
+        hx-swap="outerHTML"
+        hx-trigger="change"
+    >
+        {% csrf_token %}
+        <input type="hidden" name="field" value="show_phone_publicly"/>
+        <input type="hidden" name="value" value="false"/>
         <div>
             <div class="toggle-label">Exibir telefone publicamente</div>
-            <div class="toggle-sub">Número visível para clientes entrarem em contato</div>
+            <div class="toggle-sub">Numero visivel para clientes entrarem em contato</div>
         </div>
         <label class="toggle">
-            <input type="checkbox" name="exibir_telefone" id="gp-exibir-telefone"
-                {% if gereral_preferences.show_phone_publicly %}checked{% endif %}/>
+            <input
+                type="checkbox"
+                name="value"
+                value="true"
+                id="gp-exibir-telefone"
+                {% if gereral_preferences.show_phone_publicly %}checked{% endif %}
+            />
             <span class="toggle-track"></span>
         </label>
-    </div>
-    <div class="toggle-row">
+    </form>
+    <form
+        class="toggle-row"
+        hx-post="{% url 'establishment:general_preference_update' %}"
+        hx-target="#general-preferences-card"
+        hx-swap="outerHTML"
+        hx-trigger="change"
+    >
+        {% csrf_token %}
+        <input type="hidden" name="field" value="open_establishment"/>
+        <input type="hidden" name="value" value="false"/>
         <div>
             <div class="toggle-label">Estabelecimento aberto</div>
             <div class="toggle-sub">Desative para suspender todos os agendamentos temporariamente</div>
         </div>
         <label class="toggle">
-            <input type="checkbox" name="estabelecimento_aberto" id="gp-estabelecimento-aberto"
-                {% if gereral_preferences.open_establishment %}checked{% endif %}/>
+            <input
+                type="checkbox"
+                name="value"
+                value="true"
+                id="gp-estabelecimento-aberto"
+                {% if gereral_preferences.open_establishment %}checked{% endif %}
+            />
             <span class="toggle-track"></span>
         </label>
-    </div>
+    </form>
 </div>
