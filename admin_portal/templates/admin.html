@@ -19,18 +19,22 @@
     <button class="nav-tab" onclick="switchTab('servicos', this)">
       <i class="fa-solid fa-scissors"></i>Serviços
     </button>
+    {% if request.user.is_owner %}
     <button class="nav-tab" onclick="switchTab('funcionarios', this)">
       <i class="fa-solid fa-users"></i>Funcionários
     </button>
+    {% endif %}
     <button class="nav-tab" onclick="switchTab('perfil', this)">
       <i class="fa-solid fa-circle-user"></i>Perfil
     </button>
+    {% if request.user.is_owner %}
     <button class="nav-tab nav-tab-with-badge" onclick="switchTab('estabelecimento', this)">
       <i class="fa-solid fa-store"></i>Estabelecimento
       {% if establishment_config_incomplete %}
         <span class="tab-badge">1</span>
       {% endif %}
     </button>
+    {% endif %}
   </div>
 </div>
 
@@ -178,6 +182,7 @@
 <!-- ══════════════════════════════════════
      PANEL: FUNCIONÁRIOS
 ══════════════════════════════════════ -->
+{% if request.user.is_owner %}
 <div class="panel" id="panel-funcionarios">
 
   <div class="section-header">
@@ -195,38 +200,10 @@
     Funcionários cadastrados poderão acessar o sistema com login próprio e gerenciar sua própria agenda.
   </div>
 
-  <div class="employees-list">
-    {% for employee in employees %}
-    <div class="employee-card">
-      <div class="emp-left">
-        <div class="emp-avatar"><i class="fa-solid fa-scissors"></i></div>
-        <div>
-          <div class="emp-name">{{ employee.name }}</div>
-          <div class="emp-meta">{{ employee.user.email }}</div>
-        </div>
-      </div>
-      <div class="emp-actions">
-        <span class="badge {% if employee.user.is_active %}badge-ok{% else %}badge-alert{% endif %}">
-          {% if employee.user.is_active %}Ativo{% else %}Inativo{% endif %}
-        </span>
-        <button class="sc-btn danger" type="button"
-          onclick="openDeleteEmployee(this)"
-          data-id="{{ employee.id }}"
-          data-nome="{{ employee.name }}"
-          title="Remover">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </div>
-    </div>
-    {% empty %}
-    <div class="empty-state">
-      <i class="fa-solid fa-users"></i>
-      Nenhum funcionário cadastrado ainda.
-    </div>
-    {% endfor %}
-  </div>
+  {% include "partials/employees/list.html" %}
 
 </div>
+{% endif %}
 
 <!-- ══════════════════════════════════════
      PANEL: PERFIL
@@ -269,6 +246,7 @@
 <!-- ══════════════════════════════════════
      PANEL: ESTABELECIMENTO
 ══════════════════════════════════════ -->
+{% if request.user.is_owner %}
 <div class="panel" id="panel-estabelecimento">
 
   <div class="section-header">
@@ -302,6 +280,7 @@
   </div>
 
 </div>
+{% endif %}
 
 </div><!-- /main -->
 
@@ -539,72 +518,8 @@
 <!-- ══════════════════════════════════════
      MODAL: NOVO FUNCIONÁRIO
 ══════════════════════════════════════ -->
-<div class="overlay" id="modal-new-employee" onclick="closeOnBg(event,'modal-new-employee')">
-  <div class="modal-sheet" style="max-width:520px;">
-    <div class="modal-handle"></div>
-    <div class="modal-head">
-      <div class="modal-head-title">
-        <i class="fa-solid fa-user-plus" style="margin-right:8px;font-size:13px;color:var(--gold);"></i>
-        Novo Funcionário
-      </div>
-      <button class="modal-close" type="button" onclick="closeModal('modal-new-employee')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form method="POST" action="">
-      {% csrf_token %}
-      <div class="modal-body">
-
-        <div class="info-note" style="margin-bottom:18px;">
-          <i class="fa-solid fa-circle-info"></i>
-          O funcionário receberá acesso ao sistema com as credenciais cadastradas abaixo.
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="emp-first-name">Nome</label>
-            <input type="text" id="emp-first-name" name="first_name" placeholder="João" required/>
-          </div>
-          <div class="form-group">
-            <label for="emp-last-name">Sobrenome</label>
-            <input type="text" id="emp-last-name" name="last_name" placeholder="Silva" required/>
-          </div>
-          <div class="form-group full">
-            <label for="emp-display-name">Nome de exibição</label>
-            <input type="text" id="emp-display-name" name="nome" placeholder="Como aparece para os clientes" required/>
-          </div>
-          <div class="form-group full">
-            <label for="emp-email">E-mail</label>
-            <input type="email" id="emp-email" name="email" placeholder="joao@empresa.com" required/>
-          </div>
-          <div class="form-group full">
-            <label for="emp-username">Username</label>
-            <input type="text" id="emp-username" name="username" placeholder="joao.silva" required/>
-          </div>
-
-          <hr class="divider" style="grid-column:1/-1;margin:4px 0;"/>
-
-          <div class="form-group full" style="grid-column:1/-1;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;">Acesso</div>
-          </div>
-          <div class="form-group">
-            <label for="emp-password1">Senha</label>
-            <input type="password" id="emp-password1" name="password1" placeholder="Mínimo 8 caracteres" required/>
-          </div>
-          <div class="form-group">
-            <label for="emp-password2">Confirmar Senha</label>
-            <input type="password" id="emp-password2" name="password2" placeholder="Repita a senha" required/>
-          </div>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-ghost" onclick="closeModal('modal-new-employee')">Cancelar</button>
-        <button type="submit" class="btn-primary">
-          <i class="fa-solid fa-user-plus"></i> Cadastrar Funcionário
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+{% if request.user.is_owner %}
+{% include "partials/employees/create_employee_modal.html" %}
 
 
 <!-- ══════════════════════════════════════
@@ -633,15 +548,23 @@
     </form>
   </div>
 </div>
+{% endif %}
 
 
 <script src="{% static 'scripts_barber.js' %}?v=service-duration-slots-20260519"></script>
 <script src="{% static 'operating_hours.js' %}"></script>
 <script>
-  if (new URLSearchParams(window.location.search).get('tab') === 'estabelecimento') {
-    var establishmentTab = document.querySelector('[onclick*="estabelecimento"]');
-    if (establishmentTab) switchTab('estabelecimento', establishmentTab);
+  var currentTab = new URLSearchParams(window.location.search).get('tab');
+  if (currentTab) {
+    var selectedTab = document.querySelector('[onclick*="' + currentTab + '"]');
+    if (selectedTab) switchTab(currentTab, selectedTab);
   }
+
+  document.body.addEventListener('employeeCreated', function () {
+    closeModal('modal-new-employee');
+    var employeesTab = document.querySelector('[onclick*="funcionarios"]');
+    if (employeesTab) switchTab('funcionarios', employeesTab);
+  });
 </script>
 
 </div>

@@ -33,7 +33,7 @@ class UserLoginView(LoginView):
                 "client_portal:public_agenda",
                 kwargs={"uid": user.owned_establishment.uid}
             )
-        return reverse("services:home")
+        return reverse("admin_portal:home")
 
 
 class UserRegisterView(CreateView):

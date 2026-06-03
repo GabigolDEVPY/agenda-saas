@@ -1,25 +1,46 @@
 import json
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
+from user.forms import EmployeeCreationForm
 from user.models import Preferences
 
 
 
 class AdminService:
     @staticmethod
+    def get_establishment(request):
+        establishment = getattr(request.user, "owned_establishment", None)
+        if establishment:
+            return establishment
+
+        establishment = getattr(request.user, "establishment", None)
+        if establishment:
+            return establishment
+
+        uid = request.session.get('uid')
+        if uid:
+            return Establishment.objects.filter(uid=uid).first()
+
+        return None
+
+    @staticmethod
     def get_context_admin(view, **kwargs):
         context = super(type(view), view).get_context_data(**kwargs)
 
-        uid = view.request.session.get('uid')
-        establishment = Establishment.objects.filter(uid=uid).first()
+        establishment = AdminService.get_establishment(view.request)
+        general_preferences = None
+        if establishment:
+            general_preferences, _ = GeneralPreference.objects.get_or_create(establishment=establishment)
 
         context['establishment'] = establishment
         context['address'] = Address.objects.filter(establishment=establishment).first() if establishment else None
         context['establishment_config_incomplete'] = not context['address'] or not context['address'].completed
         context['operating_hours'] = json.dumps(AdminService.get_operating_hours(view, establishment))
-        context['gereral_preferences'] = establishment.general_preferences
+        context['gereral_preferences'] = general_preferences
         context['profile_user'] = view.request.user
         context['preferences'], _ = Preferences.objects.get_or_create(user=view.request.user)
         context['max_appointment_options'] = range(1, 31)
+        context['employees'] = establishment.users.filter(is_owner=False).order_by("first_name", "last_name", "username") if establishment else []
+        context['employee_form'] = EmployeeCreationForm()
 
         return context
 

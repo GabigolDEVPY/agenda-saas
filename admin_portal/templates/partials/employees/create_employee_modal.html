@@ -1,0 +1,94 @@
+<div class="overlay" id="modal-new-employee" onclick="closeOnBg(event,'modal-new-employee')">
+  <div class="modal-sheet" style="max-width:520px;">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <i class="fa-solid fa-user-plus" style="margin-right:8px;font-size:13px;color:var(--gold);"></i>
+        Novo Funcionario
+      </div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-new-employee')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form
+      method="POST"
+      hx-post="{% url 'user:create_employee' %}"
+      hx-target="#modal-new-employee"
+      hx-swap="outerHTML"
+    >
+      {% csrf_token %}
+      <div class="modal-body">
+
+        <div class="info-note" style="margin-bottom:18px;">
+          <i class="fa-solid fa-circle-info"></i>
+          O funcionario recebera acesso ao sistema com as credenciais cadastradas abaixo.
+        </div>
+
+        {% if employee_form.non_field_errors %}
+          <div class="field-error" style="margin-bottom:12px;">
+            {{ employee_form.non_field_errors|join:", " }}
+          </div>
+        {% endif %}
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="{{ employee_form.first_name.id_for_label }}">Nome</label>
+            <input type="text" id="{{ employee_form.first_name.id_for_label }}" name="first_name" value="{{ employee_form.first_name.value|default:'' }}" placeholder="Joao" required/>
+            {% if employee_form.first_name.errors %}
+              <span class="field-error">{{ employee_form.first_name.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{{ employee_form.last_name.id_for_label }}">Sobrenome</label>
+            <input type="text" id="{{ employee_form.last_name.id_for_label }}" name="last_name" value="{{ employee_form.last_name.value|default:'' }}" placeholder="Silva" required/>
+            {% if employee_form.last_name.errors %}
+              <span class="field-error">{{ employee_form.last_name.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group full">
+            <label for="{{ employee_form.email.id_for_label }}">E-mail</label>
+            <input type="email" id="{{ employee_form.email.id_for_label }}" name="email" value="{{ employee_form.email.value|default:'' }}" placeholder="joao@empresa.com" required/>
+            {% if employee_form.email.errors %}
+              <span class="field-error">{{ employee_form.email.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group full">
+            <label for="{{ employee_form.username.id_for_label }}">Username</label>
+            <input type="text" id="{{ employee_form.username.id_for_label }}" name="username" value="{{ employee_form.username.value|default:'' }}" placeholder="joao.silva" required/>
+            {% if employee_form.username.errors %}
+              <span class="field-error">{{ employee_form.username.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+
+          <hr class="divider" style="grid-column:1/-1;margin:4px 0;"/>
+
+          <div class="form-group full" style="grid-column:1/-1;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;">Acesso</div>
+          </div>
+          <div class="form-group">
+            <label for="{{ employee_form.password1.id_for_label }}">Senha</label>
+            <input type="password" id="{{ employee_form.password1.id_for_label }}" name="password1" placeholder="Minimo 8 caracteres" required/>
+            {% if employee_form.password1.errors %}
+              <span class="field-error">{{ employee_form.password1.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{{ employee_form.password2.id_for_label }}">Confirmar Senha</label>
+            <input type="password" id="{{ employee_form.password2.id_for_label }}" name="password2" placeholder="Repita a senha" required/>
+            {% if employee_form.password2.errors %}
+              <span class="field-error">{{ employee_form.password2.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" onclick="closeModal('modal-new-employee')">Cancelar</button>
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Cadastrar Funcionario
+        </button>
+      </div>
+    </form>
+  </div>
+  {% if employee_created %}
+    {% include "partials/employees/list.html" with hx_oob=True %}
+  {% endif %}
+</div>

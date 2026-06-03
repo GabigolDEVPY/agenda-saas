@@ -68,4 +68,7 @@ class EmployeeCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_owner = False
+        if commit:
+            user.save()
+        return user
 
