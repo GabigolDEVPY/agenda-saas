@@ -58,3 +58,14 @@ class MaxAppointmentsForm(forms.ModelForm):
         if max_appointments is None or max_appointments < 1:
             raise forms.ValidationError("Use pelo menos 1 agendamento por dia.")
         return max_appointments
+
+
+class EmployeeCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_owner = False
+
