@@ -8,7 +8,7 @@ from .views import (
     UserRegisterView,
 )
 
-from .views_employee import EmployeeCreateView
+from .views_employee import EmployeeCreateView, EmployeeDeleteView, EmployeePasswordChangeView
 
 app_name = "user"
 
@@ -19,6 +19,8 @@ urlpatterns = [
 
     # create employees and edit
     path("create-employee/", EmployeeCreateView.as_view(), name="create_employee"),
+    path("delete-employee/", EmployeeDeleteView.as_view(), name="delete_employee"),
+    path("change-employee-password/", EmployeePasswordChangeView.as_view(), name="change_employee_password"),
 
     # general preferences
     path("change-name/", ChangeNameView.as_view(), name="change_name"),

@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import SetPasswordForm, UserCreationForm
 from .models import Preferences, User
 from django import forms
 
@@ -71,4 +71,8 @@ class EmployeeCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class EmployeePasswordChangeForm(SetPasswordForm):
+    pass
 

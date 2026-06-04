@@ -292,6 +292,20 @@ function openDeleteService(btn){
   openModal('modal-delete-confirm');
 }
 
+function openChangeEmployeePassword(btn){
+  var d = btn.dataset;
+  document.getElementById('pwd-emp-id').value = d.id;
+  document.getElementById('pwd-emp-nome').textContent = d.nome;
+  openModal('modal-change-employee-password');
+}
+
+function openDeleteEmployee(btn){
+  var d = btn.dataset;
+  document.getElementById('del-emp-id').value = d.id;
+  document.getElementById('del-emp-nome').textContent = '"' + d.nome + '"';
+  openModal('modal-delete-employee');
+}
+
 /* ──────────────────────────────────────────────
    PICK MONTH
 ────────────────────────────────────────────── */

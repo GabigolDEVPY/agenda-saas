@@ -520,6 +520,7 @@
 ══════════════════════════════════════ -->
 {% if request.user.is_owner %}
 {% include "partials/employees/create_employee_modal.html" %}
+{% include "partials/employees/change_password_modal.html" %}
 
 
 <!-- ══════════════════════════════════════
@@ -528,7 +529,14 @@
 <div class="overlay" id="modal-delete-employee" onclick="closeOnBg(event,'modal-delete-employee')">
   <div class="modal-sheet" style="max-width:440px;">
     <div class="modal-handle"></div>
-    <form method="POST" id="form-delete-employee" action="">
+    <form
+      method="POST"
+      id="form-delete-employee"
+      action="{% url 'user:delete_employee' %}"
+      hx-post="{% url 'user:delete_employee' %}"
+      hx-target="#employees-list"
+      hx-swap="outerHTML"
+    >
       {% csrf_token %}
       <input type="hidden" name="employee_id" id="del-emp-id"/>
       <div class="modal-body" style="text-align:center;padding:32px 24px;">
@@ -551,7 +559,7 @@
 {% endif %}
 
 
-<script src="{% static 'scripts_barber.js' %}?v=service-duration-slots-20260519"></script>
+<script src="{% static 'scripts_barber.js' %}?v=employee-actions-20260603"></script>
 <script src="{% static 'operating_hours.js' %}"></script>
 <script>
   var currentTab = new URLSearchParams(window.location.search).get('tab');
@@ -562,6 +570,18 @@
 
   document.body.addEventListener('employeeCreated', function () {
     closeModal('modal-new-employee');
+    var employeesTab = document.querySelector('[onclick*="funcionarios"]');
+    if (employeesTab) switchTab('funcionarios', employeesTab);
+  });
+
+  document.body.addEventListener('employeeDeleted', function () {
+    closeModal('modal-delete-employee');
+    var employeesTab = document.querySelector('[onclick*="funcionarios"]');
+    if (employeesTab) switchTab('funcionarios', employeesTab);
+  });
+
+  document.body.addEventListener('employeePasswordChanged', function () {
+    closeModal('modal-change-employee-password');
     var employeesTab = document.querySelector('[onclick*="funcionarios"]');
     if (employeesTab) switchTab('funcionarios', employeesTab);
   });

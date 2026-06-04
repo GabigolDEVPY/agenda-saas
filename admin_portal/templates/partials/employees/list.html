@@ -14,6 +14,13 @@
         <span class="badge {% if employee.is_active %}badge-ok{% else %}badge-alert{% endif %}">
           {% if employee.is_active %}Ativo{% else %}Inativo{% endif %}
         </span>
+        <button class="sc-btn" type="button"
+          onclick="openChangeEmployeePassword(this)"
+          data-id="{{ employee.id }}"
+          data-nome="{% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}"
+          title="Alterar senha">
+          <i class="fa-solid fa-key"></i>
+        </button>
         <button class="sc-btn danger" type="button"
           onclick="openDeleteEmployee(this)"
           data-id="{{ employee.id }}"
