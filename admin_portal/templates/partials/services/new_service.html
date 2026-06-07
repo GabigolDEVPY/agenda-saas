@@ -1,3 +1,4 @@
+{% load l10n %}
 <div class="overlay" id="modal-new-service" onclick="closeOnBg(event,'modal-new-service')">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -21,22 +22,22 @@
 
         <div class="form-grid">
           <div class="form-group full">
-            <label for="{{ service_form.name.id_for_label }}">Nome do Servico</label>
-            <input type="text" id="{{ service_form.name.id_for_label }}" name="name" value="{{ service_form.name.value|default:'' }}" placeholder="Ex: Corte + Barba" required/>
+            <label for="new_name">Nome do Servico</label>
+            <input type="text" id="new_name" name="name" value="{{ service_form.name.value|default:'' }}" placeholder="Ex: Corte + Barba" required/>
             {% if service_form.name.errors %}
               <span class="field-error">{{ service_form.name.errors|join:", " }}</span>
             {% endif %}
           </div>
           <div class="form-group">
-            <label for="{{ service_form.price.id_for_label }}">Preco (R$)</label>
-            <input type="number" id="{{ service_form.price.id_for_label }}" name="price" value="{{ service_form.price.value|default:'' }}" placeholder="0.00" min="0" step="0.50" required/>
+            <label for="new_price">Preco (R$)</label>
+            <input type="number" id="new_price" name="price" value="{{ service_form.price.value|unlocalize|default:'' }}" placeholder="0.00" min="0" step="0.50" required/>
             {% if service_form.price.errors %}
               <span class="field-error">{{ service_form.price.errors|join:", " }}</span>
             {% endif %}
           </div>
           <div class="form-group">
-            <label for="{{ service_form.time_duration.id_for_label }}">Duracao (minutos)</label>
-            <input type="number" id="{{ service_form.time_duration.id_for_label }}" name="time_duration" value="{{ service_form.time_duration.value|default:'' }}" placeholder="30" min="10" step="5" required/>
+            <label for="new_duration">Duracao (minutos)</label>
+            <input type="number" id="new_duration" name="time_duration" value="{{ service_form.time_duration.value|default:'' }}" placeholder="30" min="10" step="5" required/>
             {% if service_form.time_duration.errors %}
               <span class="field-error">{{ service_form.time_duration.errors|join:", " }}</span>
             {% endif %}
@@ -47,10 +48,10 @@
                 <div class="toggle-label">Servico ativo</div>
                 <div class="toggle-sub">Disponivel para agendamento</div>
               </div>
-              <label class="toggle" for="{{ service_form.is_active.id_for_label }}">
+              <label class="toggle" for="new_is_active">
                 <input
                   type="checkbox"
-                  id="{{ service_form.is_active.id_for_label }}"
+                  id="new_is_active"
                   name="is_active"
                   {% if not service_form.is_bound or service_form.is_active.value %}checked{% endif %}
                 />
