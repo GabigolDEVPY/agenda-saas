@@ -1,13 +1,6 @@
 {% extends "base.html" %}
-{% block content %}
 {% load static %}
-
-<!-- DEPENDÊNCIAS -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="stylesheet" href="{% static 'barber.css' %}"/>
-
-<body>
+{% block content %}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-label">Seu estilo, nossa arte</div>
@@ -272,6 +265,8 @@
   var _bsEl = document.getElementById('booking-success-data');
   var BOOKING_SUCCESS = _bsEl ? JSON.parse(JSON.parse(_bsEl.textContent)) : null;
 </script>
+{% endblock %}
 
-</body>
+{% block extra_scripts %}
+<script src="{% static 'scripts.js' %}?v=frontend-opt-20260607"></script>
 {% endblock %}

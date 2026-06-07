@@ -1,11 +1,6 @@
 {% extends "base.html" %}
-{% block content %}
 {% load static %}
-
-<!-- DEPENDÊNCIAS -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
+{% block content %}
 <div class="admin-page">
 
 
@@ -397,9 +392,12 @@
 </div>
 {% endif %}
 
+</div>
+{% endblock content %}
 
-<script src="{% static 'scripts_barber.js' %}?v=employee-actions-20260603"></script>
-<script src="{% static 'operating_hours.js' %}"></script>
+{% block extra_scripts %}
+<script src="{% static 'scripts_barber.js' %}?v=frontend-opt-20260607"></script>
+<script src="{% static 'operating_hours.js' %}?v=frontend-opt-20260607"></script>
 <script>
   var currentTab = new URLSearchParams(window.location.search).get('tab');
   if (currentTab) {
@@ -443,6 +441,4 @@
     if (servicesTab) switchTab('servicos', servicesTab);
   });
 </script>
-
-</div>
-{% endblock content %}
+{% endblock %}

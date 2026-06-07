@@ -1,12 +1,4 @@
-/*
- * BarberBlack — CSS Unificado (Tema Minimal Dark — MiniMax Style)
- * ============================================================
- * DEPENDÊNCIAS EXTERNAS — adicione no <head> de cada template:
- *   <!-- Google Fonts -->
- *   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
- *   <!-- Font Awesome -->
- *   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
- */
+/* BarberBlack — CSS unificado (tema dark) */
 
 /* ═══════════════════════════════════════════
    TOKENS
@@ -62,9 +54,6 @@ body {
   -webkit-overflow-scrolling: touch;
   line-height: 1.5;
 }
-
-/* Sem fundo pontilhado — estilo limpo */
-body::before { display: none; }
 
 /* ═══════════════════════════════════════════
    HEADER
@@ -1254,8 +1243,6 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   -webkit-appearance: none;
   margin: 0;
 }
-.stepper-wrap input[type="number"]::-webkit-inner-spin-button,
-.stepper-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .stepper-btn {
   width: 38px; height: 40px;
   background: var(--bg-3);
@@ -1336,15 +1323,10 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   color: var(--text-2); font-weight: 500;
 }
 .hf-times {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
   flex: 1;
-  min-width: 0;
-}
-.hf-times input[type="time"] {
-  width: 100%;
   min-width: 0;
 }
 .hf-sep {
@@ -1364,12 +1346,145 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
 
   .hf-times {
     width: 100%;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
+}
 
-  .hf-sep {
-    justify-self: start;
-    padding-left: 2px;
-  }
+/* ── UTILITÁRIOS ── */
+.is-hidden { display: none !important; }
+
+/* ── OVERLAY DO CALENDÁRIO (cliente) ── */
+.cal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, .55);
+  border-radius: 16px;
+}
+.cal-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.cal-overlay-icon {
+  font-size: 2rem;
+  color: #c8a96e;
+  opacity: .9;
+}
+.cal-overlay-content p {
+  color: #e8e0d5;
+  font-size: .9rem;
+  line-height: 1.5;
+  max-width: 220px;
+  margin: 0;
+}
+
+/* ── ADMIN — agenda do mês ── */
+.m-day-off-msg {
+  color: var(--danger);
+  font-size: 13px;
+  grid-column: 1 / -1;
+  padding: 10px 0;
+}
+.month-pick-open {
+  font-size: 11px;
+  color: var(--accent-bright);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.month-pick-arrow {
+  color: var(--muted);
+  font-size: 12px;
+}
+.open-month-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.open-month-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── HORÁRIOS DE FUNCIONAMENTO (JS) ── */
+.hf-time-wrap { position: relative; display: inline-block; }
+.hf-time-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: monospace;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.hf-time-btn:hover { border-color: var(--accent-bright); }
+.hf-time-chevron { font-size: 10px; opacity: .6; }
+.hf-time-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 999;
+  background: var(--bg-2);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  min-width: 90px;
+  box-shadow: var(--shadow-lg);
+}
+.hf-time-opt {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: monospace;
+  transition: background .15s;
+}
+.hf-time-opt:hover { background: rgba(255, 255, 255, .07); }
+.hf-time-opt.is-selected { color: var(--accent-bright); font-weight: 700; }
+.hf-closed { display: flex; align-items: center; }
+.hf-toggle { flex-shrink: 0; }
+
+/* ── PÁGINA INDISPONÍVEL ── */
+.page-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 40px 20px;
+}
+.page-unavailable-icon {
+  font-size: 56px;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.page-unavailable-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.page-unavailable-msg {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 340px;
 }

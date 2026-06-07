@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from establishment.models import Establishment
 from .models import Appointment
 from django.db import transaction
+from django.utils import timezone
 import json
 from client_portal.services.services import HomeService
 
@@ -25,6 +26,12 @@ class AppointmentService:
         establishment = Establishment.objects.filter(id=user.establishment.id).first()
         if not establishment or not establishment.general_preferences.open_establishment:
             return "Estabelecimento fechado", False
+
+        agora = timezone.localtime(timezone.now())
+        if date == agora.date() and time <= agora.time():
+            horario_str = time.strftime("%H:%M")
+            uid = str(user.establishment.uid)
+            return None, _error(uid, horario_str, "Horário Inválido", "Esse horário já passou")
 
         horario_str = time.strftime("%H:%M")
         user_id = str(user.id)

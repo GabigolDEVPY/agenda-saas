@@ -1,35 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-{% load static %}
-
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="stylesheet" href="{% static 'barber.css' %}"/>
-
-<body>
-<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px;">
-  <i class="fa-solid fa-triangle-exclamation" style="font-size:56px;color:var(--accent);margin-bottom:24px;"></i>
-  <h1 style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:8px;">Página Indisponível</h1>
-  <p style="color:var(--text-muted);font-size:15px;max-width:340px;">
+<div class="page-unavailable">
+  <i class="fa-solid fa-triangle-exclamation page-unavailable-icon"></i>
+  <h1 class="page-unavailable-title">Página Indisponível</h1>
+  <p class="page-unavailable-msg">
     {{ msg }}
     {% if user %}
-
       {% if payment %}
         <a href="{% url 'admin_portal:home' %}" class="btn-admin">
           <i class="fa-solid"></i>Fazer pagamento
         </a>
       {% endif %}
-
       {% if incomplete %}
         <a href="{% url 'admin_portal:home' %}?tab=estabelecimento" class="btn-admin">
           <i class="fa-solid"></i>Concluir configuração
         </a>
       {% endif %}
-  
-
     {% endif %}
   </p>
 </div>
-
-</body>
 {% endblock %}

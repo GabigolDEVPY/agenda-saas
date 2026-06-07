@@ -1,109 +1,115 @@
-/* ─────────────────────────────────────────
-   Estado mínimo: só o que não vive no DOM
-───────────────────────────────────────── */
-var MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-             'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-var SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+/* Portal do cliente — agendamento */
+var MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+             'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+var SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-var hoje = new Date(); hoje.setHours(0,0,0,0);
+var hoje = new Date();
+hoje.setHours(0, 0, 0, 0);
+
 var calMes = hoje.getMonth();
 var calAno = hoje.getFullYear();
+var CONFIG_BARBEIRO = {};
+var AGENDAMENTOS_DIA = {};
+var MESES_DISPONIVEIS = [];
+var duracaoTotalMin = 0;
 
-var CONFIG_BARBEIRO    = {};   // {hora_inicio, hora_fim, horarios_funcionamento}
-var AGENDAMENTOS_DIA   = {};   // {date: [{inicio, fim}]}
-var MESES_DISPONIVEIS  = [];
-var duracaoTotalMin    = 0;
+function $(id) {
+  return document.getElementById(id);
+}
 
-/* ── UTILITÁRIOS DE TEMPO ────────────────────────────────────────────────── */
-
-/** "HH:MM" → minutos desde meia-noite */
 function toMin(hhmm) {
   var p = hhmm.split(':');
   return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
 }
 
-/** minutos desde meia-noite → "HH:MM" */
 function toHHMM(min) {
-  var h = Math.floor(min / 60);
-  var m = min % 60;
-  return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  return pad(Math.floor(min / 60)) + ':' + pad(min % 60);
 }
 
-/* ── GERAÇÃO DINÂMICA DE SLOTS ───────────────────────────────────────────────
-   Para cada passo da duracao do servico selecionado, verifica se ele cabe
-   no espaco livre ate o proximo agendamento.
+function toDateKey(dt) {
+  return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate());
+}
 
-   Um slot [inicio, inicio+duracao) é VÁLIDO se não sobrepõe nenhum
-   agendamento existente [ag.inicio, ag.fim).
-─────────────────────────────────────────────────────────────────────────────*/
+function isHoje(dateKey) {
+  return dateKey === toDateKey(new Date());
+}
+
+function getAgoraMin() {
+  var agora = new Date();
+  return agora.getHours() * 60 + agora.getMinutes();
+}
+
+function filtrarHorariosPassados(dateKey, slots) {
+  if (!isHoje(dateKey)) return slots;
+  var agoraMin = getAgoraMin();
+  return slots.filter(function(slot) {
+    return toMin(slot) > agoraMin;
+  });
+}
+
 function gerarSlotsDisponiveis(dateKey) {
   if (!CONFIG_BARBEIRO.hora_inicio) return [];
 
   var funcionamento = getFuncionamentoDoDia(dateKey);
   if (!funcionamento || !funcionamento.aberto) return [];
 
-  var inicioMin   = toMin(funcionamento.inicio);
-  var fimMin      = toMin(funcionamento.fim);
-  var duracao     = getDuracaoSelecionada();
-  var intervalo   = duracao;
-
+  var inicioMin = toMin(funcionamento.inicio);
+  var fimMin = toMin(funcionamento.fim);
+  var duracao = getDuracaoSelecionada();
   if (duracao <= 0) return [];
+
+  if (isHoje(dateKey) && inicioMin <= getAgoraMin()) {
+    var proximo = getAgoraMin() + 1;
+    var resto = (proximo - inicioMin) % duracao;
+    inicioMin = resto === 0 ? proximo : proximo + (duracao - resto);
+  }
 
   var agendamentos = (AGENDAMENTOS_DIA[dateKey] || []).map(function(ag) {
     return { inicio: toMin(ag.inicio), fim: toMin(ag.fim) };
   });
 
   var candidatos = [];
-
-  for (var cursor = inicioMin; cursor + duracao <= fimMin; cursor += intervalo) {
+  var cursor;
+  for (cursor = inicioMin; cursor + duracao <= fimMin; cursor += duracao) {
     candidatos.push(cursor);
   }
 
   agendamentos.forEach(function(ag) {
-    if (ag.fim >= inicioMin && ag.fim + duracao <= fimMin) {
-      candidatos.push(ag.fim);
-    }
+    if (ag.fim >= inicioMin && ag.fim + duracao <= fimMin) candidatos.push(ag.fim);
   });
 
-  candidatos = candidatos
-    .filter(function(valor, indice, lista) { return lista.indexOf(valor) === indice; })
-    .sort(function(a, b) { return a - b; });
+  candidatos = candidatos.filter(function(valor, indice, lista) {
+    return lista.indexOf(valor) === indice;
+  }).sort(function(a, b) {
+    return a - b;
+  });
 
   var slots = [];
-
   candidatos.forEach(function(slotInicio) {
-    var slotFim    = slotInicio + duracao;
-
+    var slotFim = slotInicio + duracao;
     var livre = agendamentos.every(function(ag) {
       return slotFim <= ag.inicio || slotInicio >= ag.fim;
     });
-
-    if (livre) {
-      slots.push(toHHMM(slotInicio));
-    }
+    if (livre) slots.push(toHHMM(slotInicio));
   });
 
-  return slots;
+  return filtrarHorariosPassados(dateKey, slots);
 }
 
 function getDuracaoSelecionada() {
   var duracao = 0;
-
   document.querySelectorAll('.service-option.selected').forEach(function(el) {
     duracao += parseInt(el.dataset.duracao, 10) || 0;
   });
-
   return duracao > 0 ? duracao : duracaoTotalMin;
 }
 
 function getFuncionamentoDoDia(dateKey) {
   var horarios = CONFIG_BARBEIRO.horarios_funcionamento || {};
   if (dateKey) {
-    var dt = new Date(dateKey + 'T00:00:00');
-    var dia = String(dt.getDay());
+    var dia = String(new Date(dateKey + 'T00:00:00').getDay());
     if (horarios[dia]) return horarios[dia];
   }
-
   return {
     aberto: true,
     inicio: CONFIG_BARBEIRO.hora_inicio,
@@ -111,56 +117,53 @@ function getFuncionamentoDoDia(dateKey) {
   };
 }
 
-/* ── MODAL ── */
-function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow='hidden'; }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
-function closeOnBg(e,id){ if (e.target===e.currentTarget) closeModal(id); }
-
-/* ── ESTADO DO CALENDÁRIO ── */
 function calendarReady() {
-  return !!(document.getElementById('h-barber-id').value &&
-            document.getElementById('h-services').value);
+  return !!($('h-barber-id').value && $('h-services').value);
+}
+
+function limparSelecaoDataHorario() {
+  $('h-date').value = '';
+  $('h-time').value = '';
+  $('sum-date').textContent = '—';
+  $('sum-time').textContent = '—';
+  $('time-container').innerHTML = '<p class="time-empty">Selecione uma data para ver os horários</p>';
 }
 
 function atualizarEstadoCalendario() {
-  var overlay = document.getElementById('cal-overlay');
+  var overlay = $('cal-overlay');
   if (!overlay) {
     injetarOverlayCalendario();
-    overlay = document.getElementById('cal-overlay');
+    overlay = $('cal-overlay');
   }
   if (!overlay) return;
 
   if (calendarReady()) {
     overlay.style.display = 'none';
-  } else {
-    overlay.style.display = 'flex';
-    document.getElementById('h-date').value          = '';
-    document.getElementById('h-time').value          = '';
-    document.getElementById('sum-date').textContent   = '—';
-    document.getElementById('sum-time').textContent   = '—';
-    document.getElementById('time-container').innerHTML =
-      '<p class="time-empty">Selecione uma data para ver os horários</p>';
-    renderCalendar();
-    checkConfirm();
+    return;
   }
+
+  overlay.style.display = 'flex';
+  limparSelecaoDataHorario();
+  renderCalendar();
+  checkConfirm();
 }
 
-/* ── BARBEIRO ── */
 function selectBarber(el) {
-  document.querySelectorAll('.barber-option').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelectorAll('.barber-option').forEach(function(item) {
+    item.classList.remove('selected');
+  });
   el.classList.add('selected');
 
   var barberId = el.dataset.id;
+  $('h-barber-id').value = barberId;
+  $('barber-display').textContent = el.dataset.name;
+  $('barber-display').className = 'trigger-value';
+  $('btn-barber').classList.add('filled');
+  $('sum-barber').textContent = el.dataset.name;
+  $('btn-ok-barber').disabled = false;
 
-  document.getElementById('h-barber-id').value         = barberId;
-  document.getElementById('barber-display').textContent = el.dataset.name;
-  document.getElementById('barber-display').className   = 'trigger-value';
-  document.getElementById('btn-barber').classList.add('filled');
-  document.getElementById('sum-barber').textContent     = el.dataset.name;
-  document.getElementById('btn-ok-barber').disabled     = false;
-
-  CONFIG_BARBEIRO   = CONFIG_POR_BARBEIRO[barberId]       || {};
-  AGENDAMENTOS_DIA  = AGENDAMENTOS_POR_BARBEIRO[barberId] || {};
+  CONFIG_BARBEIRO = CONFIG_POR_BARBEIRO[barberId] || {};
+  AGENDAMENTOS_DIA = AGENDAMENTOS_POR_BARBEIRO[barberId] || {};
   MESES_DISPONIVEIS = MESES_DISPONIVEIS_POR_BARBEIRO[barberId] || [];
 
   calMes = hoje.getMonth();
@@ -170,32 +173,25 @@ function selectBarber(el) {
     calAno = MESES_DISPONIVEIS[0].ano;
   }
 
-  document.getElementById('h-date').value          = '';
-  document.getElementById('h-time').value          = '';
-  document.getElementById('sum-date').textContent   = '—';
-  document.getElementById('sum-time').textContent   = '—';
-  document.getElementById('time-container').innerHTML =
-    '<p class="time-empty">Selecione uma data para ver os horários</p>';
+  limparSelecaoDataHorario();
   renderCalendar();
-
   renderServiceList(SERVICOS_POR_BARBEIRO[barberId] || []);
 
   duracaoTotalMin = 0;
-  document.getElementById('h-services').value           = '';
-  document.getElementById('h-total').value              = '0';
-  document.getElementById('service-display').className   = 'trigger-placeholder';
-  document.getElementById('service-display').textContent = 'Selecionar serviços';
-  document.getElementById('btn-service').classList.remove('filled');
-  document.getElementById('sum-service').textContent     = '—';
-  document.getElementById('sum-total').textContent       = 'R$0,00';
-  document.getElementById('btn-ok-service').disabled     = true;
-
+  $('h-services').value = '';
+  $('h-total').value = '0';
+  $('service-display').className = 'trigger-placeholder';
+  $('service-display').textContent = 'Selecionar serviços';
+  $('btn-service').classList.remove('filled');
+  $('sum-service').textContent = '—';
+  $('sum-total').textContent = 'R$0,00';
+  $('btn-ok-service').disabled = true;
   atualizarEstadoCalendario();
 }
 
-/* ── SERVIÇOS ── */
 function renderServiceList(servicos) {
   var list = document.querySelector('.service-list');
+  if (!list) return;
   list.innerHTML = '';
 
   if (!servicos.length) {
@@ -203,238 +199,223 @@ function renderServiceList(servicos) {
     return;
   }
 
+  var frag = document.createDocumentFragment();
   servicos.forEach(function(s) {
     var div = document.createElement('div');
-    div.className       = 'service-option';
-    div.dataset.id      = s.id;
-    div.dataset.name    = s.nome;
-    div.dataset.price   = s.preco;
+    div.className = 'service-option';
+    div.dataset.id = s.id;
+    div.dataset.name = s.nome;
+    div.dataset.price = s.preco;
     div.dataset.duracao = s.duracao;
     div.innerHTML =
       '<div class="svc-left">' +
         '<div class="svc-icon"><i class="fa-solid fa-scissors"></i></div>' +
-        '<div>' +
-          '<div class="svc-name">' + s.nome + '</div>' +
-          '<div class="svc-time"><i class="fa-regular fa-clock"></i> ' + s.duracao + ' min</div>' +
-        '</div>' +
+        '<div><div class="svc-name">' + s.nome + '</div>' +
+        '<div class="svc-time"><i class="fa-regular fa-clock"></i> ' + s.duracao + ' min</div></div>' +
       '</div>' +
-      '<div class="svc-right">' +
-        '<div class="svc-price">R$' + s.preco + '</div>' +
-        '<div class="svc-check"><i class="fa-solid fa-check"></i></div>' +
-      '</div>';
-    div.addEventListener('click', function(){ toggleService(div); });
-    list.appendChild(div);
+      '<div class="svc-right"><div class="svc-price">R$' + s.preco + '</div>' +
+      '<div class="svc-check"><i class="fa-solid fa-check"></i></div></div>';
+    div.addEventListener('click', function() { toggleService(div); });
+    frag.appendChild(div);
   });
+  list.appendChild(frag);
 }
 
 function toggleService(el) {
-  var jaSelecionado = el.classList.contains('selected');
-
-  document.querySelectorAll('.service-option').forEach(function(c){
-    c.classList.remove('selected');
+  var selected = el.classList.contains('selected');
+  document.querySelectorAll('.service-option').forEach(function(item) {
+    item.classList.remove('selected');
   });
-
-  if (!jaSelecionado) {
-    el.classList.add('selected');
-  }
-
+  if (!selected) el.classList.add('selected');
   recalcServices();
 }
 
 function recalcServices() {
-  var ids=[], names=[], total=0, duracao=0;
-  document.querySelectorAll('.service-option.selected').forEach(function(el){
+  var ids = [];
+  var names = [];
+  var total = 0;
+  var duracao = 0;
+
+  document.querySelectorAll('.service-option.selected').forEach(function(el) {
     ids.push(el.dataset.id);
     names.push(el.dataset.name);
-    total   += parseFloat(el.dataset.price)    || 0;
+    total += parseFloat(el.dataset.price) || 0;
     duracao += parseInt(el.dataset.duracao, 10) || 0;
   });
 
   duracaoTotalMin = duracao;
+  $('h-services').value = ids.join(',');
+  $('h-total').value = total.toFixed(2);
 
-  document.getElementById('h-services').value = ids.join(',');
-  document.getElementById('h-total').value    = total.toFixed(2);
-
-  var disp = document.getElementById('service-display');
-  var btn  = document.getElementById('btn-service');
+  var disp = $('service-display');
+  var btn = $('btn-service');
   if (names.length) {
     btn.classList.add('filled');
     disp.className = 'trigger-tags';
-    disp.innerHTML = names.map(function(n){ return '<span class="tag">'+n+'</span>'; }).join('');
+    disp.innerHTML = names.map(function(n) { return '<span class="tag">' + n + '</span>'; }).join('');
   } else {
     btn.classList.remove('filled');
-    disp.className   = 'trigger-placeholder';
+    disp.className = 'trigger-placeholder';
     disp.textContent = 'Selecionar serviços';
   }
 
-  document.getElementById('sum-service').textContent =
-    names.length ? names.join(', ') + ' (' + duracao + ' min)' : '—';
-  document.getElementById('sum-total').textContent =
-    'R$' + total.toFixed(2).replace('.', ',');
-  document.getElementById('btn-ok-service').disabled = names.length === 0;
+  $('sum-service').textContent = names.length ? names.join(', ') + ' (' + duracao + ' min)' : '—';
+  $('sum-total').textContent = 'R$' + total.toFixed(2).replace('.', ',');
+  $('btn-ok-service').disabled = names.length === 0;
 
-  var dataSel = document.getElementById('h-date').value;
+  var dataSel = $('h-date').value;
   if (dataSel) {
     var slots = gerarSlotsDisponiveis(dataSel);
     renderSlots(slots);
-
-    var timeSel = document.getElementById('h-time').value;
+    var timeSel = $('h-time').value;
     if (timeSel && slots.indexOf(timeSel) === -1) {
-      document.getElementById('h-time').value        = '';
-      document.getElementById('sum-time').textContent = '—';
+      $('h-time').value = '';
+      $('sum-time').textContent = '—';
     }
   }
 
   renderCalendar();
-
   atualizarEstadoCalendario();
   checkConfirm();
 }
 
-/* ── CALENDÁRIO ── */
 function mesPermitido(ano, mes) {
-  return MESES_DISPONIVEIS.some(function(m){ return m.ano===ano && m.mes===(mes+1); });
+  return MESES_DISPONIVEIS.some(function(m) {
+    return m.ano === ano && m.mes === (mes + 1);
+  });
 }
 
 function renderCalendar() {
-  document.getElementById('cal-month-label').textContent = MESES[calMes].toUpperCase()+' '+calAno;
+  var grid = $('cal-days');
+  if (!grid) return;
 
-  var grid  = document.getElementById('cal-days');
+  $('cal-month-label').textContent = MESES[calMes].toUpperCase() + ' ' + calAno;
   grid.innerHTML = '';
-  var first = new Date(calAno, calMes, 1).getDay();
-  var dias  = new Date(calAno, calMes+1, 0).getDate();
 
-  for (var i=0; i<first; i++) {
-    var vazio = document.createElement('div');
-    vazio.className = 'cal-day empty';
-    grid.appendChild(vazio);
+  var first = new Date(calAno, calMes, 1).getDay();
+  var dias = new Date(calAno, calMes + 1, 0).getDate();
+  var selDate = $('h-date').value;
+  var frag = document.createDocumentFragment();
+  var i;
+  var d;
+  var el;
+  var dt;
+  var key;
+
+  for (i = 0; i < first; i++) {
+    el = document.createElement('div');
+    el.className = 'cal-day empty';
+    frag.appendChild(el);
   }
 
-  var selDate = document.getElementById('h-date').value;
+  for (d = 1; d <= dias; d++) {
+    dt = new Date(calAno, calMes, d);
+    dt.setHours(0, 0, 0, 0);
+    key = toDateKey(dt);
 
-  for (var d=1; d<=dias; d++) {
-    var el  = document.createElement('div');
-    var dt  = new Date(calAno, calMes, d); dt.setHours(0,0,0,0);
-    var key = dt.toISOString().slice(0,10);
-
-    el.className   = 'cal-day';
+    el = document.createElement('div');
+    el.className = 'cal-day';
     el.textContent = d;
 
-    var passado = dt < hoje;
-    var semSlot = false;
-    if (calendarReady()) {
-      semSlot = gerarSlotsDisponiveis(key).length === 0;
-    }
-
-    if (passado || semSlot) {
+    if (dt < hoje || (calendarReady() && gerarSlotsDisponiveis(key).length === 0)) {
       el.classList.add('past');
     } else {
       if (dt.getTime() === hoje.getTime()) el.classList.add('today');
-      el.dataset.key     = key;
-      el.dataset.label   = SEMANA[dt.getDay()]+', '+d+' de '+MESES[calMes];
+      el.dataset.key = key;
+      el.dataset.label = SEMANA[dt.getDay()] + ', ' + d + ' de ' + MESES[calMes];
       el.dataset.dateIso = key;
-      el.addEventListener('click', onDayClick);
     }
 
-    if (selDate && selDate === key) el.classList.add('selected');
-
-    grid.appendChild(el);
+    if (selDate === key) el.classList.add('selected');
+    frag.appendChild(el);
   }
+
+  grid.appendChild(frag);
 }
 
-function onDayClick() {
-  if (!calendarReady()) return;
+function onDayClick(dayEl) {
+  if (!calendarReady() || !dayEl.dataset.key) return;
 
-  document.getElementById('h-date').value         = this.dataset.dateIso;
-  document.getElementById('h-time').value         = '';
-  document.getElementById('sum-date').textContent  = this.dataset.label;
-  document.getElementById('sum-time').textContent  = '—';
+  $('h-date').value = dayEl.dataset.dateIso;
+  $('h-time').value = '';
+  $('sum-date').textContent = dayEl.dataset.label;
+  $('sum-time').textContent = '—';
 
-  renderCalendar(); // ← re-renderiza lendo h-date já atualizado, marca só o dia correto
-  renderSlots(gerarSlotsDisponiveis(this.dataset.key));
+  renderCalendar();
+  renderSlots(gerarSlotsDisponiveis(dayEl.dataset.key));
   checkConfirm();
 }
 
 function changeMonth(dir) {
   var novoMes = calMes + dir;
   var novoAno = calAno;
-  if (novoMes > 11) { novoMes = 0;  novoAno++; }
-  if (novoMes < 0)  { novoMes = 11; novoAno--; }
+  if (novoMes > 11) { novoMes = 0; novoAno++; }
+  if (novoMes < 0) { novoMes = 11; novoAno--; }
   if (!mesPermitido(novoAno, novoMes)) return;
-  calMes = novoMes; calAno = novoAno;
+  calMes = novoMes;
+  calAno = novoAno;
   renderCalendar();
 }
 
-/* ── SLOTS DE HORÁRIO ── */
 function renderSlots(slots) {
-  var c = document.getElementById('time-container');
+  var container = $('time-container');
+  if (!container) return;
+
   if (!slots.length) {
-    c.innerHTML = '<p class="time-empty">Nenhum horário disponível neste dia</p>';
+    container.innerHTML = '<p class="time-empty">Nenhum horário disponível neste dia</p>';
     return;
   }
+
   var grid = document.createElement('div');
   grid.className = 'time-grid';
-  var selTime = document.getElementById('h-time').value;
+  var selTime = $('h-time').value;
+  var frag = document.createDocumentFragment();
+
   slots.forEach(function(t) {
     var el = document.createElement('div');
-    el.className   = 'time-slot';
+    el.className = 'time-slot' + (selTime === t ? ' selected' : '');
     el.textContent = t;
-    if (selTime === t) el.classList.add('selected');
-    el.addEventListener('click', function(){ selectTime(t, el); });
-    grid.appendChild(el);
+    el.addEventListener('click', function() { selectTime(t, el); });
+    frag.appendChild(el);
   });
-  c.innerHTML = '';
-  c.appendChild(grid);
+
+  grid.appendChild(frag);
+  container.innerHTML = '';
+  container.appendChild(grid);
 }
 
 function selectTime(t, el) {
-  document.querySelectorAll('.time-slot').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelectorAll('.time-slot').forEach(function(item) {
+    item.classList.remove('selected');
+  });
   el.classList.add('selected');
-  document.getElementById('h-time').value         = t;
-  document.getElementById('sum-time').textContent  = t;
+  $('h-time').value = t;
+  $('sum-time').textContent = t;
   checkConfirm();
 }
 
-/* ── VALIDAÇÃO & SUBMIT ── */
 function checkConfirm() {
-  var ok = document.getElementById('h-barber-id').value &&
-           document.getElementById('h-services').value  &&
-           document.getElementById('h-date').value      &&
-           document.getElementById('h-time').value      &&
-           document.getElementById('nome').value.trim() &&
-           document.getElementById('telefone').value.trim();
-  document.getElementById('btn-confirm').disabled = !ok;
+  var btn = $('btn-confirm');
+  if (!btn) return;
+  btn.disabled = !(
+    $('h-barber-id').value &&
+    $('h-services').value &&
+    $('h-date').value &&
+    $('h-time').value &&
+    $('nome').value.trim() &&
+    $('telefone').value.trim()
+  );
 }
 
 function confirmar() {
-  document.getElementById('h-nome').value     = document.getElementById('nome').value.trim();
-  document.getElementById('h-telefone').value = document.getElementById('telefone').value.trim();
-  document.getElementById('h-obs').value      = document.getElementById('obs').value.trim();
-  document.getElementById('form-agendamento').submit();
+  $('h-nome').value = $('nome').value.trim();
+  $('h-telefone').value = $('telefone').value.trim();
+  $('h-obs').value = $('obs').value.trim();
+  $('form-agendamento').submit();
 }
 
-/* ── MODAL DE RETORNO ── */
-document.addEventListener('DOMContentLoaded', function() {
-  injetarOverlayCalendario();
-  atualizarEstadoCalendario();
-
-  if (BOOKING_SUCCESS) {
-    if (BOOKING_SUCCESS.status === 'success') {
-      document.getElementById('title-id-form').textContent    = BOOKING_SUCCESS.title;
-      document.getElementById('message-id-form').textContent  = BOOKING_SUCCESS.message;
-      document.getElementById('horario-id-form').textContent  = BOOKING_SUCCESS.horario;
-      openModal('modal-form-success');
-    } else {
-      document.getElementById('title-id-form-error').textContent   = BOOKING_SUCCESS.title;
-      document.getElementById('message-id-form-error').textContent = BOOKING_SUCCESS.message;
-      openModal('modal-form-error');
-    }
-  }
-});
-
-/* ── OVERLAY DO CALENDÁRIO ── */
 function injetarOverlayCalendario() {
-  if (document.getElementById('cal-overlay')) return;
+  if ($('cal-overlay')) return;
 
   var calCard = document.querySelector('.cal-weekdays');
   if (!calCard) return;
@@ -442,78 +423,49 @@ function injetarOverlayCalendario() {
   if (!cardPai) return;
 
   cardPai.style.position = 'relative';
-
   var ov = document.createElement('div');
   ov.id = 'cal-overlay';
+  ov.className = 'cal-overlay';
   ov.innerHTML =
-    '<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;text-align:center;">' +
-      '<i class="fa-solid fa-lock" style="font-size:2rem;color:#c8a96e;opacity:.9;"></i>' +
-      '<p style="color:#e8e0d5;font-size:.9rem;line-height:1.5;max-width:220px;margin:0;">' +
-        'Selecione o <strong>profissional</strong> e pelo menos um <strong>serviço</strong> para ver os horários disponíveis' +
-      '</p>' +
+    '<div class="cal-overlay-content">' +
+      '<i class="fa-solid fa-lock cal-overlay-icon"></i>' +
+      '<p>Selecione o <strong>profissional</strong> e pelo menos um <strong>serviço</strong> para ver os horários disponíveis</p>' +
     '</div>';
-  ov.style.cssText =
-    'position:absolute;inset:0;z-index:10;display:flex;align-items:center;' +
-    'justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);' +
-    'background:rgba(0,0,0,0.55);border-radius:16px;';
-
   cardPai.appendChild(ov);
 }
 
-/* ── MODAL SERVIÇOS ── */
 function abrirModalServicos() {
-  if (!document.getElementById('h-barber-id').value) {
+  if (!$('h-barber-id').value) {
     alert('Selecione um profissional primeiro.');
     return;
   }
   openModal('modal-service');
 }
 
-function maskTelefone(input) {
-  // pega só números
-  var value = input.value.replace(/\D/g, '');
-
-  // limita em 11 dígitos (Brasil)
-  value = value.substring(0, 11);
-
-  if (value.length <= 10) {
-    // telefone fixo: (99) 9999-9999
-    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-    value = value.replace(/(\d{4})(\d)/, '$1-$2');
-  } else {
-    // celular: (99) 99999-9999
-    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+function initBookingPage() {
+  var calDays = $('cal-days');
+  if (calDays) {
+    calDays.addEventListener('click', function(e) {
+      var day = e.target.closest('.cal-day:not(.past):not(.empty)');
+      if (day) onDayClick(day);
+    });
   }
 
-  input.value = value;
+  injetarOverlayCalendario();
+  atualizarEstadoCalendario();
+
+  if (typeof BOOKING_SUCCESS !== 'undefined' && BOOKING_SUCCESS) {
+    if (BOOKING_SUCCESS.status === 'success') {
+      $('title-id-form').textContent = BOOKING_SUCCESS.title;
+      $('message-id-form').textContent = BOOKING_SUCCESS.message;
+      $('horario-id-form').textContent = BOOKING_SUCCESS.horario;
+      openModal('modal-form-success');
+    } else {
+      $('title-id-form-error').textContent = BOOKING_SUCCESS.title;
+      $('message-id-form-error').textContent = BOOKING_SUCCESS.message;
+      openModal('modal-form-error');
+    }
+  }
 }
 
-function maskCNPJ(input) {
-    let value = input.value.replace(/\D/g, "");
-
-    // limita a 14 dígitos
-    value = value.substring(0, 14);
-
-    // aplica a máscara
-    value = value.replace(/^(\d{2})(\d)/, "$1.$2");
-    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
-    value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
-    value = value.replace(/(\d{4})(\d)/, "$1-$2");
-
-    input.value = value;
-}
-
-function maskCEP(input) {
-    let value = input.value.replace(/\D/g, "");
-
-    // limita a 8 dígitos
-    value = value.substring(0, 8);
-
-    // aplica a máscara 00000-000
-    value = value.replace(/^(\d{5})(\d)/, "$1-$2");
-
-    input.value = value;
-}
-
-
+document.addEventListener('DOMContentLoaded', initBookingPage);
