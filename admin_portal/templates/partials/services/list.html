@@ -1,0 +1,51 @@
+<div id="services-grid" class="services-grid"{% if hx_oob %} hx-swap-oob="true"{% endif %}>
+  {% for service in services %}
+    <div class="service-card">
+      <div class="sc-top">
+        <div class="sc-icon"><i class="fa-solid fa-scissors"></i></div>
+        <div class="sc-actions">
+          <button
+            class="sc-btn"
+            type="button"
+            hx-get="{% url 'services:edit_service_form' service.id %}"
+            hx-target="#modal-edit-service"
+            hx-swap="outerHTML"
+            title="Editar"
+          >
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button
+            class="sc-btn danger"
+            type="button"
+            onclick="openDeleteService(this)"
+            data-id="{{ service.id }}"
+            data-nome="{{ service.name }}"
+            title="Excluir"
+          >
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="sc-name">{{ service.name }}</div>
+        <div class="sc-desc">
+          {% if service.user.get_full_name %}
+            {{ service.user.get_full_name }}
+          {% else %}
+            {{ service.user.username }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-price">R${{ service.price|floatformat:2 }}</div>
+        <div class="sc-time"><i class="fa-regular fa-clock"></i> {{ service.time_duration }} min</div>
+        <div class="sc-status badge badge-accent">Ativo</div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty-state services-empty-state">
+      <i class="fa-solid fa-scissors"></i>
+      Nenhum servico cadastrado ainda.
+    </div>
+  {% endfor %}
+</div>

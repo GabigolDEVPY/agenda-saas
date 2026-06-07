@@ -102,81 +102,7 @@
     </button>
   </div>
 
-  <div class="services-grid" id="services-grid">
-
-    <div class="service-card">
-      <div class="sc-top">
-        <div class="sc-icon"><i class="fa-solid fa-scissors"></i></div>
-        <div class="sc-actions">
-          <button class="sc-btn" type="button" onclick="openEditService(this)"
-            data-id="1" data-nome="Corte Masculino" data-desc="Corte clássico com acabamento"
-            data-preco="45" data-duracao="30" data-icone="fa-solid fa-scissors" data-ativo="1"
-            title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
-            data-id="1" data-nome="Corte Masculino"
-            title="Excluir"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-      <div>
-        <div class="sc-name">Corte Masculino</div>
-        <div class="sc-desc">Corte clássico com acabamento</div>
-      </div>
-      <div class="sc-footer">
-        <div class="sc-price">R$45</div>
-        <div class="sc-time"><i class="fa-regular fa-clock"></i> 30 min</div>
-        <div class="sc-status badge badge-accent">Ativo</div>
-      </div>
-    </div>
-
-    <div class="service-card">
-      <div class="sc-top">
-        <div class="sc-icon"><i class="fa-solid fa-user-tie"></i></div>
-        <div class="sc-actions">
-          <button class="sc-btn" type="button" onclick="openEditService(this)"
-            data-id="2" data-nome="Barba Completa" data-desc="Modelagem e hidratação"
-            data-preco="35" data-duracao="25" data-icone="fa-solid fa-user-tie" data-ativo="1"
-            title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
-            data-id="2" data-nome="Barba Completa"
-            title="Excluir"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-      <div>
-        <div class="sc-name">Barba Completa</div>
-        <div class="sc-desc">Modelagem e hidratação</div>
-      </div>
-      <div class="sc-footer">
-        <div class="sc-price">R$35</div>
-        <div class="sc-time"><i class="fa-regular fa-clock"></i> 25 min</div>
-        <div class="sc-status badge badge-accent">Ativo</div>
-      </div>
-    </div>
-
-    <div class="service-card">
-      <div class="sc-top">
-        <div class="sc-icon"><i class="fa-solid fa-star"></i></div>
-        <div class="sc-actions">
-          <button class="sc-btn" type="button" onclick="openEditService(this)"
-            data-id="3" data-nome="Corte + Barba" data-desc="Combo completo premium"
-            data-preco="70" data-duracao="50" data-icone="fa-solid fa-star" data-ativo="1"
-            title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button class="sc-btn danger" type="button" onclick="openDeleteService(this)"
-            data-id="3" data-nome="Corte + Barba"
-            title="Excluir"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-      <div>
-        <div class="sc-name">Corte + Barba</div>
-        <div class="sc-desc">Combo completo premium</div>
-      </div>
-      <div class="sc-footer">
-        <div class="sc-price">R$70</div>
-        <div class="sc-time"><i class="fa-regular fa-clock"></i> 50 min</div>
-        <div class="sc-status badge badge-accent">Ativo</div>
-      </div>
-    </div>
-
-  </div>
+  {% include "partials/services/list.html" %}
 </div>
 
 <!-- ══════════════════════════════════════
@@ -386,107 +312,13 @@
 <!-- ══════════════════════════════════════
      MODAL: NOVO SERVIÇO
 ══════════════════════════════════════ -->
-<div class="overlay" id="modal-new-service" onclick="closeOnBg(event,'modal-new-service')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-plus" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>Novo Serviço</div>
-      <button class="modal-close" type="button" onclick="closeModal('modal-new-service')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form method="POST" action="">
-      {% csrf_token %}
-      <div class="modal-body">
-        <div class="form-grid">
-          <div class="form-group full">
-            <label for="ns-nome">Nome do Serviço</label>
-            <input type="text" id="ns-nome" name="nome" placeholder="Ex: Corte + Barba" required/>
-          </div>
-          <div class="form-group full">
-            <label for="ns-desc">Descrição</label>
-            <textarea id="ns-desc" name="descricao" placeholder="Descreva brevemente o serviço..." style="min-height:60px;"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="ns-preco">Preço (R$)</label>
-            <input type="number" id="ns-preco" name="preco" placeholder="0.00" min="0" step="0.50" required/>
-          </div>
-          <div class="form-group">
-            <label for="ns-duracao">Duração (minutos)</label>
-            <input type="number" id="ns-duracao" name="duracao" placeholder="30" min="10" step="5" required/>
-          </div>
-          <div class="form-group full">
-            <div class="toggle-row" style="padding:0;border:none;">
-              <div>
-                <div class="toggle-label">Serviço ativo</div>
-                <div class="toggle-sub">Visível para clientes agendarem</div>
-              </div>
-              <label class="toggle"><input type="checkbox" name="ativo" checked/><span class="toggle-track"></span></label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-ghost" onclick="closeModal('modal-new-service')">Cancelar</button>
-        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Criar Serviço</button>
-      </div>
-    </form>
-  </div>
-</div>
+{% include "partials/services/new_service.html" %}
+{% include "partials/services/edit_service.html" %}
 
 
 <!-- ══════════════════════════════════════
      MODAL: EDITAR SERVIÇO
 ══════════════════════════════════════ -->
-<div class="overlay" id="modal-edit-service" onclick="closeOnBg(event,'modal-edit-service')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-head">
-      <div class="modal-head-title"><i class="fa-solid fa-pen" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>Editar Serviço</div>
-      <button class="modal-close" type="button" onclick="closeModal('modal-edit-service')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form method="POST" id="form-edit-service" action="">
-      {% csrf_token %}
-      <input type="hidden" name="servico_id" id="es-id"/>
-      <div class="modal-body">
-        <div class="form-grid">
-          <div class="form-group full">
-            <label for="es-nome">Nome do Serviço</label>
-            <input type="text" id="es-nome" name="nome" required/>
-          </div>
-          <div class="form-group full">
-            <label for="es-desc">Descrição</label>
-            <textarea id="es-desc" name="descricao" style="min-height:60px;"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="es-preco">Preço (R$)</label>
-            <input type="number" id="es-preco" name="preco" min="0" step="0.50" required/>
-          </div>
-          <div class="form-group">
-            <label for="es-duracao">Duração (minutos)</label>
-            <input type="number" id="es-duracao" name="duracao" min="10" step="5" required/>
-          </div>
-          <div class="form-group full">
-            <label for="es-icone">Ícone (Font Awesome)</label>
-            <input type="text" id="es-icone" name="icone"/>
-          </div>
-          <div class="form-group full">
-            <div class="toggle-row" style="padding:0;border:none;">
-              <div>
-                <div class="toggle-label">Serviço ativo</div>
-                <div class="toggle-sub">Visível para clientes agendarem</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="es-ativo" name="ativo"/><span class="toggle-track"></span></label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-ghost" onclick="closeModal('modal-edit-service')">Cancelar</button>
-        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 
 <!-- ══════════════════════════════════════
      MODAL: CONFIRMAR EXCLUSÃO SERVIÇO
@@ -494,7 +326,14 @@
 <div class="overlay" id="modal-delete-confirm" onclick="closeOnBg(event,'modal-delete-confirm')">
   <div class="modal-sheet" style="max-width:440px;">
     <div class="modal-handle"></div>
-    <form method="POST" id="form-delete-service" action="">
+    <form
+      method="POST"
+      id="form-delete-service"
+      action="{% url 'services:delete_service' %}"
+      hx-post="{% url 'services:delete_service' %}"
+      hx-target="#services-grid"
+      hx-swap="outerHTML"
+    >
       {% csrf_token %}
       <input type="hidden" name="servico_id" id="del-id"/>
       <div class="modal-body" style="text-align:center;padding:32px 24px;">
@@ -584,6 +423,24 @@
     closeModal('modal-change-employee-password');
     var employeesTab = document.querySelector('[onclick*="funcionarios"]');
     if (employeesTab) switchTab('funcionarios', employeesTab);
+  });
+
+  document.body.addEventListener('serviceCreated', function () {
+    closeModal('modal-new-service');
+    var servicesTab = document.querySelector('[onclick*="servicos"]');
+    if (servicesTab) switchTab('servicos', servicesTab);
+  });
+
+  document.body.addEventListener('serviceUpdated', function () {
+    closeModal('modal-edit-service');
+    var servicesTab = document.querySelector('[onclick*="servicos"]');
+    if (servicesTab) switchTab('servicos', servicesTab);
+  });
+
+  document.body.addEventListener('serviceDeleted', function () {
+    closeModal('modal-delete-confirm');
+    var servicesTab = document.querySelector('[onclick*="servicos"]');
+    if (servicesTab) switchTab('servicos', servicesTab);
   });
 </script>
 

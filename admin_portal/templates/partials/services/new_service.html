@@ -1,0 +1,68 @@
+<div class="overlay" id="modal-new-service" onclick="closeOnBg(event,'modal-new-service')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title"><i class="fa-solid fa-plus" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>Novo Servico</div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-new-service')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form
+      method="POST"
+      hx-post="{% url 'services:create_service' %}"
+      hx-target="#modal-new-service"
+      hx-swap="outerHTML"
+    >
+      {% csrf_token %}
+      <div class="modal-body">
+        {% if service_form.non_field_errors %}
+          <div class="field-error" style="margin-bottom:12px;">
+            {{ service_form.non_field_errors|join:", " }}
+          </div>
+        {% endif %}
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="{{ service_form.user.id_for_label }}">Profissional</label>
+            <select id="{{ service_form.user.id_for_label }}" name="user" required>
+              {% for option_user in service_form.fields.user.queryset %}
+                <option value="{{ option_user.id }}"{% if service_form.user.value|stringformat:"s" == option_user.id|stringformat:"s" %} selected{% endif %}>
+                  {% if option_user.get_full_name %}{{ option_user.get_full_name }}{% else %}{{ option_user.username }}{% endif %}
+                </option>
+              {% endfor %}
+            </select>
+            {% if service_form.user.errors %}
+              <span class="field-error">{{ service_form.user.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group full">
+            <label for="{{ service_form.name.id_for_label }}">Nome do Servico</label>
+            <input type="text" id="{{ service_form.name.id_for_label }}" name="name" value="{{ service_form.name.value|default:'' }}" placeholder="Ex: Corte + Barba" required/>
+            {% if service_form.name.errors %}
+              <span class="field-error">{{ service_form.name.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{{ service_form.price.id_for_label }}">Preco (R$)</label>
+            <input type="number" id="{{ service_form.price.id_for_label }}" name="price" value="{{ service_form.price.value|default:'' }}" placeholder="0.00" min="0" step="0.50" required/>
+            {% if service_form.price.errors %}
+              <span class="field-error">{{ service_form.price.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{{ service_form.time_duration.id_for_label }}">Duracao (minutos)</label>
+            <input type="number" id="{{ service_form.time_duration.id_for_label }}" name="time_duration" value="{{ service_form.time_duration.value|default:'' }}" placeholder="30" min="10" step="5" required/>
+            {% if service_form.time_duration.errors %}
+              <span class="field-error">{{ service_form.time_duration.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" onclick="closeModal('modal-new-service')">Cancelar</button>
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Criar Servico</button>
+      </div>
+    </form>
+  </div>
+  {% if service_created %}
+    {% include "partials/services/list.html" with hx_oob=True %}
+  {% endif %}
+</div>

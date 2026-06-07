@@ -727,6 +727,69 @@ select option { background: var(--bg-2); color: var(--text); }
   display: flex; gap: 8px; justify-content: flex-end;
 }
 
+@media (max-width: 380px) {
+  .modal-sheet {
+    max-height: 100dvh;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .modal-head {
+    padding: 12px 12px 10px;
+  }
+
+  .modal-body {
+    padding: 12px 12px 14px;
+  }
+
+  .modal-footer {
+    padding: 10px 12px 12px;
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .modal-footer .btn-primary,
+  .modal-footer .btn-ghost {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+    white-space: normal;
+  }
+
+  .form-grid {
+    gap: 10px;
+  }
+
+  label {
+    letter-spacing: 1px;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 9px 10px;
+  }
+
+  .info-note {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-height: 640px) {
+  .modal-sheet {
+    max-height: 100dvh;
+  }
+
+  .modal-body {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .form-grid {
+    gap: 10px;
+  }
+}
+
 /* ═══════════════════════════════════════════
    MODAL MESES — info banner
 ═══════════════════════════════════════════ */
@@ -944,6 +1007,15 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
 
 .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
 .empty-state i { font-size: 32px; color: var(--border-strong); margin-bottom: 12px; display: block; }
+.services-empty-state {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .text-accent { color: var(--accent-bright); }
 .text-muted  { color: var(--muted); }

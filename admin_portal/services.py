@@ -1,5 +1,7 @@
 import json
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
+from services.forms import ServiceForm
+from services.models import Service
 from user.forms import EmployeeCreationForm
 from user.models import Preferences
 
@@ -41,8 +43,23 @@ class AdminService:
         context['max_appointment_options'] = range(1, 31)
         context['employees'] = establishment.users.filter(is_owner=False).order_by("first_name", "last_name", "username") if establishment else []
         context['employee_form'] = EmployeeCreationForm()
+        context['service_users'] = AdminService.get_service_users(view.request, establishment)
+        context['services'] = Service.objects.filter(user__in=context['service_users']).select_related("user").order_by(
+            "user__first_name",
+            "user__last_name",
+            "name",
+        )
+        context['service_form'] = ServiceForm(users=context['service_users'])
 
         return context
+
+    @staticmethod
+    def get_service_users(request, establishment):
+        if request.user.is_owner and establishment:
+            return establishment.users.order_by("first_name", "last_name", "username")
+
+        user_model = request.user.__class__
+        return user_model.objects.filter(pk=request.user.pk)
 
     @staticmethod
     def get_operating_hours(view, establishment):
