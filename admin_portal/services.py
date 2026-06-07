@@ -1,7 +1,6 @@
 import json
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
-from services.forms import ServiceForm
-from services.models import Service
+from services.services import ServiceService
 from user.forms import EmployeeCreationForm
 from user.models import Preferences
 
@@ -10,11 +9,7 @@ from user.models import Preferences
 class AdminService:
     @staticmethod
     def get_establishment(request):
-        establishment = getattr(request.user, "owned_establishment", None)
-        if establishment:
-            return establishment
-
-        establishment = getattr(request.user, "establishment", None)
+        establishment = ServiceService.get_establishment(request.user)
         if establishment:
             return establishment
 
@@ -43,50 +38,58 @@ class AdminService:
         context['max_appointment_options'] = range(1, 31)
         context['employees'] = establishment.users.filter(is_owner=False).order_by("first_name", "last_name", "username") if establishment else []
         context['employee_form'] = EmployeeCreationForm()
-        context['service_users'] = AdminService.get_service_users(view.request, establishment)
-        context['services'] = Service.objects.filter(user__in=context['service_users']).select_related("user").order_by(
-            "user__first_name",
-            "user__last_name",
-            "name",
+        context['service_users'] = ServiceService.get_service_users(view.request.user, establishment)
+        context['services'] = ServiceService.get_services(
+            view.request.user,
+            service_users=context['service_users'],
         )
-        context['service_form'] = ServiceForm(users=context['service_users'])
+        context['service_form'] = ServiceService.get_form(
+            view.request.user,
+            users=context['service_users'],
+        )
 
         return context
 
     @staticmethod
     def get_service_users(request, establishment):
-        if request.user.is_owner and establishment:
-            return establishment.users.order_by("first_name", "last_name", "username")
-
-        user_model = request.user.__class__
-        return user_model.objects.filter(pk=request.user.pk)
+        return ServiceService.get_service_users(request.user, establishment)
 
     @staticmethod
-    def get_operating_hours(view, establishment):
-            dias_map = {0: 'seg',1: 'ter',2: 'qua',3: 'qui',4: 'sex',5: 'sab',6: 'dom',}
+    def get_operating_hours(_view, establishment):
+        dias_map = {
+            0: 'seg',
+            1: 'ter',
+            2: 'qua',
+            3: 'qui',
+            4: 'sex',
+            5: 'sab',
+            6: 'dom',
+        }
 
-            defaults = {
-                'dom': {'aberto': False, 'abertura': '08:00', 'fechamento': '18:00'},
-                'seg': {'aberto': True,  'abertura': '08:00', 'fechamento': '20:00'},
-                'ter': {'aberto': True,  'abertura': '08:00', 'fechamento': '20:00'},
-                'qua': {'aberto': True,  'abertura': '08:00', 'fechamento': '20:00'},
-                'qui': {'aberto': True,  'abertura': '08:00', 'fechamento': '20:00'},
-                'sex': {'aberto': True,  'abertura': '08:00', 'fechamento': '20:00'},
-                'sab': {'aberto': True,  'abertura': '09:00', 'fechamento': '18:00'},
+        defaults = {
+            'dom': {'aberto': False, 'abertura': '08:00', 'fechamento': '18:00'},
+            'seg': {'aberto': True, 'abertura': '08:00', 'fechamento': '20:00'},
+            'ter': {'aberto': True, 'abertura': '08:00', 'fechamento': '20:00'},
+            'qua': {'aberto': True, 'abertura': '08:00', 'fechamento': '20:00'},
+            'qui': {'aberto': True, 'abertura': '08:00', 'fechamento': '20:00'},
+            'sex': {'aberto': True, 'abertura': '08:00', 'fechamento': '20:00'},
+            'sab': {'aberto': True, 'abertura': '09:00', 'fechamento': '18:00'},
+        }
+        if not establishment:
+            return defaults
+
+        operating_hours = OperatingHours.objects.filter(establishment=establishment).order_by('day_of_week')
+        result = defaults.copy()
+
+        for item in operating_hours:
+            key = dias_map.get(item.day_of_week)
+            if not key:
+                continue
+
+            result[key] = {
+                'aberto': not item.is_closed,
+                'abertura': item.open_time.strftime('%H:%M'),
+                'fechamento': item.close_time.strftime('%H:%M'),
             }
-            if not establishment:
-                return defaults
 
-            operating_hours = OperatingHours.objects.filter(establishment=establishment).order_by('day_of_week')
-            result = defaults.copy()
-
-            for item in operating_hours:
-                key = dias_map.get(item.day_of_week)
-                if not key:
-                    continue
-
-                result[key] = {
-                    'aberto': not item.is_closed,'abertura': item.open_time.strftime('%H:%M'),'fechamento': item.close_time.strftime('%H:%M'),
-                }
-
-            return result
+        return result

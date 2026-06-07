@@ -1,42 +1,24 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 
-from .forms import ServiceForm
-from .models import Service
+from .services import ServiceService
 
 
 class ServiceBaseView(LoginRequiredMixin, View):
     list_template_name = "partials/services/list.html"
 
-    def get_establishment(self):
-        return (
-            getattr(self.request.user, "owned_establishment", None)
-            or self.request.user.establishment
-        )
-
-    def get_service_users(self):
-        establishment = self.get_establishment()
-        if self.request.user.is_owner and establishment:
-            return establishment.users.order_by("first_name", "last_name", "username")
-        return self.request.user.__class__.objects.filter(pk=self.request.user.pk)
-
     def get_services(self):
-        return Service.objects.filter(user__in=self.get_service_users()).select_related("user").order_by(
-            "user__first_name",
-            "user__last_name",
-            "name",
-        )
+        return ServiceService.get_services(self.request.user)
 
     def get_service(self, pk=None):
-        if pk is None:
-            pk = self.request.POST.get("service_id")
-        return get_object_or_404(Service, pk=pk, user__in=self.get_service_users())
+        service_id = pk or self.request.POST.get("service_id")
+        return ServiceService.get_service(self.request.user, service_id)
 
     def get_form(self, data=None, instance=None):
-        return ServiceForm(data=data, instance=instance, users=self.get_service_users())
+        return ServiceService.get_form(self.request.user, data=data, instance=instance)
 
     def render_list(self, **context):
         return render(
@@ -64,11 +46,9 @@ class ServiceCreateView(ServiceBaseView):
         )
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form(data=request.POST)
+        _service, form, created = ServiceService.create_service(request.user, request.POST)
 
-        if form.is_valid():
-            form.save()
-
+        if created:
             if request.headers.get("HX-Request"):
                 response = self.render_modal(created=True)
                 response["HX-Trigger"] = "serviceCreated"
@@ -118,12 +98,9 @@ class ServiceUpdateView(ServiceBaseView):
         return response
 
     def post(self, request, pk, *args, **kwargs):
-        service = self.get_service(pk)
-        form = self.get_form(data=request.POST, instance=service)
+        service, form, updated = ServiceService.update_service(request.user, pk, request.POST)
 
-        if form.is_valid():
-            service = form.save()
-
+        if updated:
             if request.headers.get("HX-Request"):
                 return self.render_modal(service, updated=True)
 
@@ -137,8 +114,7 @@ class ServiceUpdateView(ServiceBaseView):
 
 class ServiceDeleteView(ServiceBaseView):
     def post(self, request, *args, **kwargs):
-        service = self.get_service()
-        service.delete()
+        ServiceService.delete_service(request.user, request.POST.get("service_id"))
 
         if request.headers.get("HX-Request"):
             response = self.render_list()
