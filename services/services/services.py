@@ -16,11 +16,6 @@ class ServiceService:
 
     @staticmethod
     def get_service_users(user, establishment=None):
-        establishment = establishment or ServiceService.get_establishment(user)
-
-        if getattr(user, "is_owner", False) and establishment:
-            return establishment.users.order_by("first_name", "last_name", "username")
-
         return user.__class__.objects.filter(pk=user.pk)
 
     @staticmethod
@@ -46,8 +41,7 @@ class ServiceService:
 
     @staticmethod
     def get_form(user, data=None, instance=None, users=None):
-        service_users = users if users is not None else ServiceService.get_service_users(user)
-        return ServiceForm(data=data, instance=instance, users=service_users)
+        return ServiceForm(data=data, instance=instance)
 
     @staticmethod
     def create_service(user, data):
@@ -56,7 +50,9 @@ class ServiceService:
         if not form.is_valid():
             return None, form, False
 
-        service = form.save()
+        service = form.save(commit=False)
+        service.user = user
+        service.save()
         return service, form, True
 
     @staticmethod

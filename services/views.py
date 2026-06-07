@@ -114,7 +114,8 @@ class ServiceUpdateView(ServiceBaseView):
 
 class ServiceDeleteView(ServiceBaseView):
     def post(self, request, *args, **kwargs):
-        ServiceService.delete_service(request.user, request.POST.get("service_id"))
+        service_id = request.POST.get("service_id") or request.POST.get("servico_id")
+        ServiceService.delete_service(request.user, service_id)
 
         if request.headers.get("HX-Request"):
             response = self.render_list()

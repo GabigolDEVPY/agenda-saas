@@ -22,19 +22,6 @@
 
           <div class="form-grid">
             <div class="form-group full">
-              <label for="{{ service_form.user.id_for_label }}">Profissional</label>
-              <select id="{{ service_form.user.id_for_label }}" name="user" required>
-                {% for option_user in service_form.fields.user.queryset %}
-                  <option value="{{ option_user.id }}"{% if service_form.user.value|stringformat:"s" == option_user.id|stringformat:"s" %} selected{% endif %}>
-                    {% if option_user.get_full_name %}{{ option_user.get_full_name }}{% else %}{{ option_user.username }}{% endif %}
-                  </option>
-                {% endfor %}
-              </select>
-              {% if service_form.user.errors %}
-                <span class="field-error">{{ service_form.user.errors|join:", " }}</span>
-              {% endif %}
-            </div>
-            <div class="form-group full">
               <label for="{{ service_form.name.id_for_label }}">Nome do Servico</label>
               <input type="text" id="{{ service_form.name.id_for_label }}" name="name" value="{{ service_form.name.value|default:'' }}" required/>
               {% if service_form.name.errors %}
@@ -53,6 +40,26 @@
               <input type="number" id="{{ service_form.time_duration.id_for_label }}" name="time_duration" value="{{ service_form.time_duration.value|default:'' }}" min="10" step="5" required/>
               {% if service_form.time_duration.errors %}
                 <span class="field-error">{{ service_form.time_duration.errors|join:", " }}</span>
+              {% endif %}
+            </div>
+            <div class="form-group full">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Servico ativo</div>
+                  <div class="toggle-sub">Disponivel para agendamento</div>
+                </div>
+                <label class="toggle" for="{{ service_form.is_active.id_for_label }}">
+                  <input
+                    type="checkbox"
+                    id="{{ service_form.is_active.id_for_label }}"
+                    name="is_active"
+                    {% if service_form.is_active.value %}checked{% endif %}
+                  />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              {% if service_form.is_active.errors %}
+                <span class="field-error">{{ service_form.is_active.errors|join:", " }}</span>
               {% endif %}
             </div>
           </div>

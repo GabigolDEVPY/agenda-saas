@@ -11,6 +11,7 @@ class Service(models.Model):
     name = models.CharField(max_length=40)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     time_duration = models.IntegerField(help_text="Duração em minutos")
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

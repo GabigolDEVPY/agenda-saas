@@ -1,6 +1,6 @@
 <div id="services-grid" class="services-grid"{% if hx_oob %} hx-swap-oob="true"{% endif %}>
   {% for service in services %}
-    <div class="service-card">
+    <div class="service-card{% if not service.is_active %} inactive{% endif %}">
       <div class="sc-top">
         <div class="sc-icon"><i class="fa-solid fa-scissors"></i></div>
         <div class="sc-actions">
@@ -39,7 +39,9 @@
       <div class="sc-footer">
         <div class="sc-price">R${{ service.price|floatformat:2 }}</div>
         <div class="sc-time"><i class="fa-regular fa-clock"></i> {{ service.time_duration }} min</div>
-        <div class="sc-status badge badge-accent">Ativo</div>
+        <div class="sc-status badge {% if service.is_active %}badge-accent{% else %}badge-alert{% endif %}">
+          {% if service.is_active %}Ativo{% else %}Inativo{% endif %}
+        </div>
       </div>
     </div>
   {% empty %}

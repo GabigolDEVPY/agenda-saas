@@ -27,19 +27,21 @@ class AppointmentService:
         if not establishment or not establishment.general_preferences.open_establishment:
             return "Estabelecimento fechado", False
 
+        horario_str = time.strftime("%H:%M")
+        uid = str(user.establishment.uid)
+
+        if service.user_id != user.id or not service.is_active:
+            return None, _error(uid, horario_str, "Servico indisponivel", "Esse servico nao esta disponivel para agendamento")
+
         agora = timezone.localtime(timezone.now())
         if date == agora.date() and time <= agora.time():
-            horario_str = time.strftime("%H:%M")
-            uid = str(user.establishment.uid)
             return None, _error(uid, horario_str, "Horário Inválido", "Esse horário já passou")
 
-        horario_str = time.strftime("%H:%M")
         user_id = str(user.id)
         data_str = str(date)
         duration_snapshot = service.time_duration
         novo_inicio = datetime.combine(date, time)
         novo_fim = novo_inicio + timedelta(minutes=duration_snapshot)
-        uid = str(user.establishment.uid)
 
         # Validações de grade e expediente (sem lock, só leitura)
         config = json.loads(HomeService.get_config([user]))

@@ -96,7 +96,6 @@ class HomeService:
     @staticmethod
     def get_services(users):
         result = {}
-        has_service = False
 
         for user in users:
             services = [
@@ -106,7 +105,7 @@ class HomeService:
                     "preco": str(s.price),
                     "duracao": s.time_duration,
                 }
-                for s in user.services.all()
+                for s in user.services.filter(is_active=True)
             ]
 
             result[str(user.id)] = services
