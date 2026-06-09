@@ -394,3 +394,58 @@ function renderOpenMonthsList() {
 
 buildPickMonthList();
 buildDefaultHoursCard();
+
+function prepareMonthForm() {
+  var diasOff = [];
+  var horariosCustom = {};
+
+  Object.keys(mState.dayData).forEach(function(dateStr) {
+    var data = mState.dayData[dateStr];
+    if (data.off) {
+      diasOff.push(dateStr);
+    } else {
+      horariosCustom[dateStr] = data.slots;
+    }
+  });
+
+  document.getElementById('fm-ano').value = mState.year;
+  document.getElementById('fm-mes').value = mState.month;
+  document.getElementById('fm-dias-off').value = JSON.stringify(diasOff);
+  document.getElementById('fm-horarios').value = JSON.stringify(horariosCustom);
+}
+
+document.body.addEventListener('htmx:configRequest', function(evt) {
+  if (evt.detail.elt.id === 'form-month') {
+    prepareMonthForm();
+    evt.detail.parameters['ano'] = document.getElementById('fm-ano').value;
+    evt.detail.parameters['mes'] = document.getElementById('fm-mes').value;
+    evt.detail.parameters['dias_off'] = document.getElementById('fm-dias-off').value;
+    evt.detail.parameters['horarios'] = document.getElementById('fm-horarios').value;
+  }
+});
+
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+  if (evt.detail.successful && evt.detail.elt.id === 'form-month') {
+    closeModal('modal-month');
+    // Save to local state just in case
+    var resAno = document.getElementById('fm-ano').value;
+    var resMes = document.getElementById('fm-mes').value;
+    var y = parseInt(resAno, 10);
+    var m = parseInt(resMes, 10);
+    
+    // update DIAS_OFF and HORARIOS for the saved month
+    var prefix = monthPrefix(y, m);
+    DIAS_OFF = DIAS_OFF.filter(function(d) { return !d.startsWith(prefix); });
+    Object.keys(HORARIOS).forEach(function(k) {
+      if (k.startsWith(prefix)) delete HORARIOS[k];
+    });
+
+    var newDiasOff = JSON.parse(document.getElementById('fm-dias-off').value || '[]');
+    var newHorarios = JSON.parse(document.getElementById('fm-horarios').value || '{}');
+
+    DIAS_OFF = DIAS_OFF.concat(newDiasOff);
+    Object.assign(HORARIOS, newHorarios);
+    
+    renderOpenMonthsList();
+  }
+});

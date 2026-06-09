@@ -287,7 +287,9 @@
       </div>
 
     </div>
-    <form method="POST" id="form-month" action="">
+    <form method="POST" id="form-month"
+          hx-post="{% url 'appointment:config_agenda' %}"
+          hx-swap="none">
       {% csrf_token %}
       <input type="hidden" name="ano"      id="fm-ano"/>
       <input type="hidden" name="mes"      id="fm-mes"/>
@@ -398,6 +400,18 @@
 {% block extra_scripts %}
 <script src="{% static 'scripts_barber.js' %}?v=frontend-opt-20260607"></script>
 <script src="{% static 'operating_hours.js' %}?v=frontend-opt-20260607"></script>
+<script>
+  DIAS_OFF = {{ dias_off_json|safe|default:"[]" }};
+  HORARIOS = {{ horarios_json|safe|default:"{}" }};
+  
+  var OPENED_MONTHS_DB = {{ opened_months_json|safe|default:"[]" }};
+  
+  OPENED_MONTHS_DB.forEach(function(om) {
+    openedMonths.push({ y: om.y, m: om.m });
+  });
+
+  renderOpenMonthsList();
+</script>
 <script>
   var currentTab = new URLSearchParams(window.location.search).get('tab');
   if (currentTab) {

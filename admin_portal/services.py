@@ -3,7 +3,8 @@ from establishment.models import Establishment, Address, OperatingHours, General
 from services.services import ServiceService
 from user.forms import EmployeeCreationForm
 from user.models import Preferences
-
+from appointment.models import MonthAvailability, HoursUnavailable
+import datetime
 
 
 class AdminService:
@@ -47,6 +48,34 @@ class AdminService:
             view.request.user,
             users=context['service_users'],
         )
+
+        hours = HoursUnavailable.objects.filter(user=view.request.user).select_related('month')
+        dias_off = []
+        horarios = {}
+        
+        default_slots = []
+        for h in range(9, 20):
+            default_slots.append(f"{h:02d}:00")
+            default_slots.append(f"{h:02d}:30")
+            
+        for h in hours:
+            # h.month.month is 0-indexed in DB, but frontend expects 1-indexed for date strings
+            date_str = f"{h.month.year}-{h.month.month + 1:02d}-{h.day:02d}"
+            if h.hour == datetime.time(0, 0):
+                dias_off.append(date_str)
+            else:
+                if date_str not in horarios:
+                    horarios[date_str] = default_slots.copy()
+                slot_str = h.hour.strftime('%H:%M')
+                if slot_str in horarios[date_str]:
+                    horarios[date_str].remove(slot_str)
+        
+        context['dias_off_json'] = json.dumps(dias_off)
+        context['horarios_json'] = json.dumps(horarios)
+        
+        months = MonthAvailability.objects.filter(user=view.request.user, availability=True)
+        opened_months = [{'y': m.year, 'm': m.month} for m in months]
+        context['opened_months_json'] = json.dumps(opened_months)
 
         return context
 

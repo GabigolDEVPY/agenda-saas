@@ -14,6 +14,6 @@ class MonthAvailabilityAdmin(admin.ModelAdmin):
 
 @admin.register(HoursUnavailable)
 class HoursUnavailableAdmin(admin.ModelAdmin):
-    list_display = ('user', 'month', 'day', 'hour', 'availability')
+    list_display = ('user', 'month', 'day', 'hour')
 
 

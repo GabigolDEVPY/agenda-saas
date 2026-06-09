@@ -46,11 +46,7 @@ class HoursUnavailable(models.Model):
     month = models.ForeignKey(MonthAvailability, on_delete=models.CASCADE)
     day = models.IntegerField()
     hour = models.TimeField()
-    availability = models.BooleanField(default=True)
 
     def __str__(self):
-        return (
-            f"{self.user} - {self.month.month}/{self.month.year}/{self.day} "
-            f"{self.hour} - {'Disponível' if self.availability else 'Indisponível'}"
-        )
+        return f"{self.user} - {self.month.month}/{self.month.year}/{self.day} {self.hour} - Indisponível"
 
