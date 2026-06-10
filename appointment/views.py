@@ -31,6 +31,7 @@ class ConfigAgendaView(LoginRequiredMixin, View):
     def post(self, request):
         ano = request.POST.get('ano')
         mes = request.POST.get('mes')
+        print(mes, ano)
         dias_off_json = request.POST.get('dias_off', '[]')
         horarios_json = request.POST.get('horarios', '{}')
         
@@ -38,7 +39,7 @@ class ConfigAgendaView(LoginRequiredMixin, View):
             dias_off = json.loads(dias_off_json)
             horarios = json.loads(horarios_json)
             ano = int(ano)
-            mes = int(mes)
+            mes = int(mes) + 1
         except (json.JSONDecodeError, ValueError, TypeError) as e:
             print(f"Error parsing data: {e}, ano={ano}, mes={mes}, dias_off={dias_off_json}, horarios={horarios_json}")
             return HttpResponse(status=400)

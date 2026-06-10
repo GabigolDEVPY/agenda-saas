@@ -1,7 +1,7 @@
 from appointment.forms import AppointmentForm
 from datetime import datetime, timedelta
 from establishment.models import Establishment
-from .models import Appointment
+from .models import Appointment, MonthAvailability, HoursUnavailable
 from django.db import transaction
 from django.utils import timezone
 import json
@@ -61,14 +61,47 @@ class AppointmentService:
         if slot_inicio_min < hora_inicio_min or slot_fim_min > hora_fim_min:
             return None, _error(uid, horario_str, "Horário Inválido", "Esse horário está fora do horário de funcionamento")
 
+        # ========================================================
+        # Verificar horários bloqueados (HoursUnavailable)
+        # Usa month__year e month__month pois MonthAvailability
+        # tem os campos year e month como IntegerField separados.
+        # ========================================================
+        hours_unavailable = HoursUnavailable.objects.filter(
+            user=user,
+            month__year=date.year,
+            month__month=date.month,
+            day=date.day,
+        )
+        print(hours_unavailable)  # Debug: ver a query gerada
+
+        # Dia inteiro bloqueado: registros com hour=00:00 indicam dia off
+        if hours_unavailable.filter(hour='00:00').exists():
+            return None, _error(
+                uid, horario_str,
+                "Dia Indisponível",
+                "O profissional não está disponível neste dia"
+            )
+
+        # Horários específicos bloqueados: conflita se algum slot bloqueado
+        # cai dentro do intervalo [slot_inicio, slot_fim) do agendamento
+        for hu in hours_unavailable.exclude(hour='00:00'):
+            hu_min = _to_min(hu.hour.strftime('%H:%M'))
+            if slot_inicio_min <= hu_min < slot_fim_min:
+                return None, _error(
+                    uid, horario_str,
+                    "Horário Indisponível",
+                    "Esse horário foi bloqueado pelo profissional"
+                )
+        # ========================================================
+
         # Busca términos de agendamentos existentes para permitir continuação natural
         agendamentos_json = json.loads(HomeService.get_appointments([user]))
         agendamentos_dia  = agendamentos_json.get(user_id, {}).get(data_str, [])
         ends_of_existing  = {_to_min(ag['fim']) for ag in agendamentos_dia}
 
-        # Horário válido se segue a duração do serviço ou continua um agendamento existente.
+        # Horário válido se segue a duração do serviço ou continua um agendamento existente
         offset = slot_inicio_min - hora_inicio_min
-        on_service_grid      = (offset % effective_interval == 0)
+        on_service_grid = (offset % effective_interval == 0)
         is_natural_continuation = slot_inicio_min in ends_of_existing
 
         if not on_service_grid and not is_natural_continuation:

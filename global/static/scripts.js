@@ -11,10 +11,15 @@ var calAno = hoje.getFullYear();
 var CONFIG_BARBEIRO = {};
 var AGENDAMENTOS_DIA = {};
 var MESES_DISPONIVEIS = [];
+var HORAS_INDISPONIVEIS = {};   // <<< NOVO
 var duracaoTotalMin = 0;
 
 function $(id) {
   return document.getElementById(id);
+}
+
+function pad(n) {
+  return String(n).padStart(2, '0');
 }
 
 function toMin(hhmm) {
@@ -37,6 +42,20 @@ function isHoje(dateKey) {
 function getAgoraMin() {
   var agora = new Date();
   return agora.getHours() * 60 + agora.getMinutes();
+}
+
+// <<< NOVO — converte HOURS_UNAVAILABLE_POR_BARBEIRO em { dateKey: ['09:00', ...] }
+// ATENÇÃO: se o backend manda month 0-indexed (5 = junho) mantenha +1.
+//          Se manda 1-indexed (5 = maio) troque por pad(item.month).
+function buildHorasIndisponiveis() {
+  var raw = (typeof HOURS_UNAVAILABLE_POR_BARBEIRO !== 'undefined') ? HOURS_UNAVAILABLE_POR_BARBEIRO : [];
+  var result = {};
+  raw.forEach(function(item) {
+    var key = item.year + '-' + pad(item.month) + '-' + pad(item.day);
+    if (!result[key]) result[key] = [];
+    result[key].push(item.hour);
+  });
+  return result;
 }
 
 function filtrarHorariosPassados(dateKey, slots) {
@@ -93,7 +112,17 @@ function gerarSlotsDisponiveis(dateKey) {
     if (livre) slots.push(toHHMM(slotInicio));
   });
 
-  return filtrarHorariosPassados(dateKey, slots);
+  slots = filtrarHorariosPassados(dateKey, slots);
+
+  // <<< NOVO — remove horários bloqueados pelo servidor
+  var bloqueados = HORAS_INDISPONIVEIS[dateKey] || [];
+  if (bloqueados.length) {
+    slots = slots.filter(function(slot) {
+      return bloqueados.indexOf(slot) === -1;
+    });
+  }
+
+  return slots;
 }
 
 function getDuracaoSelecionada() {
@@ -165,6 +194,7 @@ function selectBarber(el) {
   CONFIG_BARBEIRO = CONFIG_POR_BARBEIRO[barberId] || {};
   AGENDAMENTOS_DIA = AGENDAMENTOS_POR_BARBEIRO[barberId] || {};
   MESES_DISPONIVEIS = MESES_DISPONIVEIS_POR_BARBEIRO[barberId] || [];
+  HORAS_INDISPONIVEIS = buildHorasIndisponiveis();   // <<< NOVO
 
   calMes = hoje.getMonth();
   calAno = hoje.getFullYear();

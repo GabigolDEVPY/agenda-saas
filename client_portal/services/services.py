@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-from appointment.models import Appointment, MonthAvailability
+from appointment.models import Appointment, MonthAvailability, HoursUnavailable
 import json
 from establishment.models import Establishment
 from establishment.services.messages import ERRORS
@@ -122,6 +122,18 @@ class HomeService:
         print(result["operating_hours_grouped"])
         return result
 
+    @staticmethod
+    def get_hours_unavailable(uid):
+        hours_unavailable = HoursUnavailable.objects.filter(user__id=uid)
+        return [
+            {
+                "month": h.month.month,
+                "year": h.month.year,
+                "day": h.day,
+                "hour": h.hour.strftime("%H:%M"),
+            }
+            for h in hours_unavailable
+        ]
 
     @staticmethod
     def get_context_establishment(uid):
@@ -146,8 +158,10 @@ class HomeService:
             "meses_disponiveis_json": HomeService.get_available_months(users),
             "servicos_json": HomeService.get_services(users),
             "infos": HomeService.get_infos_establishment(establishment),
-            "gereral_preferences": establishment.general_preferences
+            "gereral_preferences": establishment.general_preferences,
+            "hours_unavailable_json": HomeService.get_hours_unavailable(establishment.id)
         }
-        print(context["servicos_json"])
+        print(context["meses_disponiveis_json"])
+        print(context["hours_unavailable_json"])
         return context
 

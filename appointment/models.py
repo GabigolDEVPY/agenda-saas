@@ -4,6 +4,7 @@ from services.models import Service
 
 
 
+
 class Appointment(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
