@@ -34,6 +34,8 @@ class ConfigAgendaView(LoginRequiredMixin, View):
         print(mes, ano)
         dias_off_json = request.POST.get('dias_off', '[]')
         horarios_json = request.POST.get('horarios', '{}')
+        print(dias_off_json)
+        print(horarios_json)
         
         try:
             dias_off = json.loads(dias_off_json)
@@ -66,24 +68,17 @@ class ConfigAgendaView(LoginRequiredMixin, View):
                 hour=dummy_time
             ))
             
-        default_slots = []
-        for h in range(9, 20):
-            default_slots.append(f"{h:02d}:00")
-            default_slots.append(f"{h:02d}:30")
-            
         for d, slots in horarios.items():
             day = int(d.split('-')[2])
-            # Apenas salva os slots que são PADRÃO mas NÃO ESTÃO na lista de disponíveis (ou seja, os indisponíveis)
-            for default_slot in default_slots:
-                if default_slot not in slots:
-                    h, m = map(int, default_slot.split(':'))
-                    time_obj = datetime.time(h, m)
-                    hours_to_create.append(HoursUnavailable(
-                        user=request.user,
-                        month=month_avail,
-                        day=day,
-                        hour=time_obj
-                    ))
+            for slot in slots:
+                h, m = map(int, slot.split(':'))
+                time_obj = datetime.time(h, m)
+                hours_to_create.append(HoursUnavailable(
+                    user=request.user,
+                    month=month_avail,
+                    day=day,
+                    hour=time_obj
+                ))
                 
         if hours_to_create:
             HoursUnavailable.objects.bulk_create(hours_to_create)

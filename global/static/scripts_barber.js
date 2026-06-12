@@ -5,7 +5,7 @@ var HORARIOS = {};
 var DEFAULT_SLOTS = [];
 (function() {
   var h;
-  for (h = 9; h < 20; h++) {
+  for (h = 6; h < 23; h++) {
     DEFAULT_SLOTS.push(pad(h) + ':00');
     DEFAULT_SLOTS.push(pad(h) + ':30');
   }
@@ -15,7 +15,20 @@ var MONTHS_PT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 var DAYS_LABEL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 var defaultWorkDays = { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true };
-var openedMonths = [];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CORREÇÃO: normaliza openedMonths garantindo que o mês seja sempre 0-indexed.
+// Se o servidor envia mês 1-indexed (1=Janeiro … 12=Dezembro), subtrai 1 aqui.
+// Se já é 0-indexed, não muda nada — o Math.max(0, m - (m > 11 ? 0 : ???))
+// seria ambíguo, então usamos uma heurística simples: se m > 11, já é inválido;
+// se o array vier do PHP com 1-indexed, basta descomentar o "- 1" abaixo.
+// ─────────────────────────────────────────────────────────────────────────────
+var openedMonths = (window.__openedMonths__ || []).map(function(o) {
+  return {
+    y: parseInt(o.y, 10),
+    m: parseInt(o.m, 10) - 1   // ← CORREÇÃO: PHP envia 1-indexed, converte para 0-indexed
+  };
+});
 
 var mState = {
   month: 0,
@@ -53,7 +66,11 @@ function openMonthModal(m, y) {
 
   Object.keys(HORARIOS).forEach(function(d) {
     if (!d.startsWith(prefix)) return;
-    mState.dayData[d] = { off: false, slots: HORARIOS[d].slice() };
+    var bloqueados = HORARIOS[d];
+    var ativos = DEFAULT_SLOTS.filter(function(s) {
+      return bloqueados.indexOf(s) === -1;
+    });
+    mState.dayData[d] = { off: false, slots: ativos };
   });
 
   document.getElementById('modal-month-title').textContent = MONTHS_PT[m] + ' ' + y;
@@ -404,7 +421,13 @@ function prepareMonthForm() {
     if (data.off) {
       diasOff.push(dateStr);
     } else {
-      horariosCustom[dateStr] = data.slots;
+      // CORREÇÃO: envia só os slots BLOQUEADOS (default - ativos)
+      var bloqueados = DEFAULT_SLOTS.filter(function(s) {
+        return data.slots.indexOf(s) === -1;
+      });
+      if (bloqueados.length) {
+        horariosCustom[dateStr] = bloqueados;
+      }
     }
   });
 
@@ -427,13 +450,13 @@ document.body.addEventListener('htmx:configRequest', function(evt) {
 document.body.addEventListener('htmx:afterRequest', function(evt) {
   if (evt.detail.successful && evt.detail.elt.id === 'form-month') {
     closeModal('modal-month');
-    // Save to local state just in case
+
     var resAno = document.getElementById('fm-ano').value;
     var resMes = document.getElementById('fm-mes').value;
     var y = parseInt(resAno, 10);
-    var m = parseInt(resMes, 10);
-    
-    // update DIAS_OFF and HORARIOS for the saved month
+    var m = parseInt(resMes, 10); // já é 0-indexed (vem do mState.month via prepareMonthForm)
+
+    // Atualiza DIAS_OFF e HORARIOS para o mês salvo
     var prefix = monthPrefix(y, m);
     DIAS_OFF = DIAS_OFF.filter(function(d) { return !d.startsWith(prefix); });
     Object.keys(HORARIOS).forEach(function(k) {
@@ -445,7 +468,8 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
 
     DIAS_OFF = DIAS_OFF.concat(newDiasOff);
     Object.assign(HORARIOS, newHorarios);
-    
+
+    // openedMonths NÃO é alterado aqui — já foi populado corretamente no clique
     renderOpenMonthsList();
   }
 });

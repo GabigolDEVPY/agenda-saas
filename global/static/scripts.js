@@ -47,8 +47,9 @@ function getAgoraMin() {
 // <<< NOVO — converte HOURS_UNAVAILABLE_POR_BARBEIRO em { dateKey: ['09:00', ...] }
 // ATENÇÃO: se o backend manda month 0-indexed (5 = junho) mantenha +1.
 //          Se manda 1-indexed (5 = maio) troque por pad(item.month).
-function buildHorasIndisponiveis() {
-  var raw = (typeof HOURS_UNAVAILABLE_POR_BARBEIRO !== 'undefined') ? HOURS_UNAVAILABLE_POR_BARBEIRO : [];
+function buildHorasIndisponiveis(barberId) {
+  var all = (typeof HOURS_UNAVAILABLE_POR_BARBEIRO !== 'undefined') ? HOURS_UNAVAILABLE_POR_BARBEIRO : {};
+  var raw = all[barberId] || [];
   var result = {};
   raw.forEach(function(item) {
     var key = item.year + '-' + pad(item.month) + '-' + pad(item.day);
@@ -194,7 +195,7 @@ function selectBarber(el) {
   CONFIG_BARBEIRO = CONFIG_POR_BARBEIRO[barberId] || {};
   AGENDAMENTOS_DIA = AGENDAMENTOS_POR_BARBEIRO[barberId] || {};
   MESES_DISPONIVEIS = MESES_DISPONIVEIS_POR_BARBEIRO[barberId] || [];
-  HORAS_INDISPONIVEIS = buildHorasIndisponiveis();   // <<< NOVO
+  HORAS_INDISPONIVEIS = buildHorasIndisponiveis(barberId);
 
   calMes = hoje.getMonth();
   calAno = hoje.getFullYear();

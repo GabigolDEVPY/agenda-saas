@@ -123,17 +123,20 @@ class HomeService:
         return result
 
     @staticmethod
-    def get_hours_unavailable(uid):
-        hours_unavailable = HoursUnavailable.objects.filter(user__id=uid)
-        return [
-            {
-                "month": h.month.month,
-                "year": h.month.year,
-                "day": h.day,
-                "hour": h.hour.strftime("%H:%M"),
-            }
-            for h in hours_unavailable
-        ]
+    def get_hours_unavailable(users):
+        result = {}
+        for user in users:
+            hours_unavailable = HoursUnavailable.objects.filter(user=user).select_related('month')
+            result[str(user.id)] = [
+                {
+                    "month": h.month.month,
+                    "year": h.month.year,
+                    "day": h.day,
+                    "hour": h.hour.strftime("%H:%M"),
+                }
+                for h in hours_unavailable
+            ]
+        return json.dumps(result)
 
     @staticmethod
     def get_context_establishment(uid):
@@ -159,7 +162,7 @@ class HomeService:
             "servicos_json": HomeService.get_services(users),
             "infos": HomeService.get_infos_establishment(establishment),
             "gereral_preferences": establishment.general_preferences,
-            "hours_unavailable_json": HomeService.get_hours_unavailable(establishment.id)
+            "hours_unavailable_json": HomeService.get_hours_unavailable(users)
         }
         print(context["meses_disponiveis_json"])
         print(context["hours_unavailable_json"])
