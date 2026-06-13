@@ -25,15 +25,12 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        if hasattr(user, 'owned_establishment') and user.owned_establishment:
-            id = user.owned_establishment.uid
-            self.request.session['uid'] = id
+        id = user.establishment.uid
+        self.request.session['uid'] = id
+        return reverse(
+            "admin_portal:home",
+        )
 
-            return reverse(
-                "client_portal:public_agenda",
-                kwargs={"uid": user.owned_establishment.uid}
-            )
-        return reverse("admin_portal:home")
 
 
 class UserRegisterView(CreateView):

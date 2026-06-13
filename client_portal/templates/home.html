@@ -15,7 +15,7 @@
   <div style="display:flex;flex-direction:column;gap:18px;">
 
     <!-- PROFISSIONAL -->
-    <div class="card">
+    <div class="card">modal-barber
       <div class="card-title">Profissional</div>
       <div class="card-sub">Escolha o profissional de sua preferência</div>
       <button class="select-trigger" id="btn-barber" type="button" onclick="openModal('modal-barber')">
@@ -194,7 +194,7 @@
               onclick="selectBarber(this)">
           <div class="b-avatar"><i class="fa-solid fa-user-tie"></i></div>
           <div class="b-info">
-            <div class="b-name">{{ user.username }}</div>
+            <div class="b-name">{{ user.first_name }}</div>
           </div>
           <div class="b-check"><i class="fa-solid fa-check"></i></div>
         </div>
