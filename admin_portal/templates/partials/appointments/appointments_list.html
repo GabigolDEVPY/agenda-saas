@@ -1,0 +1,87 @@
+{% load i18n %}
+
+<div id="appointments-list">
+
+  <hr class="divider" style="margin: 24px 0 20px;"/>
+
+  <div class="section-header" style="margin-bottom:14px;">
+    <div>
+      <div class="section-title">Agendamentos</div>
+      <div class="section-sub">Histórico de clientes por mês</div>
+    </div>
+  </div>
+
+  {% if appointments %}
+
+    {% regroup appointments by date.month as months_list %}
+
+    {% for month_group in months_list %}
+      {% with first=month_group.list.0 %}
+
+      <div class="open-month-bar" style="background:var(--bg-3);border-color:var(--border-dark);" onclick="this.nextElementSibling.classList.toggle('is-hidden'); this.querySelector('.month-chevron').classList.toggle('fa-chevron-down'); this.querySelector('.month-chevron').classList.toggle('fa-chevron-up');">
+        <div class="open-month-bar-left">
+          <div class="open-month-bar-icon" style="background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.12);">
+            <i class="fa-solid fa-scissors" style="color:var(--danger);font-size:12px;"></i>
+          </div>
+          <div>
+            <div class="open-month-title">{{ first.date|date:"F Y" }}</div>
+            <div class="open-month-meta">{{ month_group.list|length }} agendamento{{ month_group.list|length|pluralize }}</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-down month-chevron" style="color:var(--muted);font-size:11px;transition:all .2s;"></i>
+      </div>
+
+      <div class="month-list" style="margin-bottom:16px;">
+        {% for appointment in month_group.list %}
+        <div class="month-item" style="cursor:default;">
+          <div class="month-left">
+            <div class="month-icon">
+              <i class="fa-solid fa-scissors"></i>
+            </div>
+            <div>
+              <div class="month-name">{{ appointment.service.name }}</div>
+              <div class="month-stat">
+                {{ appointment.date|date:"d/m/Y" }} às {{ appointment.time|time:"H:i" }}
+                &nbsp;·&nbsp; {{ appointment.duration }} min
+              </div>
+              {% if appointment.client_name %}
+                <div class="month-stat" style="margin-top:2px;">
+                  <i class="fa-solid fa-user" style="font-size:9px;margin-right:4px;"></i>{{ appointment.client_name }}
+                </div>
+              {% endif %}
+              {% if appointment.observation %}
+                <div class="month-stat" style="margin-top:2px;font-style:italic;">
+                  <i class="fa-regular fa-comment" style="font-size:9px;margin-right:4px;"></i>{{ appointment.observation }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+            <span class="stat-value" style="font-size:16px;">R${{ appointment.total }}</span>
+            {% now "Y-m-d" as today_str %}
+            {% if appointment.date|date:"Y-m-d" < today_str %}
+              <span class="month-badge badge-gray">Concluído</span>
+            {% elif appointment.date|date:"Y-m-d" == today_str %}
+              <span class="month-badge badge-ok">Hoje</span>
+            {% else %}
+              <span class="month-badge badge-accent">Agendado</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% endwith %}
+    {% endfor %}
+
+  {% else %}
+
+    <div class="empty-state">
+      <i class="fa-regular fa-calendar-xmark"></i>
+      <div>Nenhum agendamento encontrado.</div>
+    </div>
+
+  {% endif %}
+
+</div>

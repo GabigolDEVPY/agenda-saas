@@ -4,6 +4,7 @@ from services.services import ServiceService
 from user.forms import EmployeeCreationForm
 from user.models import Preferences
 from appointment.models import MonthAvailability, HoursUnavailable
+from appointment.models import Appointment
 import datetime
 
 
@@ -19,7 +20,21 @@ class AdminService:
             return Establishment.objects.filter(uid=uid).first()
 
         return None
+    
+    # selecionar o estabelecimento do usuário logado
+    from itertools import groupby
+    from django.db.models import Prefetch
 
+
+    def get_appointments_by_month(user):
+        appointments = (
+            Appointment.objects
+            .filter(user=user)
+            .select_related("service")
+            .order_by("date", "time")
+        )
+        return appointments
+    
     @staticmethod
     def get_context_admin(view, **kwargs):
         context = super(type(view), view).get_context_data(**kwargs)
@@ -40,14 +55,9 @@ class AdminService:
         context['employees'] = establishment.users.filter(is_owner=False).order_by("first_name", "last_name", "username") if establishment else []
         context['employee_form'] = EmployeeCreationForm()
         context['service_users'] = ServiceService.get_service_users(view.request.user, establishment)
-        context['services'] = ServiceService.get_services(
-            view.request.user,
-            service_users=context['service_users'],
-        )
-        context['service_form'] = ServiceService.get_form(
-            view.request.user,
-            users=context['service_users'],
-        )
+        context['services'] = ServiceService.get_services(view.request.user,service_users=context['service_users'],)
+        context['service_form'] = ServiceService.get_form(view.request.user,users=context['service_users'],)
+        context["appointments"] = AdminService.get_appointments_by_month(view.request.user)
 
         hours = HoursUnavailable.objects.filter(user=view.request.user).select_related('month')
         dias_off = []

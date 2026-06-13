@@ -2,6 +2,8 @@
 var DIAS_OFF = [];
 var HORARIOS = {};
 
+/* horarios que aparecerão na agenda para selecionar horarios disponiveis para agendar
+ pode alterar e mandar do backend, da parte de avaliable days, hours, etc*/
 var DEFAULT_SLOTS = [];
 (function() {
   var h;
