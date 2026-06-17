@@ -11,6 +11,9 @@
     <button class="nav-tab active" onclick="switchTab('agenda', this)">
       <i class="fa-regular fa-calendar-days"></i>Agenda
     </button>
+    <button class="nav-tab active" onclick="switchTab('agendamentos', this)">
+      <i class="fa-regular fa-calendar-days"></i>Agendamentos
+    </button>
     <button class="nav-tab" onclick="switchTab('servicos', this)">
       <i class="fa-solid fa-scissors"></i>Serviços
     </button>
@@ -79,8 +82,8 @@
 
   <!-- MESES ABERTOS (renderizados dinamicamente) -->
   <div id="open-months-list"></div>
-  {% include "partials/appointments/appointments_list.html" %}
 </div>
+{% include "partials/appointments/appointments_list.html" %}
 
 
 
