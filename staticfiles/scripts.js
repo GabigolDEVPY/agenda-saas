@@ -500,3 +500,4 @@ function initBookingPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initBookingPage);
+

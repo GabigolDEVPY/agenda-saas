@@ -1488,3 +1488,168 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   font-size: 15px;
   max-width: 340px;
 }
+
+/* ═══════════════════════════════════════════
+   DAY BARS
+═══════════════════════════════════════════ */
+.day-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all .15s;
+  gap: 12px;
+}
+.day-bar:hover    { border-color: var(--border-dark); background: var(--bg-4); }
+.day-bar.is-open  { border-color: var(--border-strong); background: var(--bg-4); }
+
+.day-bar-left   { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.day-date-block { display: flex; flex-direction: column; align-items: center; min-width: 36px; }
+.day-date-num   { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -.5px; }
+.day-date-wk    { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.day-date-info  { min-width: 0; }
+.day-weekday    { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -.1px; }
+.day-summary    { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.day-bar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.day-chevron   { color: var(--muted); font-size: 11px; transition: transform .2s; }
+
+/* ═══════════════════════════════════════════
+   DAY TIMELINE WRAPPER
+═══════════════════════════════════════════ */
+.day-timeline {
+  margin-bottom: 8px;
+  padding-left: 4px;
+  animation: tlIn .3s ease;
+}
+@keyframes tlIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.day-tl-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 4px 8px; gap: 8px; flex-wrap: wrap;
+}
+.day-tl-date  { font-size: 12px; font-weight: 600; color: var(--text-2); letter-spacing: .3px; }
+.day-tl-meta  { display: flex; align-items: center; gap: 10px; }
+.day-tl-total { font-size: 13px; font-weight: 700; color: var(--text); display: none; }
+.day-tl-total.has-value { display: inline; }
+.day-tl-count { font-size: 11px; color: var(--muted); }
+
+.day-tl-scroll {
+  max-height: 500px;
+  overflow-y: auto; overflow-x: hidden;
+  border-radius: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-5) transparent;
+}
+.day-tl-scroll::-webkit-scrollbar       { width: 5px; }
+.day-tl-scroll::-webkit-scrollbar-track  { background: transparent; }
+.day-tl-scroll::-webkit-scrollbar-thumb  { background: var(--bg-5); border-radius: 3px; }
+.day-tl-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ═══════════════════════════════════════════
+   TIMELINE CORE
+═══════════════════════════════════════════ */
+.tl-wrap {
+  display: flex; position: relative;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tl-hours {
+  width: 48px; flex-shrink: 0;
+  position: relative;
+  border-right: 1px solid var(--border);
+  background: var(--bg-3);
+}
+.tl-hour-lbl {
+  position: absolute; right: 8px;
+  font-size: 10px; font-weight: 500;
+  color: var(--muted);
+  transform: translateY(-50%);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .3px; white-space: nowrap;
+}
+
+.tl-track { flex: 1; position: relative; }
+
+.tl-grid     { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); }
+.tl-grid-half { opacity: .3; }
+
+.tl-now {
+  position: absolute; left: 0; right: 0;
+  height: 2px; background: var(--danger);
+  z-index: 10; pointer-events: none;
+}
+.tl-now::before {
+  content: ''; position: absolute;
+  left: -4px; top: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%; background: var(--danger);
+}
+
+/* ═══════════════════════════════════════════
+   TIMELINE BLOCKS
+═══════════════════════════════════════════ */
+.tl-block {
+  position: absolute; left: 6px; right: 6px;
+  border-radius: 6px; padding: 7px 10px;
+  overflow: hidden; cursor: default;
+  transition: border-color .15s, box-shadow .15s;
+  z-index: 5;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+.tl-block--done    { background: var(--bg-4); border: 1px solid var(--border-dark); opacity: .6; }
+.tl-block--today   { background: rgba(139,143,163,.1); border: 1px solid rgba(139,143,163,.25); }
+.tl-block--pending { background: rgba(34,197,94,.06); border: 1px solid rgba(34,197,94,.18); }
+
+.tl-block:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); z-index: 6; }
+.tl-block--done:hover { opacity: .85; }
+
+.tl-b-time {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .5px; color: var(--muted);
+  margin-bottom: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.tl-b-svc {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+.tl-b-client {
+  font-size: 11px; color: var(--text-2); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tl-b-price { font-size: 12px; font-weight: 700; color: var(--text); margin-top: 4px; }
+.tl-b-obs {
+  font-size: 10px; color: var(--muted); margin-top: 3px; font-style: italic;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* compacto (duração curta) */
+.tl-block--compact { padding: 4px 10px; flex-direction: row; align-items: center; gap: 8px; }
+.tl-block--compact .tl-b-time  { margin-bottom: 0; flex-shrink: 0; }
+.tl-block--compact .tl-b-svc   { margin-bottom: 0; }
+.tl-block--compact .tl-b-client { margin-top: 0; font-size: 10px; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .day-bar         { padding: 10px 12px; }
+  .day-date-num    { font-size: 18px; }
+  .day-weekday     { font-size: 12px; }
+  .tl-hours        { width: 40px; }
+  .tl-hour-lbl     { font-size: 9px; right: 6px; }
+  .tl-block        { left: 4px; right: 4px; padding: 5px 8px; }
+  .tl-b-svc        { font-size: 12px; }
+}

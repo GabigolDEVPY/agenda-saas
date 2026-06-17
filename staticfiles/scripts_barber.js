@@ -550,3 +550,166 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
     renderOpenMonthsList();
   }
 });
+
+/* ═══════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════ */
+const TL_HH   = 56;   // px por hora
+const TL_FROM = 0;     // hora inicial
+const TL_TO   = 24;    // hora final
+
+/* ═══════════════════════════════════════════
+   MONTH TOGGLE
+═══════════════════════════════════════════ */
+function toggleMonth(bar) {
+  const list    = bar.nextElementSibling;
+  const chevron = bar.querySelector('.month-chevron');
+  list.classList.toggle('is-hidden');
+  chevron.classList.toggle('fa-chevron-down');
+  chevron.classList.toggle('fa-chevron-up');
+}
+
+/* ═══════════════════════════════════════════
+   DAY TOGGLE (accordion dentro do mês)
+═══════════════════════════════════════════ */
+function toggleDay(bar) {
+  const tl     = bar.nextElementSibling;
+  const isOpen = !tl.classList.contains('is-hidden');
+
+  /* fecha irmãos */
+  const parent = bar.parentElement;
+  parent.querySelectorAll(':scope > .day-bar').forEach(b => {
+    if (b === bar) return;
+    const t = b.nextElementSibling;
+    if (t && t.classList.contains('day-timeline') && !t.classList.contains('is-hidden')) {
+      t.classList.add('is-hidden');
+      b.querySelector('.day-chevron').style.transform = '';
+      b.classList.remove('is-open');
+    }
+  });
+
+  if (isOpen) {
+    tl.classList.add('is-hidden');
+    bar.querySelector('.day-chevron').style.transform = '';
+    bar.classList.remove('is-open');
+  } else {
+    tl.classList.remove('is-hidden');
+    bar.querySelector('.day-chevron').style.transform = 'rotate(180deg)';
+    bar.classList.add('is-open');
+
+    const c = tl.querySelector('.tl-container');
+    if (c && !c.dataset.built) { buildTimeline(c); c.dataset.built = '1'; }
+
+    requestAnimationFrame(() => autoScroll(tl));
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BUILD TIMELINE
+═══════════════════════════════════════════ */
+function buildTimeline(container) {
+  const els  = container.querySelectorAll('.tl-apt');
+  const apts = Array.from(els).map(e => ({
+    h: +e.dataset.h,  m: +e.dataset.m,  dur: +e.dataset.dur,
+    svc: e.dataset.svc, client: e.dataset.client,
+    total: e.dataset.total, time: e.dataset.time,
+    status: e.dataset.status, obs: e.dataset.obs
+  })).filter(a => !isNaN(a.h) && !isNaN(a.m));
+
+  apts.sort((a, b) => (a.h * 60 + a.m) - (b.h * 60 + b.m));
+
+  const totalPx = (TL_TO - TL_FROM) * TL_HH;
+
+  /* wrap */
+  const wrap = el('div', 'tl-wrap');
+  wrap.style.height = totalPx + 'px';
+
+  /* coluna de horas */
+  const hCol = el('div', 'tl-hours');
+  for (let h = TL_FROM; h <= TL_TO; h++) {
+    const lbl = el('div', 'tl-hour-lbl');
+    lbl.style.top = ((h - TL_FROM) * TL_HH) + 'px';
+    lbl.textContent = String(h).padStart(2, '0') + ':00';
+    hCol.appendChild(lbl);
+  }
+
+  /* track */
+  const track = el('div', 'tl-track');
+
+  /* grid */
+  for (let h = TL_FROM; h <= TL_TO; h++) {
+    const y = (h - TL_FROM) * TL_HH;
+    track.appendChild(gridLine(y));
+    if (h < TL_TO) track.appendChild(gridLine(y + TL_HH / 2, true));
+  }
+
+  /* indicador "agora" */
+  const dayStr  = container.dataset.day;
+  const now     = new Date();
+  const today   = fmt(now);
+  if (dayStr === today) {
+    const nEl = el('div', 'tl-now');
+    nEl.style.top = ((now.getHours() * 60 + now.getMinutes()) / 60 * TL_HH) + 'px';
+    track.appendChild(nEl);
+  }
+
+  /* blocos */
+  let totalVal = 0;
+  apts.forEach(a => {
+    totalVal += parseFloat(a.total) || 0;
+
+    const top  = ((a.h - TL_FROM) * 60 + a.m) / 60 * TL_HH;
+    const raw  = a.dur / 60 * TL_HH;
+    const h    = Math.max(raw, 30);
+    const mini = raw < 44;
+
+    const blk = el('div', 'tl-block tl-block--' + a.status + (mini ? ' tl-block--compact' : ''));
+    blk.style.top    = top + 'px';
+    blk.style.height = h + 'px';
+
+    if (mini) {
+      blk.innerHTML =
+        span('tl-b-time', a.time) +
+        span('tl-b-svc', esc(a.svc)) +
+        (a.client ? span('tl-b-client', '· ' + esc(a.client)) : '');
+    } else {
+      blk.innerHTML =
+        '<div class="tl-b-time">' + a.time + ' · ' + a.dur + 'min</div>' +
+        '<div class="tl-b-svc">' + esc(a.svc) + '</div>' +
+        (a.client ? '<div class="tl-b-client"><i class="fa-solid fa-user" style="font-size:9px;margin-right:4px;opacity:.5"></i>' + esc(a.client) + '</div>' : '') +
+        (h >= 75  ? '<div class="tl-b-price">R$ ' + a.total + '</div>' : '') +
+        (h >= 100 && a.obs ? '<div class="tl-b-obs"><i class="fa-regular fa-comment" style="font-size:9px;margin-right:4px;opacity:.5"></i>' + esc(a.obs) + '</div>' : '');
+    }
+    track.appendChild(blk);
+  });
+
+  wrap.appendChild(hCol);
+  wrap.appendChild(track);
+  container.appendChild(wrap);
+
+  /* total no header */
+  const totEl = container.closest('.day-timeline').querySelector('.day-tl-total');
+  if (totEl && totalVal > 0) {
+    totEl.textContent = 'R$ ' + totalVal.toFixed(2).replace('.', ',');
+    totEl.classList.add('has-value');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   AUTO-SCROLL
+═══════════════════════════════════════════ */
+function autoScroll(wrap) {
+  const sc = wrap.querySelector('.day-tl-scroll');
+  if (!sc) return;
+  const target = sc.querySelector('.tl-now') || sc.querySelector('.tl-block');
+  if (target) sc.scrollTop = Math.max(0, parseInt(target.style.top) - 80);
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function el(tag, cls)  { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+function span(c, txt)  { return '<span class="' + c + '">' + txt + '</span>'; }
+function gridLine(y, half) { const d = el('div', 'tl-grid' + (half ? ' tl-grid-half' : '')); d.style.top = y + 'px'; return d; }
+function fmt(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
