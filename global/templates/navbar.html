@@ -23,6 +23,9 @@
       </button>
     </form>
     {% else %}
+    <a href="{% url 'client_portal:appointments' %}" class="btn-admin">
+      <i class="fa-solid fa-user"></i>Meus Agendamentos
+    </a>
     <a href="{% url 'user:login' %}" class="btn-admin">
       <i class="fa-solid fa-user"></i>Entrar
     </a>

@@ -5,4 +5,5 @@ app_name = 'client_portal'
 
 urlpatterns = [
     path('e/<str:uid>/', PublicAgenda.as_view(), name='public_agenda'),
+    path('e/appointments/', PublicAgenda.as_view(), name='appointments'),
     ]

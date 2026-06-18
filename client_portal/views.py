@@ -9,3 +9,8 @@ class PublicAgenda(View):
         if context.get("incomplete"):
             return render(request, 'unavailable.html', context=context)  
         return render(request, 'home.html', context=context)
+    
+class Appointments(View):
+    def get(self, request):
+        # Implementation for displaying appointments
+        pass
