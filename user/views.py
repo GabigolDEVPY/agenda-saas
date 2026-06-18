@@ -79,9 +79,9 @@ class ChangeNameView(ProfilePartialMixin):
 
         if form.is_valid():
             display_name = form.cleaned_data["display_name"]
-            first_name, _, last_name = display_name.partition(" ")
-            request.user.first_name = first_name
-            request.user.last_name = last_name
+            parts = display_name.split(" ", 1)
+            request.user.first_name = parts[0]
+            request.user.last_name = parts[1] if len(parts) > 1 else ""
             request.user.save(update_fields=["first_name", "last_name"])
             form = None
 

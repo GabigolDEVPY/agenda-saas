@@ -1,0 +1,105 @@
+{% load i18n %}
+
+<hr class="divider" style="margin: 24px 0 20px;"/>
+
+<div class="section-header" style="margin-bottom:14px;">
+  <div>
+    <div class="section-title">Agendamentos</div>
+    <div class="section-sub">Histórico de clientes por mês</div>
+  </div>
+</div>
+
+{% if appointments %}
+  {% now "Y-m-d" as today_str %}
+  {% regroup appointments by date.month as months_list %}
+
+  {% for month_group in months_list %}
+    {% with first=month_group.list.0 %}
+
+    <div class="open-month-bar" onclick="toggleMonth(this)">
+      <div class="open-month-bar-left">
+        <div class="open-month-bar-icon" style="background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.12);">
+          <i class="fa-solid fa-scissors" style="color:var(--danger);font-size:12px;"></i>
+        </div>
+        <div>
+          <div class="open-month-title">{{ first.date|date:"F Y" }}</div>
+          <div class="open-month-meta">{{ month_group.list|length }} agendamento{{ month_group.list|length|pluralize }}</div>
+        </div>
+      </div>
+      <i class="fa-solid fa-chevron-down month-chevron" style="color:var(--muted);font-size:11px;transition:all .2s;"></i>
+    </div>
+
+    <div class="month-list is-hidden" style="margin-bottom:16px;">
+
+      {% regroup month_group.list by date.day as days_list %}
+      {% for day_group in days_list %}
+        {% with day_first=day_group.list.0 last_apt=day_group.list|last %}
+
+        <div class="day-bar" onclick="toggleDay(this)">
+          <div class="day-bar-left">
+            <div class="day-date-block">
+              <div class="day-date-num">{{ day_first.date|date:"d" }}</div>
+              <div class="day-date-wk">{{ day_first.date|date:"D" }}</div>
+            </div>
+            <div class="day-date-info">
+              <div class="day-weekday">{{ day_first.date|date:"l" }}</div>
+              <div class="day-summary">
+                {{ day_group.list|length }} agendamento{{ day_group.list|length|pluralize }}
+                &nbsp;·&nbsp; {{ day_first.time|time:"H:i" }} – {{ last_apt.time|time:"H:i" }}
+              </div>
+            </div>
+          </div>
+          <div class="day-bar-right">
+            {% if day_first.date|date:"Y-m-d" < today_str %}
+              <span class="month-badge badge-gray">Concluído</span>
+            {% elif day_first.date|date:"Y-m-d" == today_str %}
+              <span class="month-badge badge-ok">Hoje</span>
+            {% else %}
+              <span class="month-badge badge-accent">Agendado</span>
+            {% endif %}
+            <i class="fa-solid fa-chevron-down day-chevron"></i>
+          </div>
+        </div>
+
+        <div class="day-timeline is-hidden">
+          <div class="day-tl-head">
+            <span class="day-tl-date">{{ day_first.date|date:"d/m/Y" }} — {{ day_first.date|date:"l" }}</span>
+            <div class="day-tl-meta">
+              <span class="day-tl-total"></span>
+              <span class="day-tl-count">{{ day_group.list|length }} agendamento{{ day_group.list|length|pluralize }}</span>
+            </div>
+          </div>
+          <div class="day-tl-scroll">
+            <div class="tl-container" data-day="{{ day_first.date|date:'Y-m-d' }}">
+              {% for appointment in day_group.list %}
+              <div class="tl-apt"
+                   data-id="{{ appointment.id }}"
+                   data-h="{{ appointment.time.hour }}"
+                   data-m="{{ appointment.time.minute }}"
+                   data-dur="{{ appointment.duration }}"
+                   data-svc="{{ appointment.service.name }}"
+                   data-client="{{ appointment.client_name|default_if_none:'' }}"
+                   data-total="{{ appointment.total }}"
+                   data-time="{{ appointment.time|time:'H:i' }}"
+                   data-status="{% if appointment.date|date:'Y-m-d' < today_str %}done{% elif appointment.date|date:'Y-m-d' == today_str %}today{% else %}pending{% endif %}"
+                   data-obs="{{ appointment.observation|default_if_none:'' }}"
+                   style="display:none;"></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        {% endwith %}
+      {% endfor %}
+
+    </div>
+
+    {% endwith %}
+  {% endfor %}
+
+{% else %}
+  <div class="empty-state">
+    <i class="fa-regular fa-calendar-xmark"></i>
+    <div>Nenhum agendamento encontrado.</div>
+  </div>
+{% endif %}

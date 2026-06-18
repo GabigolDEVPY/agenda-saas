@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-from appointment.models import Appointment, MonthAvailability, HoursUnavailable
+from appointment.models import Appointment, MonthAvailability, HoursUnavailable, DayUnavailable
 import json
 from establishment.models import Establishment
 from establishment.services.messages import ERRORS
+from user.models import Preferences
 from .utils import group_operating_hours
 
 class HomeService:
@@ -17,11 +18,13 @@ class HomeService:
                 (dia for dia in horarios_funcionamento.values() if dia["aberto"]),
                 {"inicio": "09:00", "fim": "18:00"},
             )
+            preferences, _ = Preferences.objects.get_or_create(user=user)
 
             result[str(user.id)] = {
                 "hora_inicio": primeiro_dia_aberto["inicio"],
                 "hora_fim": primeiro_dia_aberto["fim"],
                 "horarios_funcionamento": horarios_funcionamento,
+                "max_appointments": preferences.max_appointments,
             }
         return json.dumps(result)
 
@@ -61,7 +64,14 @@ class HomeService:
 
             agendamentos = (
                 Appointment.objects
-                .filter(user=user, date__gte=hoje)
+                .filter(
+                    user=user,
+                    date__gte=hoje,
+                    status__in=[
+                        Appointment.Status.PENDING,
+                        Appointment.Status.CONFIRMED,
+                    ],
+                )
                 .select_related('service')
             )
 
@@ -126,16 +136,27 @@ class HomeService:
     def get_hours_unavailable(users):
         result = {}
         for user in users:
+            days_off = DayUnavailable.objects.filter(user=user).select_related('month')
             hours_unavailable = HoursUnavailable.objects.filter(user=user).select_related('month')
-            result[str(user.id)] = [
-                {
-                    "month": h.month.month,
-                    "year": h.month.year,
-                    "day": h.day,
-                    "hour": h.hour.strftime("%H:%M"),
-                }
-                for h in hours_unavailable
-            ]
+            result[str(user.id)] = {
+                "days_off": [
+                    {
+                        "month": d.month.month,
+                        "year": d.month.year,
+                        "day": d.day,
+                    }
+                    for d in days_off
+                ],
+                "hours": [
+                    {
+                        "month": h.month.month,
+                        "year": h.month.year,
+                        "day": h.day,
+                        "hour": h.hour.strftime("%H:%M"),
+                    }
+                    for h in hours_unavailable
+                ],
+            }
         return json.dumps(result)
 
     @staticmethod

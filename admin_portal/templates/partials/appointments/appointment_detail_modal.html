@@ -1,0 +1,75 @@
+<div class="overlay open" id="modal-appointment-detail" onclick="closeOnBg(event,'modal-appointment-detail')">
+  <div class="modal-sheet" style="max-width:480px;">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <i class="fa-solid fa-calendar-check" style="margin-right:8px;font-size:13px;color:var(--accent);"></i>
+        Agendamento
+      </div>
+      <button class="modal-close" type="button" onclick="closeModal('modal-appointment-detail')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="apt-detail-grid">
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Cliente</span>
+          <span class="apt-detail-value">{{ appointment.client_name }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Telefone</span>
+          <span class="apt-detail-value">{{ appointment.phone }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Data</span>
+          <span class="apt-detail-value">{{ appointment.date|date:"d/m/Y" }} — {{ appointment.date|date:"l" }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Horário</span>
+          <span class="apt-detail-value">{{ appointment.time|time:"H:i" }} · {{ appointment.duration }} min</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Serviço</span>
+          <span class="apt-detail-value">{{ appointment.service.name }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Profissional</span>
+          <span class="apt-detail-value">{{ appointment.user.get_display_name }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Status</span>
+          <span class="apt-detail-value">{{ appointment.get_status_display }}</span>
+        </div>
+        <div class="apt-detail-row">
+          <span class="apt-detail-label">Valor</span>
+          <span class="apt-detail-value">R$ {{ appointment.total }}</span>
+        </div>
+        {% if appointment.observation %}
+        <div class="apt-detail-row apt-detail-row--full">
+          <span class="apt-detail-label">Observação</span>
+          <span class="apt-detail-value">{{ appointment.observation }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-ghost" onclick="closeModal('modal-appointment-detail')">Fechar</button>
+      <form
+        style="display:inline;"
+        hx-post="{% url 'appointment:delete_appointment' appointment.id %}"
+        hx-target="#appointments-panel-content"
+        hx-swap="innerHTML"
+        hx-confirm="Excluir o agendamento de {{ appointment.client_name }} às {{ appointment.time|time:'H:i' }}?"
+      >
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="btn-primary"
+          style="background:var(--danger);box-shadow:0 2px 8px rgba(239,68,68,.3);"
+        >
+          <i class="fa-solid fa-trash"></i> Excluir
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

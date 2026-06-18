@@ -11,7 +11,7 @@
     <button class="nav-tab active" onclick="switchTab('agenda', this)">
       <i class="fa-regular fa-calendar-days"></i>Agenda
     </button>
-    <button class="nav-tab active" onclick="switchTab('agendamentos', this)">
+    <button class="nav-tab" onclick="switchTab('agendamentos', this)">
       <i class="fa-regular fa-calendar-days"></i>Agendamentos
     </button>
     <button class="nav-tab" onclick="switchTab('servicos', this)">
@@ -75,7 +75,7 @@
     <p style="font-size:13px; color:var(--gray); margin-bottom:24px;">
       Selecione um mês para configurar dias de trabalho, folgas e horários disponíveis.
     </p>
-    <button class="btn-primary" onclick="openModal('modal-pick-month')" type="button">
+    <button class="btn-primary" onclick="buildPickMonthList(); openModal('modal-pick-month')" type="button">
       <i class="fa-solid fa-calendar-plus"></i> Abrir Agenda
     </button>
   </div>
@@ -83,6 +83,8 @@
   <!-- MESES ABERTOS (renderizados dinamicamente) -->
   <div id="open-months-list"></div>
 </div>
+<div id="appointment-modal-root"></div>
+
 {% include "partials/appointments/appointments_list.html" %}
 
 
@@ -164,6 +166,21 @@
       {% include "partials/profile/confirm_manually_appointments.html" %}
     </div>
 
+    <!-- LINK DO PORTAL -->
+    {% if portal_link %}
+    <div class="card">
+      <div class="card-title">Link de Agendamento</div>
+      <div class="card-sub">Compartilhe com seus clientes para receber agendamentos</div>
+      <div class="portal-link-row">
+        <input type="text" class="portal-link-input" value="{{ portal_link }}" readonly id="portal-link-input"/>
+        <button class="btn-primary" type="button" data-link="{{ portal_link }}" onclick="copyPortalLink(this)">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copiar link</span>
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
 </div>
 
 
@@ -182,7 +199,7 @@
     </div>
 
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn-primary" onclick="copyLink(this)" type="button">
+      <button class="btn-primary" type="button" data-link="{{ portal_link }}" onclick="copyPortalLink(this)">
         <i class="fa-solid fa-share-nodes"></i>
         <span>Copiar link</span>
       </button>
@@ -403,7 +420,10 @@
 {% endblock content %}
 
 {% block extra_scripts %}
-<script src="{% static 'scripts_barber.js' %}?v=frontend-opt-20260616"></script>
+<script>
+  var APPOINTMENT_DETAIL_URL = "{% url 'appointment:appointment_detail' 999999 %}".replace('999999', '__ID__');
+</script>
+<script src="{% static 'scripts_barber.js' %}?v=frontend-opt-20260617c"></script>
 <script src="{% static 'operating_hours.js' %}?v=frontend-opt-20260616"></script>
 <script>
   DIAS_OFF = {{ dias_off_json|safe|default:"[]" }};
@@ -416,6 +436,7 @@
   });
 
   renderOpenMonthsList();
+  buildPickMonthList();
 </script>
 <script>
   var currentTab = new URLSearchParams(window.location.search).get('tab');
@@ -458,6 +479,32 @@
     closeModal('modal-delete-confirm');
     var servicesTab = document.querySelector('[onclick*="servicos"]');
     if (servicesTab) switchTab('servicos', servicesTab);
+  });
+
+  document.body.addEventListener('appointmentDeleted', function () {
+    _closeAppointmentModal();
+  });
+
+  document.body.addEventListener('appointmentUpdated', function () {
+    _closeAppointmentModal();
+  });
+
+  function _closeAppointmentModal() {
+    var modalRoot = document.getElementById('appointment-modal-root');
+    if (modalRoot) modalRoot.innerHTML = '';
+    document.body.style.overflow = '';
+
+    var panel = document.getElementById('panel-agendamentos');
+    if (panel && !panel.classList.contains('active')) {
+      var tab = document.querySelector('[onclick*="agendamentos"]');
+      if (tab) switchTab('agendamentos', tab);
+    }
+  }
+
+  document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'appointment-modal-root' && evt.detail.target.innerHTML.trim()) {
+      document.body.style.overflow = 'hidden';
+    }
   });
 </script>
 {% endblock %}

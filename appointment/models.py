@@ -6,6 +6,11 @@ from services.models import Service
 
 
 class Appointment(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pendente'
+        CONFIRMED = 'confirmed', 'Confirmado'
+        REJECTED = 'rejected', 'Recusado'
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -19,6 +24,11 @@ class Appointment(models.Model):
     phone = models.CharField(max_length=15)
     observation = models.TextField(blank=True, null=True, max_length=100)
     total = models.DecimalField(max_digits=7, decimal_places=2)
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.CONFIRMED,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -39,6 +49,21 @@ class MonthAvailability(models.Model):
         return f"{self.user} - {self.month} - {'Disponível' if self.availability else 'Indisponível'}"
 
 
+class DayUnavailable(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    month = models.ForeignKey(MonthAvailability, on_delete=models.CASCADE)
+    day = models.IntegerField()
+
+    class Meta:
+        unique_together = ('user', 'month', 'day')
+
+    def __str__(self):
+        return f"{self.user} - {self.month.month}/{self.month.year}/{self.day} - Dia indisponível"
+
+
 class HoursUnavailable(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -47,6 +72,9 @@ class HoursUnavailable(models.Model):
     month = models.ForeignKey(MonthAvailability, on_delete=models.CASCADE)
     day = models.IntegerField()
     hour = models.TimeField()
+
+    class Meta:
+        unique_together = ('user', 'month', 'day', 'hour')
 
     def __str__(self):
         return f"{self.user} - {self.month.month}/{self.month.year}/{self.day} {self.hour} - Indisponível"

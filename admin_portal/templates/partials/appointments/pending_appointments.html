@@ -1,0 +1,56 @@
+{% if pending_appointments %}
+<div class="pending-appointments-card">
+  <div class="pending-appointments-head">
+    <div>
+      <div class="section-title" style="font-size:14px;">
+        <i class="fa-solid fa-clock" style="color:var(--gold);margin-right:6px;"></i>
+        Aguardando confirmação
+      </div>
+      <div class="section-sub">{{ pending_appointments|length }} solicitaç{{ pending_appointments|length|pluralize:"ão,ões" }} pendente{{ pending_appointments|length|pluralize }}</div>
+    </div>
+  </div>
+
+  <div class="pending-appointments-list">
+    {% for appointment in pending_appointments %}
+    <div class="pending-apt-item">
+      <div class="pending-apt-main">
+        <div class="pending-apt-client">{{ appointment.client_name }}</div>
+        <div class="pending-apt-meta">
+          {{ appointment.date|date:"d/m/Y" }} às {{ appointment.time|time:"H:i" }}
+          · {{ appointment.service.name }}
+          · {{ appointment.phone }}
+        </div>
+        {% if appointment.observation %}
+        <div class="pending-apt-obs">{{ appointment.observation }}</div>
+        {% endif %}
+      </div>
+      <div class="pending-apt-actions">
+        <form
+          style="display:inline;"
+          hx-post="{% url 'appointment:confirm_appointment' appointment.id %}"
+          hx-target="#appointments-panel-content"
+          hx-swap="innerHTML"
+        >
+          {% csrf_token %}
+          <button type="submit" class="btn-primary pending-btn-confirm">
+            <i class="fa-solid fa-check"></i> Aceitar
+          </button>
+        </form>
+        <form
+          style="display:inline;"
+          hx-post="{% url 'appointment:reject_appointment' appointment.id %}"
+          hx-target="#appointments-panel-content"
+          hx-swap="innerHTML"
+          hx-confirm="Recusar a solicitação de {{ appointment.client_name }}?"
+        >
+          {% csrf_token %}
+          <button type="submit" class="btn-ghost pending-btn-reject">
+            <i class="fa-solid fa-xmark"></i> Recusar
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

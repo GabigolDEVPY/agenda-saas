@@ -12,6 +12,10 @@ class User(AbstractUser):
     )
     is_owner = models.BooleanField(default=False)
 
+    def get_display_name(self):
+        name = self.get_full_name().strip()
+        return name if name else self.username
+
     def __str__(self):
         return self.username
     

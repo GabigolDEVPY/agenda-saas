@@ -11,7 +11,8 @@ var calAno = hoje.getFullYear();
 var CONFIG_BARBEIRO = {};
 var AGENDAMENTOS_DIA = {};
 var MESES_DISPONIVEIS = [];
-var HORAS_INDISPONIVEIS = {};   // <<< NOVO
+var HORAS_INDISPONIVEIS = {};
+var DIAS_INDISPONIVEIS = {};
 var duracaoTotalMin = 0;
 
 function $(id) {
@@ -44,19 +45,28 @@ function getAgoraMin() {
   return agora.getHours() * 60 + agora.getMinutes();
 }
 
-// <<< NOVO — converte HOURS_UNAVAILABLE_POR_BARBEIRO em { dateKey: ['09:00', ...] }
-// ATENÇÃO: se o backend manda month 0-indexed (5 = junho) mantenha +1.
-//          Se manda 1-indexed (5 = maio) troque por pad(item.month).
-function buildHorasIndisponiveis(barberId) {
+function buildIndisponibilidades(barberId) {
   var all = (typeof HOURS_UNAVAILABLE_POR_BARBEIRO !== 'undefined') ? HOURS_UNAVAILABLE_POR_BARBEIRO : {};
-  var raw = all[barberId] || [];
-  var result = {};
-  raw.forEach(function(item) {
+  var raw = all[barberId] || {};
+  var dias = {};
+  var horas = {};
+
+  (raw.days_off || []).forEach(function(item) {
     var key = item.year + '-' + pad(item.month) + '-' + pad(item.day);
-    if (!result[key]) result[key] = [];
-    result[key].push(item.hour);
+    dias[key] = true;
   });
-  return result;
+
+  (raw.hours || []).forEach(function(item) {
+    var key = item.year + '-' + pad(item.month) + '-' + pad(item.day);
+    if (!horas[key]) horas[key] = [];
+    horas[key].push(item.hour);
+  });
+
+  return { dias: dias, horas: horas };
+}
+
+function isDiaIndisponivel(dateKey) {
+  return !!DIAS_INDISPONIVEIS[dateKey];
 }
 
 function filtrarHorariosPassados(dateKey, slots) {
@@ -69,6 +79,11 @@ function filtrarHorariosPassados(dateKey, slots) {
 
 function gerarSlotsDisponiveis(dateKey) {
   if (!CONFIG_BARBEIRO.hora_inicio) return [];
+  if (isDiaIndisponivel(dateKey)) return [];
+
+  var maxPorDia = CONFIG_BARBEIRO.max_appointments || 8;
+  var agendamentosDia = AGENDAMENTOS_DIA[dateKey] || [];
+  if (agendamentosDia.length >= maxPorDia) return [];
 
   var funcionamento = getFuncionamentoDoDia(dateKey);
   if (!funcionamento || !funcionamento.aberto) return [];
@@ -115,11 +130,14 @@ function gerarSlotsDisponiveis(dateKey) {
 
   slots = filtrarHorariosPassados(dateKey, slots);
 
-  // <<< NOVO — remove horários bloqueados pelo servidor
   var bloqueados = HORAS_INDISPONIVEIS[dateKey] || [];
   if (bloqueados.length) {
     slots = slots.filter(function(slot) {
-      return bloqueados.indexOf(slot) === -1;
+      var slotMin = toMin(slot);
+      return !bloqueados.some(function(b) {
+        var bMin = toMin(b);
+        return slotMin <= bMin && bMin < slotMin + getDuracaoSelecionada();
+      });
     });
   }
 
@@ -195,7 +213,9 @@ function selectBarber(el) {
   CONFIG_BARBEIRO = CONFIG_POR_BARBEIRO[barberId] || {};
   AGENDAMENTOS_DIA = AGENDAMENTOS_POR_BARBEIRO[barberId] || {};
   MESES_DISPONIVEIS = MESES_DISPONIVEIS_POR_BARBEIRO[barberId] || [];
-  HORAS_INDISPONIVEIS = buildHorasIndisponiveis(barberId);
+  var indisponibilidades = buildIndisponibilidades(barberId);
+  DIAS_INDISPONIVEIS = indisponibilidades.dias;
+  HORAS_INDISPONIVEIS = indisponibilidades.horas;
 
   calMes = hoje.getMonth();
   calAno = hoje.getFullYear();

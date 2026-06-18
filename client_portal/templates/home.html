@@ -190,11 +190,11 @@
         {% for user in users %}
         <div class="barber-option"
              data-id="{{ user.id }}"
-             data-name="{{ user.username }}"
-              onclick="selectBarber(this)">
+             data-name="{{ user.get_display_name }}"
+             onclick="selectBarber(this)">
           <div class="b-avatar"><i class="fa-solid fa-user-tie"></i></div>
           <div class="b-info">
-            <div class="b-name">{{ user.first_name }}</div>
+            <div class="b-name">{{ user.get_display_name }}</div>
           </div>
           <div class="b-check"><i class="fa-solid fa-check"></i></div>
         </div>
@@ -269,5 +269,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{% static 'scripts.js' %}?v=frontend-opt-20260607"></script>
+<script src="{% static 'scripts.js' %}?v=frontend-opt-20260617b"></script>
 {% endblock %}

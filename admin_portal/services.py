@@ -1,11 +1,11 @@
 import json
+from django.urls import reverse
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
 from services.services import ServiceService
 from user.forms import EmployeeCreationForm
 from user.models import Preferences
-from appointment.models import MonthAvailability, HoursUnavailable
-from appointment.models import Appointment
-import datetime
+from appointment.models import MonthAvailability, HoursUnavailable, DayUnavailable
+from appointment.services import AppointmentAdminService
 
 
 class AdminService:
@@ -20,20 +20,17 @@ class AdminService:
             return Establishment.objects.filter(uid=uid).first()
 
         return None
-    
-    # selecionar o estabelecimento do usuário logado
-    from itertools import groupby
-    from django.db.models import Prefetch
 
-
+    @staticmethod
     def get_appointments_by_month(user):
-        appointments = (
-            Appointment.objects
-            .filter(user=user)
-            .select_related("service")
-            .order_by("date", "time")
-        )
-        return appointments
+        return AppointmentAdminService.get_confirmed_appointments(user)
+
+    @staticmethod
+    def get_portal_link(request, establishment):
+        if not establishment:
+            return ''
+        path = reverse('client_portal:public_agenda', kwargs={'uid': establishment.uid})
+        return request.build_absolute_uri(path)
     
     @staticmethod
     def get_context_admin(view, **kwargs):
@@ -57,22 +54,23 @@ class AdminService:
         context['service_users'] = ServiceService.get_service_users(view.request.user, establishment)
         context['services'] = ServiceService.get_services(view.request.user,service_users=context['service_users'],)
         context['service_form'] = ServiceService.get_form(view.request.user,users=context['service_users'],)
-        context["appointments"] = AdminService.get_appointments_by_month(view.request.user)
+        context.update(AppointmentAdminService.appointments_panel_context(view.request.user))
+        context['portal_link'] = AdminService.get_portal_link(view.request, establishment)
 
         hours = HoursUnavailable.objects.filter(user=view.request.user).select_related('month')
+        days_off_qs = DayUnavailable.objects.filter(user=view.request.user).select_related('month')
         dias_off = []
         horarios = {}
-        
+
+        for d in days_off_qs:
+            date_str = f"{d.month.year}-{d.month.month:02d}-{d.day:02d}"
+            dias_off.append(date_str)
+
         for h in hours:
-            # h.month.month is 0-indexed in DB, but frontend expects 1-indexed for date strings
             date_str = f"{h.month.year}-{h.month.month:02d}-{h.day:02d}"
-            if h.hour == datetime.time(0, 0):
-                dias_off.append(date_str)
-            else:
-                if date_str not in horarios:
-                    horarios[date_str] = []
-                slot_str = h.hour.strftime('%H:%M')
-                horarios[date_str].append(slot_str)
+            if date_str not in horarios:
+                horarios[date_str] = []
+            horarios[date_str].append(h.hour.strftime('%H:%M'))
         
         context['dias_off_json'] = json.dumps(dias_off)
         context['horarios_json'] = json.dumps(horarios)

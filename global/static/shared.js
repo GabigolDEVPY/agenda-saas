@@ -38,3 +38,18 @@ function maskTelefone(input) {
 function maskCEP(input) {
   input.value = onlyDigits(input.value, 8).replace(/^(\d{5})(\d)/, '$1-$2');
 }
+
+function copyPortalLink(btn) {
+  var link = btn.dataset.link || (document.getElementById('portal-link-input') || {}).value;
+  if (!link) return;
+
+  navigator.clipboard.writeText(link).then(function() {
+    var span = btn.querySelector('span');
+    if (!span) return;
+    var original = span.textContent;
+    span.textContent = 'Copiado!';
+    setTimeout(function() { span.textContent = original; }, 2000);
+  }).catch(function() {
+    window.prompt('Copie o link:', link);
+  });
+}
