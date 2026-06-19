@@ -1,10 +1,9 @@
 import json
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import View
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from .services import AppointmentService, ConfigAgendaService, AppointmentAdminService
 from .models import Appointment
 
@@ -64,6 +63,12 @@ class DeleteAppointmentView(LoginRequiredMixin, View):
     def post(self, request, pk):
         AppointmentAdminService.delete_appointment(request.user, pk)
         return _hx_appointments_response(request, 'appointmentDeleted')
+    
+    
+class DeleteAppointmentViewApi(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        AppointmentAdminService.delete_appointment(request.user, pk)
+        return JsonResponse({'status': 'success', 'message': 'Agendamento deletado com sucesso.'})
 
 
 class ConfirmAppointmentView(LoginRequiredMixin, View):

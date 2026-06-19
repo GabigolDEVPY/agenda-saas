@@ -4,6 +4,7 @@ from .views import (
     ConfigAgendaView,
     AppointmentDetailView,
     DeleteAppointmentView,
+    DeleteAppointmentViewApi,
     ConfirmAppointmentView,
     RejectAppointmentView,
 )
@@ -18,4 +19,7 @@ urlpatterns = [
     path('<int:pk>/delete/', DeleteAppointmentView.as_view(), name='delete_appointment'),
     path('<int:pk>/confirm/', ConfirmAppointmentView.as_view(), name='confirm_appointment'),
     path('<int:pk>/reject/', RejectAppointmentView.as_view(), name='reject_appointment'),
+    
+    # api para deletar agendamento sem htmx, usado na tela de agendamento do cliente
+    path('<int:pk>/cliente/delete/', DeleteAppointmentViewApi.as_view(), name='delete_appointment_cliente'),
 ]

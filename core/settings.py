@@ -4,7 +4,9 @@ import os
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
 
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 dias
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 90  # 90 dias
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -1,16 +1,160 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h1>Meus Agendamentos</h1>
-    <div class="appointments">
-        {% for appointment in appointments %}
-            <div class="appointment-card">
-                <h2>{{ appointment.service.name }}</h2>
-                <p>Data: {{ appointment.date }}</p>
-                <p>Horário: {{ appointment.time }}</p>
-                <p>Status: {{ appointment.get_status_display }}</p>
-            </div>
-        {% empty %}
-            <p>Você não tem agendamentos.</p>
-        {% endfor %}
+
+<div class="hero">
+  <div class="hero-label">Painel do cliente</div>
+  <h1 class="hero-title">Meus <span>Agendamentos</span></h1>
+  <p class="hero-desc">Acompanhe e gerencie seus horários marcados.</p>
+</div>
+
+<div class="main">
+
+  {% for appointment in appointments %}
+  <div class="summary-card" style="margin-bottom:10px;">
+
+    <div class="summary-header" style="display:flex;align-items:center;justify-content:space-between;">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <i class="fa-solid fa-scissors" style="font-size:11px;"></i>
+        {{ appointment.service.name }}
+      </span>
+
+      {% with s=appointment.status %}
+        {% if s == "confirmed" %}
+          <span class="month-badge badge-ok">{{ appointment.get_status_display }}</span>
+        {% elif s == "pending" %}
+          <span class="month-badge" style="background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.15);color:var(--warn);">
+            {{ appointment.get_status_display }}
+          </span>
+        {% elif s == "rejected" %}
+          <span class="month-badge badge-alert">{{ appointment.get_status_display }}</span>
+        {% else %}
+          <span class="month-badge badge-gray">{{ appointment.get_status_display }}</span>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="summary-body">
+      <div class="summary-row">
+        <span class="summary-key">Data</span>
+        <span class="summary-val">{{ appointment.date }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Horário</span>
+        <span class="summary-val">{{ appointment.time }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Duração</span>
+        <span class="summary-val">{{ appointment.duration }} min</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Valor</span>
+        <span class="summary-val" style="font-weight:700;">R$ {{ appointment.total }}</span>
+      </div>
+      {% if appointment.observation %}
+      <div class="summary-row">
+        <span class="summary-key">Obs</span>
+        <span class="summary-val" style="font-weight:400;font-style:italic;">{{ appointment.observation }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding:10px 18px;display:flex;justify-content:flex-end;">
+      <button class="btn-danger"
+              onclick="openCancelModal('{{ appointment.id }}', '{{ appointment.service.name }}')"
+              style="display:inline-flex;align-items:center;gap:6px;">
+        <i class="fa-solid fa-xmark" style="font-size:11px;"></i> Cancelar
+      </button>
+    </div>
+
+  </div>
+
+  {% empty %}
+  <div class="empty-state">
+    <i class="fa-regular fa-calendar-xmark"></i>
+    Você ainda não tem agendamentos.
+  </div>
+  {% endfor %}
+
+</div>
+
+<!-- ── Modal de confirmação (reusa .overlay + .modal-sheet) ── -->
+<div class="overlay" id="cancelOverlay">
+  <div class="modal-sheet" style="max-width:400px;">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <span class="modal-head-title">Cancelar agendamento</span>
+      <button class="modal-close" onclick="closeCancelModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+
+      <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="fa-solid fa-trash-can" style="font-size:20px;color:var(--danger);"></i>
+      </div>
+
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">
+        Tem certeza?
+      </p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:4px;">
+        Você está cancelando
+      </p>
+      <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:0;" id="cancelServiceName"></p>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-fechar" onclick="closeCancelModal()">Manter</button>
+      <button class="btn-danger" id="btnConfirmCancel" style="background:rgba(239,68,68,.06);">
+        <i class="fa-solid fa-trash-can" style="font-size:11px;"></i> Sim, cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentAppointmentId = null;
+
+  function openCancelModal(id, serviceName) {
+    currentAppointmentId = id;
+    document.getElementById('cancelServiceName').textContent = serviceName;
+    document.getElementById('cancelOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCancelModal() {
+    currentAppointmentId = null;
+    document.getElementById('cancelOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cancelOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeCancelModal();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeCancelModal();
+  });
+
+  document.getElementById('btnConfirmCancel').addEventListener('click', function() {
+    if (!currentAppointmentId) return;
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{% url 'appointment:delete_appointment_cliente' 0 %}".replace('0', currentAppointmentId);
+
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrf) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'csrfmiddlewaretoken';
+      input.value = csrf.value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  });
+</script>
+
+{% csrf_token %}
 {% endblock %}
