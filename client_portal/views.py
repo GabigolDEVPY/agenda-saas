@@ -11,6 +11,7 @@ class PublicAgenda(View):
         context = HomeService.get_context_establishment(uid)
         if context.get("incomplete"):
             return render(request, 'unavailable.html', context=context)  
+        request.session["uid"] = uid
         return render(request, 'home.html', context=context)
     
 class Appointments(View):
