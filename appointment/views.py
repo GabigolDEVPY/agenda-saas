@@ -11,7 +11,7 @@ from .models import Appointment
 
 class CreateAppointmentView(View):
     def post(self, request):
-        errors, result = AppointmentService.create_appointment(request.POST)
+        errors, result = AppointmentService.create_appointment(request.POST, request.session.session_key)
 
         if not result:
             messages.error(request, json.dumps({

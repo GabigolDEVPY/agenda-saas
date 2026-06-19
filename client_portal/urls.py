@@ -1,9 +1,9 @@
 from django.urls import path
-from . views import PublicAgenda
+from . views import PublicAgenda, Appointments
 
 app_name = 'client_portal'
 
 urlpatterns = [
     path('e/<str:uid>/', PublicAgenda.as_view(), name='public_agenda'),
-    path('e/appointments/', PublicAgenda.as_view(), name='appointments'),
+    path('appointments/', Appointments.as_view(), name='appointments'),
     ]

@@ -30,6 +30,7 @@ class Appointment(models.Model):
         default=Status.CONFIRMED,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    session_key = models.CharField(max_length=40, blank=True, null=True)
 
     def __str__(self):
         return f"{self.client_name} - {self.date} {self.time}"

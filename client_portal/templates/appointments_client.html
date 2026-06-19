@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>Meus Agendamentos</h1>
+    <div class="appointments">
+        {% for appointment in appointments %}
+            <div class="appointment-card">
+                <h2>{{ appointment.service.name }}</h2>
+                <p>Data: {{ appointment.date }}</p>
+                <p>Horário: {{ appointment.time }}</p>
+                <p>Status: {{ appointment.get_status_display }}</p>
+            </div>
+        {% empty %}
+            <p>Você não tem agendamentos.</p>
+        {% endfor %}
+{% endblock %}

@@ -21,7 +21,7 @@ ACTIVE_STATUSES = (
 
 class BookingService:
     @staticmethod
-    def create_appointment(form_data):
+    def create_appointment(form_data, session_key):
         form = AppointmentForm(form_data)
 
         if not form.is_valid():
@@ -144,13 +144,18 @@ class BookingService:
             appointment = form.save(commit=False)
             appointment.duration = duration_snapshot
             appointment.total = service.price
+            appointment.session_key = session_key
             if preferences.confirm_manually_appointments:
                 appointment.status = Appointment.Status.PENDING
             else:
                 appointment.status = Appointment.Status.CONFIRMED
             appointment.save()
 
+        # abaixo feature para adicionar id em session do usuário
+
+        
         if appointment.status == Appointment.Status.PENDING:
+            
             return None, {
                 "status": "success",
                 "horario": horario_str,

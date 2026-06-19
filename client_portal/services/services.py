@@ -129,7 +129,6 @@ class HomeService:
             "phone": establishment.phone,
             "operating_hours_grouped": group_operating_hours(establishment.operating_hours.all())
         }
-        print(result["operating_hours_grouped"])
         return result
 
     @staticmethod
@@ -185,7 +184,5 @@ class HomeService:
             "gereral_preferences": establishment.general_preferences,
             "hours_unavailable_json": HomeService.get_hours_unavailable(users)
         }
-        print(context["meses_disponiveis_json"])
-        print(context["hours_unavailable_json"])
         return context
 

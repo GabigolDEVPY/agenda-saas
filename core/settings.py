@@ -4,6 +4,8 @@ import os
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
 
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 dias
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-fx64mlz4jmzm$p^*&s6k@s6@yz(t1hdhk^9s1)6nh3=bm89590'
