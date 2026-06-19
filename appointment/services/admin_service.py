@@ -40,6 +40,14 @@ class AppointmentAdminService:
     def delete_appointment(user, pk):
         appointment = AppointmentAdminService.get_appointment_for_user(user, pk)
         appointment.delete()
+        
+    @staticmethod
+    def delete_appointment_api(session_key, pk):
+        appointment = Appointment.objects.filter(pk=pk, session_key=session_key).first()
+        if appointment:
+            appointment.delete()
+        appointments = Appointment.objects.filter(session_key=session_key)
+        return appointments
 
     @staticmethod
     def confirm_appointment(user, pk):

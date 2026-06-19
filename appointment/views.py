@@ -65,10 +65,10 @@ class DeleteAppointmentView(LoginRequiredMixin, View):
         return _hx_appointments_response(request, 'appointmentDeleted')
     
     
-class DeleteAppointmentViewApi(LoginRequiredMixin, View):
+class DeleteAppointmentViewApi(View):
     def post(self, request, pk):
-        AppointmentAdminService.delete_appointment(request.user, pk)
-        return JsonResponse({'status': 'success', 'message': 'Agendamento deletado com sucesso.'})
+        appointments = AppointmentAdminService.delete_appointment_api(request.session.session_key, pk)
+        return render(request, 'appointments_client.html', context={"appointments": appointments})
 
 
 class ConfirmAppointmentView(LoginRequiredMixin, View):
