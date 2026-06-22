@@ -1757,3 +1757,157 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
   .tl-block        { left: 4px; right: 4px; padding: 5px 8px; }
   .tl-b-svc        { font-size: 12px; }
 }
+
+
+/* ═══════════════════════════════════════════
+   TIMELINE — MELHORIAS DE ESPAÇAMENTO
+   (adicione no final do BarberBlack CSS)
+═══════════════════════════════════════════ */
+
+/* Aumenta a largura da coluna de horários */
+.tl-hours {
+  width: 56px;
+}
+
+/* Aumenta o espaçamento interno dos blocos */
+.tl-block {
+  left: 8px;
+  right: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+/* Adiciona margem inferior sutil entre blocos (quando possível) */
+.tl-block + .tl-block {
+  margin-top: 2px;
+}
+
+/* Aumenta a fonte das informações principais */
+.tl-b-svc {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tl-b-client {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.tl-b-price {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.tl-b-obs {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* Aumenta a altura mínima dos blocos para respiro visual */
+.tl-block {
+  min-height: 52px;
+}
+
+/* Melhora a legibilidade do horário */
+.tl-b-time {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.tl-b-range {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.tl-b-start,
+.tl-b-end {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-b-arrow {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+.tl-b-duration {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+/* Bloco compacto com mais respiro */
+.tl-block--compact {
+  padding: 6px 12px;
+  min-height: 36px;
+  gap: 10px;
+}
+
+.tl-block--compact .tl-b-time {
+  font-size: 10px;
+}
+
+.tl-block--compact .tl-b-range {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+/* Aumenta o espaçamento da grade horária */
+.tl-grid {
+  opacity: 0.5;
+}
+
+/* Track com padding interno para não colar nas bordas */
+.tl-track {
+  padding: 4px 0;
+}
+
+/* Aumenta o scroll area para mais conforto */
+.day-tl-scroll {
+  max-height: 600px;
+  padding: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — TIMELINE
+═══════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .tl-hours {
+    width: 44px;
+  }
+
+  .tl-hour-lbl {
+    font-size: 9px;
+    right: 6px;
+  }
+
+  .tl-block {
+    left: 4px;
+    right: 4px;
+    padding: 8px 10px;
+    min-height: 48px;
+    border-radius: 6px;
+  }
+
+  .tl-b-svc {
+    font-size: 13px;
+  }
+
+  .tl-b-client {
+    font-size: 11px;
+  }
+
+  .tl-b-price {
+    font-size: 12px;
+  }
+}
