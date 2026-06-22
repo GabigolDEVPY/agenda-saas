@@ -1911,3 +1911,48 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
     font-size: 12px;
   }
 }
+
+/* Timeline appointment cards: keep all visible info on one row. */
+.tl-block,
+.tl-block--compact {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 0;
+  white-space: nowrap;
+}
+
+.tl-block .tl-b-time,
+.tl-block--compact .tl-b-time,
+.tl-block .tl-b-range,
+.tl-block--compact .tl-b-range {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.tl-block .tl-b-svc,
+.tl-block--compact .tl-b-svc {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-block .tl-b-client,
+.tl-block--compact .tl-b-client {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-block .tl-b-price,
+.tl-block .tl-b-obs {
+  display: none;
+}
