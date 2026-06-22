@@ -101,32 +101,21 @@ function gerarSlotsDisponiveis(dateKey) {
 
   var agendamentos = (AGENDAMENTOS_DIA[dateKey] || []).map(function(ag) {
     return { inicio: toMin(ag.inicio), fim: toMin(ag.fim) };
-  });
-
-  var candidatos = [];
-  var cursor;
-  for (cursor = inicioMin; cursor + duracao <= fimMin; cursor += duracao) {
-    candidatos.push(cursor);
-  }
-
-  agendamentos.forEach(function(ag) {
-    if (ag.fim >= inicioMin && ag.fim + duracao <= fimMin) candidatos.push(ag.fim);
-  });
-
-  candidatos = candidatos.filter(function(valor, indice, lista) {
-    return lista.indexOf(valor) === indice;
-  }).sort(function(a, b) {
-    return a - b;
+  }).filter(function(ag) {
+    return ag.fim > inicioMin && ag.inicio < fimMin;
   });
 
   var slots = [];
-  candidatos.forEach(function(slotInicio) {
-    var slotFim = slotInicio + duracao;
-    var livre = agendamentos.every(function(ag) {
-      return slotFim <= ag.inicio || slotInicio >= ag.fim;
-    });
-    if (livre) slots.push(toHHMM(slotInicio));
+  var cursorLivre = inicioMin;
+
+  agendamentos.sort(function(a, b) {
+    return a.inicio - b.inicio;
+  }).forEach(function(ag) {
+    adicionarSlotsNoIntervalo(cursorLivre, ag.inicio, duracao, slots);
+    if (ag.fim > cursorLivre) cursorLivre = ag.fim;
   });
+
+  adicionarSlotsNoIntervalo(cursorLivre, fimMin, duracao, slots);
 
   slots = filtrarHorariosPassados(dateKey, slots);
 
@@ -142,6 +131,15 @@ function gerarSlotsDisponiveis(dateKey) {
   }
 
   return slots;
+}
+
+function adicionarSlotsNoIntervalo(inicioMin, fimMin, duracao, slots) {
+  var cursor;
+  if (fimMin - inicioMin < duracao) return;
+
+  for (cursor = inicioMin; cursor + duracao <= fimMin; cursor += duracao) {
+    slots.push(toHHMM(cursor));
+  }
 }
 
 function getDuracaoSelecionada() {
@@ -316,6 +314,8 @@ function recalcServices() {
 
   var dataSel = $('h-date').value;
   if (dataSel) {
+    $('h-time').value = '';
+    $('sum-time').textContent = '—';
     var slots = gerarSlotsDisponiveis(dataSel);
     renderSlots(slots);
     var timeSel = $('h-time').value;

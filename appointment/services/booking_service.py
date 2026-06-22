@@ -19,6 +19,40 @@ ACTIVE_STATUSES = (
 )
 
 
+def _add_slots_in_interval(slots, start_min, end_min, duration):
+    if end_min - start_min < duration:
+        return
+
+    cursor = start_min
+    while cursor + duration <= end_min:
+        slots.add(cursor)
+        cursor += duration
+
+
+def _available_slot_minutes(start_min, end_min, duration, appointments):
+    slots = set()
+    cursor_free = start_min
+
+    ordered_appointments = sorted(
+        appointments,
+        key=lambda appointment: to_min(appointment.time.strftime("%H:%M")),
+    )
+
+    for appointment in ordered_appointments:
+        appointment_start = to_min(appointment.time.strftime("%H:%M"))
+        appointment_end = appointment_start + appointment.duration
+
+        if appointment_end <= start_min or appointment_start >= end_min:
+            continue
+
+        _add_slots_in_interval(slots, cursor_free, min(appointment_start, end_min), duration)
+        if appointment_end > cursor_free:
+            cursor_free = appointment_end
+
+    _add_slots_in_interval(slots, cursor_free, end_min, duration)
+    return slots
+
+
 class BookingService:
     @staticmethod
     def create_appointment(form_data, session_key):
@@ -97,16 +131,21 @@ class BookingService:
                     "Esse horário foi bloqueado pelo profissional"
                 )
 
-        agendamentos_json = json.loads(HomeService.get_appointments([user]))
-        agendamentos_dia = agendamentos_json.get(user_id, {}).get(data_str, [])
-        ends_of_existing = {to_min(ag['fim']) for ag in agendamentos_dia}
-
-        offset = slot_inicio_min - hora_inicio_min
-        on_service_grid = (offset % effective_interval == 0)
-        is_natural_continuation = slot_inicio_min in ends_of_existing
-
-        if not on_service_grid and not is_natural_continuation:
-            return None, error(uid, horario_str, "Horário Inválido", "Esse horário não corresponde a um slot disponível")
+        agendamentos_para_validacao = Appointment.objects.filter(
+            user=user,
+            date=date,
+            status__in=ACTIVE_STATUSES,
+        )
+        
+        available_slots = _available_slot_minutes(
+            hora_inicio_min,
+            hora_fim_min,
+            duration_snapshot,
+            agendamentos_para_validacao
+        )
+        
+        if slot_inicio_min not in available_slots:
+            return None, error(uid, horario_str, "Horário Inválido", "Esse horário não está disponível")
 
         preferences, _ = Preferences.objects.get_or_create(user=user)
         active_count = Appointment.objects.filter(
