@@ -29,6 +29,15 @@ class AppointmentAdminService:
         )
 
     @staticmethod
+    def get_canceled_appointments(user):
+        return (
+            Appointment.objects
+            .filter(user=user, status=Appointment.Status.CANCELED)
+            .select_related("service")
+            .order_by("-date", "-time")
+        )
+
+    @staticmethod
     def get_appointment_for_user(user, pk):
         return (
             Appointment.objects
@@ -45,7 +54,8 @@ class AppointmentAdminService:
     def delete_appointment_api(session_key, pk):
         appointment = Appointment.objects.filter(pk=pk, session_key=session_key).first()
         if appointment:
-            appointment.delete()
+            appointment.status = Appointment.Status.CANCELED
+            appointment.save(update_fields=["status"])
         appointments = Appointment.objects.filter(session_key=session_key)
         return appointments
 
@@ -90,4 +100,5 @@ class AppointmentAdminService:
         return {
             "pending_appointments": AppointmentAdminService.get_pending_appointments(user),
             "appointments": AppointmentAdminService.get_confirmed_appointments(user),
+            "canceled_appointments": AppointmentAdminService.get_canceled_appointments(user),
         }

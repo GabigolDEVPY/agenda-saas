@@ -1,0 +1,46 @@
+<hr class="divider" style="margin: 24px 0 20px;"/>
+
+<div class="section-header" style="margin-bottom:14px;">
+  <div>
+    <div class="section-title">Cancelados pelo cliente</div>
+    <div class="section-sub">
+      {% if canceled_appointments %}
+        {{ canceled_appointments|length }} horario{{ canceled_appointments|length|pluralize }} cancelado{{ canceled_appointments|length|pluralize }}
+      {% else %}
+        Nenhum horario cancelado pelo cliente
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if canceled_appointments %}
+<div class="canceled-appointments-list">
+  {% for appointment in canceled_appointments %}
+  <div
+    class="pending-apt-item canceled-apt-item"
+    style="border-color:var(--border-dark);background:var(--bg-2);"
+    hx-get="{% url 'appointment:appointment_detail' appointment.id %}"
+    hx-target="#appointment-modal-root"
+    hx-swap="innerHTML"
+  >
+    <div class="pending-apt-main canceled-apt-main">
+      <div class="pending-apt-client canceled-apt-client">{{ appointment.client_name }}</div>
+      <div class="pending-apt-meta canceled-apt-meta">
+        {{ appointment.date|date:"d/m/Y" }} &agrave;s {{ appointment.time|time:"H:i" }}
+        &middot; {{ appointment.service.name }}
+        &middot; {{ appointment.phone }}
+      </div>
+      {% if appointment.observation %}
+      <div class="pending-apt-obs canceled-apt-obs">{{ appointment.observation }}</div>
+      {% endif %}
+    </div>
+    <span class="month-badge badge-gray">{{ appointment.get_status_display }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa-regular fa-calendar-check"></i>
+  <div>Nenhum cancelamento encontrado.</div>
+</div>
+{% endif %}

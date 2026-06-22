@@ -10,6 +10,7 @@ class Appointment(models.Model):
         PENDING = 'pending', 'Pendente'
         CONFIRMED = 'confirmed', 'Confirmado'
         REJECTED = 'rejected', 'Recusado'
+        CANCELED = 'canceled', 'Cancelado'
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

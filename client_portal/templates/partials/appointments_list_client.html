@@ -18,6 +18,8 @@
         </span>
       {% elif s == "rejected" %}
         <span class="month-badge badge-alert">{{ appointment.get_status_display }}</span>
+      {% elif s == "canceled" %}
+        <span class="month-badge badge-gray">{{ appointment.get_status_display }}</span>
       {% else %}
         <span class="month-badge badge-gray">{{ appointment.get_status_display }}</span>
       {% endif %}
@@ -50,11 +52,15 @@
   </div>
 
   <div style="border-top:1px solid var(--border);padding:10px 18px;display:flex;justify-content:flex-end;">
-    <button class="btn-danger"
-            onclick="openCancelModal('{{ appointment.id }}', '{{ appointment.service.name }}')"
-            style="display:inline-flex;align-items:center;gap:6px;">
-      <i class="fa-solid fa-xmark" style="font-size:11px;"></i> Cancelar
-    </button>
+    {% if appointment.status == 'canceled' %}
+      <span style="font-size:12px;color:var(--muted);">Agendamento cancelado</span>
+    {% else %}
+      <button class="btn-danger"
+              onclick="openCancelModal('{{ appointment.id }}', '{{ appointment.service.name }}')"
+              style="display:inline-flex;align-items:center;gap:6px;">
+        <i class="fa-solid fa-xmark" style="font-size:11px;"></i> Cancelar
+      </button>
+    {% endif %}
   </div>
 
 </div>
