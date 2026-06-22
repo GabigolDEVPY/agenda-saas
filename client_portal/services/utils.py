@@ -1,4 +1,4 @@
-DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
 
 # Ordem comercial: Seg=0, Ter=1, ..., Sáb=5, Dom=6
 COMMERCIAL_ORDER = [1, 2, 3, 4, 5, 6, 0]

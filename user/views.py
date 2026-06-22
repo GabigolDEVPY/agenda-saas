@@ -25,8 +25,8 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        id = user.establishment.uid
-        self.request.session['uid'] = id
+        if user.establishment:
+            self.request.session['uid'] = user.establishment.uid
         return reverse(
             "admin_portal:home",
         )
@@ -110,4 +110,3 @@ class ChangeConfirmManuallyAppointmentsView(ProfilePartialMixin):
         preferences.confirm_manually_appointments = "confirm_manually_appointments" in request.POST
         preferences.save(update_fields=["confirm_manually_appointments"])
         return self.render_partial()
-

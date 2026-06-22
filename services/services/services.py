@@ -16,6 +16,12 @@ class ServiceService:
 
     @staticmethod
     def get_service_users(user, establishment=None):
+        if establishment is None:
+            establishment = ServiceService.get_establishment(user)
+
+        if getattr(user, "is_owner", False) and establishment:
+            return user.__class__.objects.filter(establishment=establishment)
+
         return user.__class__.objects.filter(pk=user.pk)
 
     @staticmethod

@@ -23,7 +23,6 @@ class EstablishmentForm(forms.ModelForm):
 
 
     def clean_phone(self):
-        print("Validando telefone...")
         phone = self._only_digits(self.cleaned_data.get("phone"))
 
         if not phone:

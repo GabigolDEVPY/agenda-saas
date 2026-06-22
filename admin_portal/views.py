@@ -9,6 +9,5 @@ class ServicesView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = AdminService.get_context_admin(self, **kwargs)
-        print(context["appointments"])
         return context
 
