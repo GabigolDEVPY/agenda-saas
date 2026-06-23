@@ -1,1 +1,0 @@
-SELECT * FROM appointment_appointment;
