@@ -1,0 +1,35 @@
+Depois de criar o arquivo:
+
+appointment/
+└── management/
+    └── commands/
+        └── clean_appointments.py
+
+você já pode executar manualmente:
+
+python manage.py clean_appointments
+
+Se aparecer:
+
+X agendamentos removidos com sucesso.
+
+está funcionando.
+
+Para rodar automaticamente
+
+O Django sozinho não agenda tarefas.
+
+Você precisa de algo externo chamando:
+
+python manage.py clean_appointments
+Se estiver em uma VPS Linux
+
+Abra o crontab:
+
+crontab -e
+
+Adicione:
+
+0 2 * * * /caminho/venv/bin/python /caminho/projeto/manage.py clean_appointments
+
+Isso executa todos os dias às 02:00.

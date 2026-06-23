@@ -24,8 +24,7 @@ class Command(BaseCommand):
                 date__lt=limite_confirmed,
                 status=Appointment.Status.CONFIRMED,
             )
-            |
-            Q(
+            | Q(
                 date__lt=limite_canceleds,
                 status__in=[
                     Appointment.Status.CANCELED,
