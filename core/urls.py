@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin-portal/', include('admin_portal.urls')),
     path('appointment/', include('appointment.urls')),
     path('services/', include('services.urls')),
+    path('billing/', include('billing.urls')),
 ]
 
 if settings.DEBUG:

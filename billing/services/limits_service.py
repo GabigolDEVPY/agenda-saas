@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from django.utils import timezone
 
 from billing.models import Plan, Subscription
 from services.models import Service
@@ -156,6 +157,50 @@ class LimitsService:
         subscription = cls.get_subscription(user)
         return {
             "subscription": subscription,
+            "billing": cls.billing_summary(subscription),
             "services": cls.services_summary(user),
             "users": cls.users_summary(user, establishment),
+        }
+
+    @classmethod
+    def billing_summary(cls, subscription):
+        if not subscription:
+            return {
+                "subscription": None,
+                "plan": None,
+                "is_expired": True,
+                "needs_payment": True,
+                "started_at": None,
+                "renews_at": None,
+                "expires_in_label": "Sem plano ativo",
+            }
+
+        now = timezone.now()
+        expires_at = subscription.expires_at
+        is_expired = (
+            subscription.status == Subscription.Status.EXPIRED
+            or not subscription.is_active
+            or (expires_at is not None and expires_at <= now)
+        )
+
+        if expires_at is None:
+            expires_in_label = "Sem expiracao"
+        elif expires_at <= now:
+            expires_in_label = "Expirado"
+        else:
+            delta = expires_at - now
+            days = delta.days + (1 if delta.seconds or delta.microseconds else 0)
+            if days == 1:
+                expires_in_label = "1 dia"
+            else:
+                expires_in_label = f"{days} dias"
+
+        return {
+            "subscription": subscription,
+            "plan": subscription.plan,
+            "is_expired": is_expired,
+            "needs_payment": not subscription.can_use_public_agenda,
+            "started_at": subscription.start_date,
+            "renews_at": expires_at,
+            "expires_in_label": expires_in_label,
         }

@@ -56,6 +56,7 @@ class AdminService:
         context['services'] = ServiceService.get_services(view.request.user,service_users=context['service_users'],)
         context['service_form'] = ServiceService.get_form(view.request.user,users=context['service_users'],)
         context['limits'] = LimitsService.context(view.request.user, establishment)
+        context['billing'] = context['limits']['billing']
         context.update(AppointmentAdminService.appointments_panel_context(view.request.user))
         context['portal_link'] = AdminService.get_portal_link(view.request, establishment)
 

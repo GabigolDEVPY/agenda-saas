@@ -22,6 +22,11 @@
       <i class="fa-solid fa-users"></i>Funcionários
     </button>
     {% endif %}
+    {% if request.user.is_owner %}
+    <button class="nav-tab" onclick="switchTab('plano', this)">
+      <i class="fa-solid fa-credit-card"></i>Plano
+    </button>
+    {% endif %}
     <button class="nav-tab" onclick="switchTab('perfil', this)">
       <i class="fa-solid fa-circle-user"></i>Perfil
     </button>
@@ -129,6 +134,24 @@
   </div>
 
   {% include "partials/employees/list.html" %}
+
+</div>
+{% endif %}
+
+<!-- ══════════════════════════════════════
+     PANEL: PLANO
+══════════════════════════════════════ -->
+{% if request.user.is_owner %}
+<div class="panel" id="panel-plano">
+
+  <div class="section-header">
+    <div>
+      <div class="section-title">Plano e Pagamento</div>
+      <div class="section-sub">Status do plano, renovação e pagamento do estabelecimento</div>
+    </div>
+  </div>
+
+  {% include "partials/billing/plan.html" %}
 
 </div>
 {% endif %}

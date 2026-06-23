@@ -7,7 +7,7 @@
     {{ msg }}
     {% if request.user.is_authenticated %}
       {% if payment %}
-        <a href="{% url 'admin_portal:home' %}" class="btn-admin">
+        <a href="{% url 'admin_portal:home' %}?tab=plano" class="btn-admin">
           <i class="fa-solid fa-credit-card"></i>Fazer pagamento
         </a>
       {% endif %}

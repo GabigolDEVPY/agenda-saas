@@ -1,0 +1,121 @@
+{% if messages %}
+  {% for message in messages %}
+    <div class="info-note payment-message">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>{{ message }}</span>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="payment-status-card {% if billing.needs_payment %}payment-status-card--attention{% endif %}">
+  <div class="payment-status-main">
+    <div class="payment-icon">
+      <i class="fa-solid fa-credit-card"></i>
+    </div>
+    <div>
+      <div class="payment-plan-name">
+        {% if billing.plan %}{{ billing.plan.name }}{% else %}Nenhum plano ativo{% endif %}
+      </div>
+      <div class="payment-plan-sub">
+        {% if billing.needs_payment %}
+          O plano precisa de pagamento para liberar a agenda publica.
+        {% else %}
+          Plano ativo para o estabelecimento.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-status-actions">
+    {% if billing.subscription %}
+      {% if billing.subscription.status == "active" and not billing.is_expired %}
+        <span class="badge badge-ok">Ativo</span>
+      {% elif billing.subscription.status == "pending" %}
+        <span class="badge" style="background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.15);color:var(--warn);">Pendente</span>
+      {% elif billing.subscription.status == "expired" %}
+        <span class="badge badge-alert">Expirado</span>
+      {% elif billing.subscription.status == "canceled" %}
+        <span class="badge badge-gray">Cancelado</span>
+      {% else %}
+        <span class="badge badge-gray">{{ billing.subscription.get_status_display }}</span>
+      {% endif %}
+    {% else %}
+      <span class="badge badge-alert">Sem plano</span>
+    {% endif %}
+
+    {% if billing.needs_payment %}
+      <a class="btn-primary payment-button" href="{% url 'billing:checkout' %}">
+        <i class="fa-solid fa-credit-card"></i>
+        Fazer pagamento
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="payment-grid">
+  <div class="payment-info-card">
+    <div class="payment-info-label">Plano</div>
+    <div class="payment-info-value">
+      {% if billing.plan %}{{ billing.plan.name }}{% else %}-{% endif %}
+    </div>
+    <div class="payment-info-sub">
+      {% if billing.plan.price %}
+        R$ {{ billing.plan.price|floatformat:2 }}
+      {% else %}
+        Gratuito
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="payment-info-card">
+    <div class="payment-info-label">Inicio do plano</div>
+    <div class="payment-info-value">
+      {% if billing.started_at %}{{ billing.started_at|date:"d/m/Y" }}{% else %}-{% endif %}
+    </div>
+    <div class="payment-info-sub">
+      {% if billing.started_at %}{{ billing.started_at|date:"H:i" }}{% else %}Sem registro{% endif %}
+    </div>
+  </div>
+
+  <div class="payment-info-card">
+    <div class="payment-info-label">{% if billing.needs_payment %}Expirou em{% else %}Renovacao{% endif %}</div>
+    <div class="payment-info-value">
+      {% if billing.renews_at %}{{ billing.renews_at|date:"d/m/Y" }}{% else %}Sem renovacao{% endif %}
+    </div>
+    <div class="payment-info-sub">
+      {% if billing.renews_at %}
+        {{ billing.renews_at|date:"H:i" }}
+      {% elif billing.plan.price %}
+        Configure a data de renovacao
+      {% else %}
+        Plano gratuito sem vencimento
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="payment-info-card">
+    <div class="payment-info-label">Expira em</div>
+    <div class="payment-info-value">{{ billing.expires_in_label }}</div>
+    <div class="payment-info-sub">
+      {% if billing.needs_payment %}Pagamento necessario{% else %}Acesso liberado{% endif %}
+    </div>
+  </div>
+</div>
+
+{% if billing.plan %}
+  <div class="card payment-limits-card">
+    <div class="card-title">Limites do plano</div>
+    <div class="card-sub">Recursos disponiveis para este estabelecimento</div>
+
+    <div class="payment-limits">
+      <div class="payment-limit-row">
+        <span>Servicos por profissional</span>
+        <strong>{{ billing.plan.max_services_per_user }}</strong>
+      </div>
+      <div class="payment-limit-row">
+        <span>Usuarios no estabelecimento</span>
+        <strong>{{ billing.plan.max_users_per_establishment }}</strong>
+      </div>
+    </div>
+  </div>
+{% endif %}
