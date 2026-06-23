@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from appointment.forms import AppointmentForm
 from appointment.models import Appointment, DayUnavailable, HoursUnavailable
+from billing.services import LimitsService
 from client_portal.services.services import HomeService
 from establishment.models import Establishment
 from user.models import Preferences
@@ -70,6 +71,10 @@ class BookingService:
         establishment = Establishment.objects.filter(id=user.establishment.id).first()
         if not establishment or not establishment.general_preferences.open_establishment:
             return "Estabelecimento fechado", False
+
+        can_use_agenda, billing_message = LimitsService.public_agenda_status(establishment)
+        if not can_use_agenda:
+            return billing_message, False
 
         horario_str = time.strftime("%H:%M")
         uid = str(user.establishment.uid)

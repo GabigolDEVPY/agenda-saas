@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'client_portal',
     'admin_portal',
     'services',
+    'billing',
 ]
 
 MIDDLEWARE = [

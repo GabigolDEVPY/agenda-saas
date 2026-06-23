@@ -1,6 +1,8 @@
 from establishment.models import OperatingHours, GeneralPreference, Address
 from datetime import time
 from django.db import transaction
+from billing.models import Subscription
+from billing.services import LimitsService
 
 class UserServices:
     @staticmethod
@@ -29,6 +31,11 @@ class UserServices:
         # criando o endereço
         Address.objects.create(
             establishment=establishment,
+        )
+
+        Subscription.objects.get_or_create(
+            user=user,
+            defaults={"plan": LimitsService.get_default_plan()},
         )
 
         return

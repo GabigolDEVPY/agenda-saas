@@ -1,39 +1,46 @@
-<div id="employees-list" class="employees-list"{% if hx_oob %} hx-swap-oob="true"{% endif %}>
-  {% for employee in employees %}
-    <div class="employee-card">
-      <div class="emp-left">
-        <div class="emp-avatar"><i class="fa-solid fa-scissors"></i></div>
-        <div>
-          <div class="emp-name">
-            {% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}
+<div id="employees-panel-list"{% if hx_oob %} hx-swap-oob="true"{% endif %}>
+  <div class="info-note" style="margin-bottom:16px;justify-content:space-between;gap:12px;">
+    <span><i class="fa-solid fa-gauge-high"></i> Funcionarios do estabelecimento</span>
+    <strong>{{ limits.users.employees_label|default:"0/4" }}</strong>
+  </div>
+
+  <div id="employees-list" class="employees-list">
+    {% for employee in employees %}
+      <div class="employee-card">
+        <div class="emp-left">
+          <div class="emp-avatar"><i class="fa-solid fa-scissors"></i></div>
+          <div>
+            <div class="emp-name">
+              {% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}
+            </div>
+            <div class="emp-meta">{{ employee.email }}</div>
           </div>
-          <div class="emp-meta">{{ employee.email }}</div>
+        </div>
+        <div class="emp-actions">
+          <span class="badge {% if employee.is_active %}badge-ok{% else %}badge-alert{% endif %}">
+            {% if employee.is_active %}Ativo{% else %}Inativo{% endif %}
+          </span>
+          <button class="sc-btn" type="button"
+            onclick="openChangeEmployeePassword(this)"
+            data-id="{{ employee.id }}"
+            data-nome="{% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}"
+            title="Alterar senha">
+            <i class="fa-solid fa-key"></i>
+          </button>
+          <button class="sc-btn danger" type="button"
+            onclick="openDeleteEmployee(this)"
+            data-id="{{ employee.id }}"
+            data-nome="{% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}"
+            title="Remover">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
       </div>
-      <div class="emp-actions">
-        <span class="badge {% if employee.is_active %}badge-ok{% else %}badge-alert{% endif %}">
-          {% if employee.is_active %}Ativo{% else %}Inativo{% endif %}
-        </span>
-        <button class="sc-btn" type="button"
-          onclick="openChangeEmployeePassword(this)"
-          data-id="{{ employee.id }}"
-          data-nome="{% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}"
-          title="Alterar senha">
-          <i class="fa-solid fa-key"></i>
-        </button>
-        <button class="sc-btn danger" type="button"
-          onclick="openDeleteEmployee(this)"
-          data-id="{{ employee.id }}"
-          data-nome="{% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}"
-          title="Remover">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+    {% empty %}
+      <div class="empty-state">
+        <i class="fa-solid fa-users"></i>
+        Nenhum funcionario cadastrado ainda.
       </div>
-    </div>
-  {% empty %}
-    <div class="empty-state">
-      <i class="fa-solid fa-users"></i>
-      Nenhum funcionario cadastrado ainda.
-    </div>
-  {% endfor %}
+    {% endfor %}
+  </div>
 </div>

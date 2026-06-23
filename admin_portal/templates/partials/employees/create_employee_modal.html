@@ -22,6 +22,12 @@
           O funcionario recebera acesso ao sistema com as credenciais cadastradas abaixo.
         </div>
 
+        {% if limits.users.is_full %}
+          <div class="field-error" style="margin-bottom:12px;">
+            Limite atingido: {{ limits.users.employees_label }} funcionarios cadastrados.
+          </div>
+        {% endif %}
+
         {% if employee_form.non_field_errors %}
           <div class="field-error" style="margin-bottom:12px;">
             {{ employee_form.non_field_errors|join:", " }}
@@ -82,7 +88,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeModal('modal-new-employee')">Cancelar</button>
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary" {% if limits.users.is_full %}disabled{% endif %}>
           <i class="fa-solid fa-user-plus"></i> Cadastrar Funcionario
         </button>
       </div>

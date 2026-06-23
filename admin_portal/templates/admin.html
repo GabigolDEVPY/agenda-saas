@@ -99,7 +99,7 @@
       <div class="section-title">Meus Serviços</div>
       <div class="section-sub">Gerencie os serviços que você oferece</div>
     </div>
-    <button class="btn-primary" onclick="openModal('modal-new-service')">
+    <button class="btn-primary" onclick="openModal('modal-new-service')" {% if limits.services.is_full %}disabled title="Limite de servicos atingido"{% endif %}>
       <i class="fa-solid fa-plus"></i> Novo Serviço
     </button>
   </div>
@@ -118,7 +118,7 @@
       <div class="section-title">Funcionários</div>
       <div class="section-sub">Cadastre os profissionais que trabalham no estabelecimento</div>
     </div>
-    <button class="btn-primary" type="button" onclick="openModal('modal-new-employee')">
+    <button class="btn-primary" type="button" onclick="openModal('modal-new-employee')" {% if limits.users.is_full %}disabled title="Limite de funcionarios atingido"{% endif %}>
       <i class="fa-solid fa-user-plus"></i> Novo Funcionário
     </button>
   </div>
@@ -350,7 +350,7 @@
       id="form-delete-service"
       action="{% url 'services:delete_service' %}"
       hx-post="{% url 'services:delete_service' %}"
-      hx-target="#services-grid"
+      hx-target="#services-panel-list"
       hx-swap="outerHTML"
     >
       {% csrf_token %}
@@ -392,7 +392,7 @@
       id="form-delete-employee"
       action="{% url 'user:delete_employee' %}"
       hx-post="{% url 'user:delete_employee' %}"
-      hx-target="#employees-list"
+      hx-target="#employees-panel-list"
       hx-swap="outerHTML"
     >
       {% csrf_token %}

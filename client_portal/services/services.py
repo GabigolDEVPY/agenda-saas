@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 from appointment.models import Appointment, MonthAvailability, HoursUnavailable, DayUnavailable
+from billing.services import LimitsService
 import json
 from establishment.models import Establishment
 from establishment.services.messages import ERRORS
@@ -164,9 +165,19 @@ class HomeService:
         if not establishment or not establishment.general_preferences.open_establishment:
             return {"msg": ERRORS["ESTABLISHMENT_NOT_FOUND"], "incomplete": True}
 
+        can_use_agenda, billing_message = LimitsService.public_agenda_status(establishment)
+        if not can_use_agenda:
+            subscription = LimitsService.get_subscription(establishment.user)
+            return {
+                "msg": billing_message,
+                "incomplete": True,
+                "payment": bool(subscription and not subscription.can_use_public_agenda),
+                "uid": uid,
+            }
+
         address = getattr(establishment, "address", None)
         if not address or not address.completed:
-            return {"msg": "Concluir configuração.", "incomplete": True, "uid": uid}
+            return {"msg": "Concluir configuracao.", "incomplete": True, "config_incomplete": True, "uid": uid}
 
 
         users = establishment.users.all()

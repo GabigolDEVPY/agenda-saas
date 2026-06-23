@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 
+from billing.services import LimitsService
 from .services import ServiceService
 
 
@@ -24,7 +25,11 @@ class ServiceBaseView(LoginRequiredMixin, View):
         return render(
             self.request,
             self.list_template_name,
-            {"services": self.get_services(), **context},
+            {
+                "services": self.get_services(),
+                "limits": LimitsService.context(self.request.user),
+                **context,
+            },
         )
 
     def home_url(self):
@@ -41,6 +46,7 @@ class ServiceCreateView(ServiceBaseView):
             {
                 "service_form": form or self.get_form(),
                 "services": self.get_services(),
+                "limits": LimitsService.context(self.request.user),
                 "service_created": created,
             },
         )
@@ -73,6 +79,7 @@ class ServiceEditFormView(ServiceBaseView):
             {
                 "service": service,
                 "service_form": self.get_form(instance=service),
+                "limits": LimitsService.context(request.user),
                 "service_modal_open": True,
             },
         )
@@ -89,6 +96,7 @@ class ServiceUpdateView(ServiceBaseView):
                 "service": service,
                 "service_form": form or self.get_form(instance=service),
                 "services": self.get_services(),
+                "limits": LimitsService.context(self.request.user),
                 "service_modal_open": bool(form and form.errors),
                 "service_updated": updated,
             },

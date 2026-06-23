@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from billing.services import LimitsService
 from services.forms import ServiceForm
 from services.models import Service
 
@@ -54,6 +55,11 @@ class ServiceService:
         form = ServiceService.get_form(user, data=data)
 
         if not form.is_valid():
+            return None, form, False
+
+        allowed, message = LimitsService.validate(user, LimitsService.FEATURE_SERVICES)
+        if not allowed:
+            form.add_error(None, message)
             return None, form, False
 
         service = form.save(commit=False)

@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
+from billing.services import LimitsService
 from .forms import EmployeeCreationForm, EmployeePasswordChangeForm
 from .models import Preferences, User
 from establishment.mixins.mixins import OwnerRequiredMixin
@@ -27,6 +28,7 @@ class EmployeeCreateView(LoginRequiredMixin, OwnerRequiredMixin, View):
             {
                 "employee_form": form or EmployeeCreationForm(),
                 "employees": self.get_employees(),
+                "limits": LimitsService.context(self.request.user, self.get_establishment()),
                 "employee_created": created,
             },
         )
@@ -35,6 +37,13 @@ class EmployeeCreateView(LoginRequiredMixin, OwnerRequiredMixin, View):
         form = EmployeeCreationForm(request.POST)
 
         if form.is_valid():
+            allowed, message = LimitsService.validate(request.user, LimitsService.FEATURE_USERS)
+            if not allowed:
+                form.add_error(None, message)
+                if request.headers.get("HX-Request"):
+                    return self.render_modal(form=form)
+                return HttpResponse(status=400)
+
             employee = form.save(commit=False)
             employee.establishment = self.get_establishment()
             employee.save()
@@ -84,7 +93,10 @@ class EmployeeDeleteView(EmployeeOwnerBaseView):
             response = render(
                 request,
                 self.template_name,
-                {"employees": self.get_employees()},
+                {
+                    "employees": self.get_employees(),
+                    "limits": LimitsService.context(request.user, self.get_establishment()),
+                },
             )
             response["HX-Trigger"] = "employeeDeleted"
             return response

@@ -2,18 +2,18 @@
 {% block content %}
 <div class="page-unavailable">
   <i class="fa-solid fa-triangle-exclamation page-unavailable-icon"></i>
-  <h1 class="page-unavailable-title">Página Indisponível</h1>
+  <h1 class="page-unavailable-title">Pagina Indisponivel</h1>
   <p class="page-unavailable-msg">
     {{ msg }}
-    {% if user %}
+    {% if request.user.is_authenticated %}
       {% if payment %}
         <a href="{% url 'admin_portal:home' %}" class="btn-admin">
-          <i class="fa-solid"></i>Fazer pagamento
+          <i class="fa-solid fa-credit-card"></i>Fazer pagamento
         </a>
       {% endif %}
-      {% if incomplete %}
+      {% if config_incomplete %}
         <a href="{% url 'admin_portal:home' %}?tab=estabelecimento" class="btn-admin">
-          <i class="fa-solid"></i>Concluir configuração
+          <i class="fa-solid fa-store"></i>Concluir configuracao
         </a>
       {% endif %}
     {% endif %}

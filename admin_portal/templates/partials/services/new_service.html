@@ -14,6 +14,12 @@
     >
       {% csrf_token %}
       <div class="modal-body">
+        {% if limits.services.is_full %}
+          <div class="field-error" style="margin-bottom:12px;">
+            Limite atingido: {{ limits.services.label }} servicos cadastrados para este profissional.
+          </div>
+        {% endif %}
+
         {% if service_form.non_field_errors %}
           <div class="field-error" style="margin-bottom:12px;">
             {{ service_form.non_field_errors|join:", " }}
@@ -66,7 +72,9 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeModal('modal-new-service')">Cancelar</button>
-        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Criar Servico</button>
+        <button type="submit" class="btn-primary" {% if limits.services.is_full %}disabled{% endif %}>
+          <i class="fa-solid fa-plus"></i> Criar Servico
+        </button>
       </div>
     </form>
   </div>

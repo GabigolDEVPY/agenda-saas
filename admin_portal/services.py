@@ -1,5 +1,6 @@
 import json
 from django.urls import reverse
+from billing.services import LimitsService
 from establishment.models import Establishment, Address, OperatingHours, GeneralPreference
 from services.services import ServiceService
 from user.forms import EmployeeCreationForm
@@ -54,6 +55,7 @@ class AdminService:
         context['service_users'] = ServiceService.get_service_users(view.request.user, establishment)
         context['services'] = ServiceService.get_services(view.request.user,service_users=context['service_users'],)
         context['service_form'] = ServiceService.get_form(view.request.user,users=context['service_users'],)
+        context['limits'] = LimitsService.context(view.request.user, establishment)
         context.update(AppointmentAdminService.appointments_panel_context(view.request.user))
         context['portal_link'] = AdminService.get_portal_link(view.request, establishment)
 
