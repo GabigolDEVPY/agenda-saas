@@ -8,7 +8,8 @@
     {% for employee in employees %}
       <div class="employee-card">
         <div class="emp-left">
-          <div class="emp-avatar"><i class="fa-solid fa-scissors"></i></div>
+          <div class="emp-avatar"><i class="fa-solid fa-user"></i></div>
+
           <div>
             <div class="emp-name">
               {% if employee.get_full_name %}{{ employee.get_full_name }}{% else %}{{ employee.username }}{% endif %}

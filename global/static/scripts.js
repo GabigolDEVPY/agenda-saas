@@ -258,12 +258,13 @@ function renderServiceList(servicos) {
     div.dataset.duracao = s.duracao;
     div.innerHTML =
       '<div class="svc-left">' +
-        '<div class="svc-icon"><i class="fa-solid fa-scissors"></i></div>' +
+        '<div class="svc-icon"><i class="fa-solid fa-briefcase"></i></div>' +
         '<div><div class="svc-name">' + s.nome + '</div>' +
         '<div class="svc-time"><i class="fa-regular fa-clock"></i> ' + s.duracao + ' min</div></div>' +
       '</div>' +
       '<div class="svc-right"><div class="svc-price">R$' + s.preco + '</div>' +
       '<div class="svc-check"><i class="fa-solid fa-check"></i></div></div>';
+
     div.addEventListener('click', function() { toggleService(div); });
     frag.appendChild(div);
   });

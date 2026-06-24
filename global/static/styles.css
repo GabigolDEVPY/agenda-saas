@@ -2121,3 +2121,205 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; 
     grid-template-columns: 1fr;
   }
 }
+
+/* Account page custom styles */
+.account-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.account-card {
+  margin-bottom: 0 !important;
+}
+
+/* Credit card styling - ultra premium look */
+.payment-method-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.credit-card-mockup {
+  position: relative;
+  width: 320px;
+  height: 180px;
+  background: linear-gradient(135deg, #1e1e24 0%, #111115 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.credit-card-mockup::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.credit-card-chip {
+  width: 38px;
+  height: 28px;
+  background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.credit-card-brand {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.credit-card-number {
+  font-size: 19px;
+  letter-spacing: 3.5px;
+  font-family: 'Courier New', Courier, monospace;
+  margin: 15px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.credit-card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cc-label {
+  display: block;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.cc-val {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ddd;
+}
+
+.payment-method-details {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-detail-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 8px;
+  font-size: 14px;
+}
+
+.payment-detail-row span {
+  color: var(--muted);
+}
+
+.payment-detail-row strong {
+  color: var(--white);
+}
+
+/* Warning note helper */
+.warning-note {
+  border-color: rgba(234, 179, 8, 0.24) !important;
+  background: rgba(234, 179, 8, 0.04) !important;
+  color: var(--warn) !important;
+}
+
+/* Danger Zone */
+.danger-zone-card {
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.02) !important;
+}
+
+.danger-zone-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.danger-description {
+  flex: 1;
+  min-width: 250px;
+}
+
+.danger-description strong {
+  color: var(--red);
+  font-size: 15px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.danger-description p {
+  color: var(--gray);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.btn-danger-action {
+  background: var(--red) !important;
+  color: var(--white) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(224, 82, 82, 0.2) !important;
+}
+
+.btn-danger-action:hover {
+  background: #ff5555 !important;
+  transform: translateY(-1px);
+}
+
+.btn-warning-action {
+  background: var(--warn) !important;
+  color: var(--bg) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2) !important;
+  font-weight: 700;
+}
+
+.btn-warning-action:hover {
+  background: #fcd34d !important;
+  transform: translateY(-1px);
+}
+
+.text-danger {
+  color: var(--red) !important;
+}
+
+@media (max-width: 768px) {
+  .payment-method-container,
+  .danger-zone-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .credit-card-mockup {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+

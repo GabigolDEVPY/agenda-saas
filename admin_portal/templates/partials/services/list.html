@@ -8,7 +8,8 @@
     {% for service in services %}
       <div class="service-card{% if not service.is_active %} inactive{% endif %}">
         <div class="sc-top">
-          <div class="sc-icon"><i class="fa-solid fa-scissors"></i></div>
+          <div class="sc-icon"><i class="fa-solid fa-briefcase"></i></div>
+
           <div class="sc-actions">
             <button
               class="sc-btn"
@@ -52,9 +53,10 @@
       </div>
     {% empty %}
       <div class="empty-state services-empty-state">
-        <i class="fa-solid fa-scissors"></i>
+        <i class="fa-solid fa-briefcase"></i>
         Nenhum servico cadastrado ainda.
       </div>
+
     {% endfor %}
   </div>
 </div>

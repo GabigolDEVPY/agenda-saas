@@ -1,5 +1,7 @@
 from django.db import transaction
 from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db.models import Q, Sum
 
 from appointment.models import Appointment
 
@@ -97,8 +99,39 @@ class AppointmentAdminService:
 
     @staticmethod
     def appointments_panel_context(user):
+        now = timezone.localtime(timezone.now())
+        today = now.date()
+        current_time = now.time()
+        start_of_week = today - timedelta(days=today.weekday())  # Segunda-feira
+        end_of_week = start_of_week + timedelta(days=6)  # Domingo
+
+        confirmed_qs = Appointment.objects.filter(user=user, status=Appointment.Status.CONFIRMED)
+
+        # 1. Esta semana
+        week_appointments_count = confirmed_qs.filter(date__range=[start_of_week, end_of_week]).count()
+
+        # 2. Hoje
+        today_appointments_count = confirmed_qs.filter(date=today).count()
+
+        # 3. Agendamentos este mês
+        month_appointments_count = confirmed_qs.filter(date__year=today.year, date__month=today.month).count()
+
+        # 4. Faturamento este mês (agendamentos concluídos este mês)
+        concluded_this_month = confirmed_qs.filter(
+            date__year=today.year,
+            date__month=today.month
+        ).filter(
+            Q(date__lt=today) | Q(date=today, time__lt=current_time)
+        )
+        faturamento = concluded_this_month.aggregate(total_sum=Sum('total'))['total_sum'] or 0.0
+
         return {
             "pending_appointments": AppointmentAdminService.get_pending_appointments(user),
             "appointments": AppointmentAdminService.get_confirmed_appointments(user),
             "canceled_appointments": AppointmentAdminService.get_canceled_appointments(user),
+            "week_appointments_count": week_appointments_count,
+            "today_appointments_count": today_appointments_count,
+            "month_appointments_count": month_appointments_count,
+            "faturamento_este_mes": faturamento,
         }
+

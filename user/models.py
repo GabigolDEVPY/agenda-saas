@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from core.encryption import EncryptedEmailField
 
 
 class User(AbstractUser):
+    email = EncryptedEmailField(blank=True, max_length=255)
+
+    
     establishment = models.ForeignKey(
         "establishment.Establishment",
         on_delete=models.CASCADE,
@@ -11,6 +15,7 @@ class User(AbstractUser):
         blank=True,
     )
     is_owner = models.BooleanField(default=False)
+
 
     def get_display_name(self):
         name = self.get_full_name().strip()

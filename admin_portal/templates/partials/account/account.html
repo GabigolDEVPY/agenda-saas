@@ -1,0 +1,92 @@
+{% load static %}
+<div class="account-sections">
+
+  <!-- 1. PLANO E PAGAMENTO -->
+  <div class="card account-card">
+    <div class="card-title">Plano e Pagamento</div>
+    <div class="card-sub">Status do plano, limites e renovação do estabelecimento</div>
+    {% include "partials/billing/plan.html" %}
+  </div>
+
+  <!-- 2. MEIO DE PAGAMENTO -->
+  {% if billing.subscription %}
+  <div class="card account-card">
+    <div class="card-title">Meio de Pagamento</div>
+    <div class="card-sub">Gerencie o cartão de crédito associado à sua assinatura</div>
+    
+    <div class="payment-method-container">
+      <div class="credit-card-mockup">
+        <div class="credit-card-chip"></div>
+        <div class="credit-card-brand">
+          <i class="fa-brands fa-cc-visa"></i>
+        </div>
+        <div class="credit-card-number">•••• •••• •••• 4242</div>
+        <div class="credit-card-info">
+          <div class="credit-card-holder">
+            <span class="cc-label">Titular</span>
+            <span class="cc-val">{{ request.user.get_display_name|upper }}</span>
+          </div>
+          <div class="credit-card-exp">
+            <span class="cc-label">Validade</span>
+            <span class="cc-val">12/29</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="payment-method-details">
+        <div class="payment-detail-row">
+          <span>Bandeira:</span>
+          <strong>Visa</strong>
+        </div>
+        <div class="payment-detail-row">
+          <span>Tipo:</span>
+          <strong>Crédito</strong>
+        </div>
+        <div class="payment-detail-row">
+          <span>Status:</span>
+          <span class="badge badge-ok">Ativo</span>
+        </div>
+        
+        <a class="btn-primary" href="{% url 'billing:checkout' %}" style="margin-top: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+          <i class="fa-solid fa-arrows-rotate"></i> Atualizar Cartão
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- 3. CANCELAR ASSINATURA -->
+  {% if billing.subscription and billing.subscription.status == "active" %}
+  <div class="card account-card">
+    <div class="card-title">Cancelar Assinatura</div>
+    <div class="card-sub">Cancele a recorrência de pagamentos do seu plano</div>
+    
+    <div class="info-note warning-note" style="margin-bottom: 20px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>Ao cancelar a assinatura, sua agenda pública será bloqueada e seus clientes não conseguirão fazer novos agendamentos online.</span>
+    </div>
+    
+    <button class="btn-primary btn-warning-action" onclick="openModal('modal-cancel-subscription')" type="button">
+      <i class="fa-solid fa-ban"></i> Cancelar Assinatura
+    </button>
+  </div>
+  {% endif %}
+
+  <!-- 4. ZONA DE PERIGO (EXCLUSÃO DE CONTA) -->
+  <div class="card account-card danger-zone-card">
+    <div class="card-title text-danger">Zona de Perigo</div>
+    <div class="card-sub">Ações irreversíveis para a sua conta e estabelecimento</div>
+    
+    <div class="danger-zone-content">
+      <div class="danger-description">
+        <strong>Excluir esta conta permanentemente</strong>
+        <p>Ao excluir a sua conta, seu estabelecimento, funcionários, agendamentos, serviços e configurações serão permanentemente apagados. Esta ação não poderá ser desfeita de forma alguma.</p>
+      </div>
+      
+      <button class="btn-primary btn-danger-action" onclick="openModal('modal-delete-account')" type="button">
+        <i class="fa-solid fa-trash-can"></i> Excluir Conta Permanentemente
+      </button>
+    </div>
+  </div>
+
+</div>

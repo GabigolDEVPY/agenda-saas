@@ -15,16 +15,12 @@
       <i class="fa-regular fa-calendar-days"></i>Agendamentos
     </button>
     <button class="nav-tab" onclick="switchTab('servicos', this)">
-      <i class="fa-solid fa-scissors"></i>Serviços
+      <i class="fa-solid fa-briefcase"></i>Serviços
     </button>
+
     {% if request.user.is_owner %}
     <button class="nav-tab" onclick="switchTab('funcionarios', this)">
       <i class="fa-solid fa-users"></i>Funcionários
-    </button>
-    {% endif %}
-    {% if request.user.is_owner %}
-    <button class="nav-tab" onclick="switchTab('plano', this)">
-      <i class="fa-solid fa-credit-card"></i>Plano
     </button>
     {% endif %}
     <button class="nav-tab" onclick="switchTab('perfil', this)">
@@ -38,8 +34,14 @@
       {% endif %}
     </button>
     {% endif %}
+    {% if request.user.is_owner %}
+    <button class="nav-tab" onclick="switchTab('conta', this)">
+      <i class="fa-solid fa-user-gear"></i>Conta
+    </button>
+    {% endif %}
   </div>
 </div>
+
 
 <div class="main">
 
@@ -51,25 +53,26 @@
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-label">Esta semana</div>
-      <div class="stat-value">12</div>
+      <div class="stat-value">{{ week_appointments_count|default:"0" }}</div>
       <div class="stat-sub">agendamentos</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Hoje</div>
-      <div class="stat-value">4</div>
+      <div class="stat-value">{{ today_appointments_count|default:"0" }}</div>
       <div class="stat-sub">clientes</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Dias livres</div>
-      <div class="stat-value" id="stat-daysoff">0</div>
+      <div class="stat-label">Agendamentos</div>
+      <div class="stat-value">{{ month_appointments_count|default:"0" }}</div>
       <div class="stat-sub">este mês</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Faturamento</div>
-      <div class="stat-value">R$0</div>
+      <div class="stat-value">R$ {{ faturamento_este_mes|floatformat:2 }}</div>
       <div class="stat-sub">este mês</div>
     </div>
   </div>
+
 
   <!-- BOTÃO ABRIR AGENDA -->
   <div class="card" style="text-align:center; padding: 36px 20px;">
@@ -139,22 +142,23 @@
 {% endif %}
 
 <!-- ══════════════════════════════════════
-     PANEL: PLANO
+     PANEL: CONTA
 ══════════════════════════════════════ -->
 {% if request.user.is_owner %}
-<div class="panel" id="panel-plano">
+<div class="panel" id="panel-conta">
 
   <div class="section-header">
     <div>
-      <div class="section-title">Plano e Pagamento</div>
-      <div class="section-sub">Status do plano, renovação e pagamento do estabelecimento</div>
+      <div class="section-title">Minha Conta</div>
+      <div class="section-sub">Configurações de plano, pagamentos e segurança da conta</div>
     </div>
   </div>
 
-  {% include "partials/billing/plan.html" %}
+  {% include "partials/account/account.html" %}
 
 </div>
 {% endif %}
+
 
 <!-- ══════════════════════════════════════
      PANEL: PERFIL
@@ -437,7 +441,67 @@
     </form>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     MODAL: CANCELAR ASSINATURA
+══════════════════════════════════════ -->
+<div class="overlay" id="modal-cancel-subscription" onclick="closeOnBg(event,'modal-cancel-subscription')">
+  <div class="modal-sheet" style="max-width:440px;">
+    <div class="modal-handle"></div>
+    <form method="POST" action="{% url 'billing:cancel_subscription' %}">
+      {% csrf_token %}
+      <div class="modal-body" style="text-align:center;padding:32px 24px;">
+        <div style="font-size:44px;color:var(--warn);margin-bottom:14px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;">Cancelar Assinatura?</div>
+        <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:22px;">
+          Sua agenda pública será bloqueada e seus clientes não conseguirão realizar novos agendamentos.<br>
+          Deseja prosseguir com o cancelamento?
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button type="button" class="btn-ghost" onclick="closeModal('modal-cancel-subscription')">Voltar</button>
+          <button type="submit" class="btn-primary" style="background:var(--warn);color:var(--bg);box-shadow:0 2px 8px rgba(234,179,8,.3);">
+            Confirmar Cancelamento
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: EXCLUIR CONTA
+══════════════════════════════════════ -->
+<div class="overlay" id="modal-delete-account" onclick="closeOnBg(event,'modal-delete-account')">
+  <div class="modal-sheet" style="max-width:480px;">
+    <div class="modal-handle"></div>
+    <form method="POST" action="{% url 'billing:delete_account' %}">
+      {% csrf_token %}
+      <div class="modal-body" style="padding:32px 24px;">
+        <div style="font-size:44px;color:var(--red);text-align:center;margin-bottom:14px;"><i class="fa-solid fa-skull-crossbones"></i></div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.3px;text-align:center;margin-bottom:8px;">Excluir Conta Permanentemente?</div>
+        <p style="font-size:14px;color:var(--gray);line-height:1.7;text-align:center;margin-bottom:22px;">
+          Esta ação é <strong>irreversível</strong> e apagará todo o seu estabelecimento, funcionários, agendamentos, serviços e configurações.
+        </p>
+        
+        <div style="margin-bottom:20px;">
+          <label style="font-size:13px;color:var(--white);display:block;margin-bottom:8px;font-weight:600;">
+            Para confirmar, digite <span style="color:var(--red);font-weight:bold;">EXCLUIR</span> no campo abaixo:
+          </label>
+          <input type="text" name="confirmation" required placeholder="Digite EXCLUIR" autocomplete="off" class="form-control" style="width:100%;text-align:center;border-color:var(--red);background:rgba(224,82,82,.05);color:var(--white);font-weight:bold;letter-spacing:1px;"/>
+        </div>
+        
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button type="button" class="btn-ghost" onclick="closeModal('modal-delete-account')">Cancelar</button>
+          <button type="submit" class="btn-primary" style="background:var(--red);box-shadow:0 2px 8px rgba(224,82,82,.3);">
+            Excluir Minha Conta
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 {% endif %}
+
 
 </div>
 {% endblock content %}

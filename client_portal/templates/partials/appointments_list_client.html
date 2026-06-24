@@ -5,9 +5,10 @@
 
   <div class="summary-header" style="display:flex;align-items:center;justify-content:space-between;">
     <span style="display:flex;align-items:center;gap:8px;">
-      <i class="fa-solid fa-scissors" style="font-size:11px;"></i>
+      <i class="fa-solid fa-briefcase" style="font-size:11px;"></i>
       {{ appointment.service.name }}
     </span>
+
 
     {% with s=appointment.status %}
       {% if s == "confirmed" %}
