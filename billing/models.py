@@ -8,6 +8,7 @@ class Plan(models.Model):
     max_services_per_user = models.PositiveIntegerField(default=30)
     max_users_per_establishment = models.PositiveIntegerField(default=5)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    stripe_price_id = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:

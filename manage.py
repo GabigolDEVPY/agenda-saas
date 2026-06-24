@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
-import os
 import sys
 sys.dont_write_bytecode = True
+import os
 
 def main():
     """Run administrative tasks."""

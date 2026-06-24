@@ -3,18 +3,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
-
+from .services.stripe_service import StripeService
 from establishment.mixins.mixins import OwnerRequiredMixin
 from billing.services.account_service import AccountService
+from .models import Plan, Subscription
 
 
 class CheckoutView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        messages.info(
-            request,
-            "Checkout ainda nao configurado. Integre o provedor de pagamento nesta rota.",
-        )
-        return redirect(f"{reverse('admin_portal:home')}?tab=conta")
+        plan = Plan.objects.filter(name="Plano Inicial").first()
+        url = StripeService.create_checkout_session(request, plan=plan)
+        return redirect(url.url)
 
 
 class CancelSubscriptionView(LoginRequiredMixin, OwnerRequiredMixin, View):
