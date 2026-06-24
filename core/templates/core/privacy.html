@@ -1,0 +1,559 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Política de Privacidade — BarberBlack</title>
+  <meta name="description" content="Política de Privacidade, Termos de Uso e conformidade com a LGPD do BarberBlack — Sistema de Agendamento."/>
+  <meta name="robots" content="index, follow"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'styles.css' %}?v=privacy-v1">
+  <style>
+    /* ── Privacy page styles ── */
+    .prv-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 60px); height: 60px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+    }
+    .prv-nav-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .prv-nav-logo-box {
+      width: 32px; height: 32px; background: var(--bg-4);
+      border: 1px solid var(--border-dark); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-2);
+    }
+    .prv-nav-brand { font-size: 15px; font-weight: 700; color: var(--text); }
+    .prv-back {
+      font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none;
+      display: flex; align-items: center; gap: 7px; transition: color .15s;
+    }
+    .prv-back:hover { color: var(--text-2); }
+
+    /* Layout principal */
+    .prv-layout {
+      max-width: 1100px; margin: 0 auto;
+      padding: clamp(30px, 5vw, 60px) clamp(20px, 5vw, 60px);
+      display: grid; grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    @media (min-width: 900px) {
+      .prv-layout { grid-template-columns: 240px 1fr; gap: 48px; }
+    }
+
+    /* Sidebar */
+    .prv-sidebar {
+      position: sticky; top: 24px; height: fit-content;
+    }
+    .prv-sidebar-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+    }
+    .prv-sidebar-links { display: flex; flex-direction: column; gap: 2px; }
+    .prv-sidebar-link {
+      font-size: 13px; color: var(--muted); text-decoration: none;
+      padding: 7px 12px; border-radius: 6px; border-left: 2px solid transparent;
+      transition: all .15s; display: flex; align-items: center; gap: 8px;
+    }
+    .prv-sidebar-link:hover { color: var(--text-2); background: var(--accent-pale); }
+    .prv-sidebar-link.active {
+      color: var(--text); background: var(--accent-pale);
+      border-left-color: var(--text-2);
+    }
+    @media (max-width: 899px) {
+      .prv-sidebar { display: none; }
+    }
+
+    /* Conteúdo */
+    .prv-content { min-width: 0; }
+    .prv-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 28px; margin-bottom: 40px;
+    }
+    .prv-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent-bright);
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+    }
+    .prv-title {
+      font-size: clamp(24px, 4vw, 36px); font-weight: 800;
+      letter-spacing: -.5px; color: var(--text); margin-bottom: 10px; line-height: 1.15;
+    }
+    .prv-subtitle { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .prv-meta {
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+    }
+    .prv-meta-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--muted);
+    }
+    .prv-meta-item i { font-size: 11px; color: var(--accent-bright); }
+
+    /* Seções do documento */
+    .prv-section {
+      margin-bottom: 44px; scroll-margin-top: 80px;
+    }
+    .prv-section-title {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .prv-section-icon {
+      width: 32px; height: 32px; border-radius: 7px;
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--accent-bright); flex-shrink: 0;
+    }
+    .prv-text {
+      font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 14px;
+    }
+    .prv-text strong { color: var(--text-2); font-weight: 600; }
+    .prv-list {
+      display: flex; flex-direction: column; gap: 8px; margin: 12px 0 16px;
+    }
+    .prv-list-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--muted); line-height: 1.6;
+    }
+    .prv-list-item i { color: var(--accent-bright); font-size: 11px; margin-top: 3px; flex-shrink: 0; }
+    .prv-list-item strong { color: var(--text-2); font-weight: 600; }
+
+    .prv-card {
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 22px; margin: 16px 0;
+    }
+    .prv-card-title {
+      font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+    }
+    .prv-card-text { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .prv-highlight {
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      border-left: 3px solid var(--accent-bright);
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0;
+    }
+    .prv-highlight-text { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+    .prv-highlight-text i { color: var(--accent-bright); margin-right: 6px; }
+
+    .prv-rights-grid {
+      display: grid; grid-template-columns: 1fr; gap: 10px; margin: 16px 0;
+    }
+    @media (min-width: 600px) {
+      .prv-rights-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .prv-right-card {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .prv-right-card-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    }
+    .prv-right-card-title i { color: var(--success); font-size: 12px; }
+    .prv-right-card-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .prv-divider {
+      border: none; border-top: 1px solid var(--border); margin: 36px 0;
+    }
+
+    .prv-contact-box {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 24px; text-align: center; margin-top: 16px;
+    }
+    .prv-contact-icon { font-size: 28px; color: var(--accent-bright); margin-bottom: 12px; }
+    .prv-contact-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .prv-contact-text { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .prv-contact-email {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13px; font-weight: 600; color: var(--text-2);
+      background: var(--bg-3); border: 1px solid var(--border-dark);
+      padding: 8px 18px; border-radius: 6px; text-decoration: none; transition: all .15s;
+    }
+    .prv-contact-email:hover { border-color: var(--border-strong); color: var(--text); }
+
+    /* Footer simples */
+    .prv-footer {
+      border-top: 1px solid var(--border);
+      padding: 24px clamp(20px, 5vw, 60px);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .prv-footer-copy { font-size: 12px; color: var(--muted); }
+    .prv-footer-back {
+      font-size: 12px; color: var(--muted); text-decoration: none; transition: color .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .prv-footer-back:hover { color: var(--text-2); }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="prv-nav">
+  <a href="{% url 'landing' %}" class="prv-nav-logo">
+    <div class="prv-nav-logo-box"><i class="fa-solid fa-scissors"></i></div>
+    <span class="prv-nav-brand">BarberBlack</span>
+  </a>
+  <a href="{% url 'landing' %}" class="prv-back">
+    <i class="fa-solid fa-arrow-left"></i> Voltar ao início
+  </a>
+</nav>
+
+<!-- Layout principal -->
+<div class="prv-layout">
+
+  <!-- Sidebar -->
+  <aside class="prv-sidebar">
+    <div class="prv-sidebar-title">Nesta página</div>
+    <nav class="prv-sidebar-links" id="prv-toc">
+      <a href="#introducao"     class="prv-sidebar-link active"><i class="fa-solid fa-circle-info"></i> Introdução</a>
+      <a href="#dados"          class="prv-sidebar-link"><i class="fa-solid fa-database"></i> Dados coletados</a>
+      <a href="#finalidade"     class="prv-sidebar-link"><i class="fa-solid fa-bullseye"></i> Finalidade</a>
+      <a href="#compartilhamento" class="prv-sidebar-link"><i class="fa-solid fa-share-nodes"></i> Compartilhamento</a>
+      <a href="#retencao"       class="prv-sidebar-link"><i class="fa-solid fa-clock"></i> Retenção</a>
+      <a href="#direitos"       class="prv-sidebar-link"><i class="fa-solid fa-shield-halved"></i> Seus direitos (LGPD)</a>
+      <a href="#seguranca"      class="prv-sidebar-link"><i class="fa-solid fa-lock"></i> Segurança</a>
+      <a href="#cookies"        class="prv-sidebar-link"><i class="fa-solid fa-cookie-bite"></i> Cookies</a>
+      <a href="#termos"         class="prv-sidebar-link"><i class="fa-solid fa-file-contract"></i> Termos de Uso</a>
+      <a href="#contato"        class="prv-sidebar-link"><i class="fa-solid fa-envelope"></i> Contato / DPO</a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="prv-content">
+
+    <!-- Cabeçalho -->
+    <div class="prv-header">
+      <div class="prv-eyebrow"><i class="fa-solid fa-shield-halved"></i> LGPD Compliant</div>
+      <h1 class="prv-title">Política de Privacidade e<br>Proteção de Dados</h1>
+      <p class="prv-subtitle">
+        Este documento descreve como o <strong style="color:var(--text-2);">BarberBlack</strong> coleta, usa, armazena e protege seus dados pessoais, em conformidade com a
+        <strong style="color:var(--text-2);">Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</strong>.
+      </p>
+      <div class="prv-meta">
+        <span class="prv-meta-item"><i class="fa-solid fa-calendar"></i> Última atualização: 23 de junho de 2026</span>
+        <span class="prv-meta-item"><i class="fa-solid fa-check-circle"></i> Versão 1.0</span>
+        <span class="prv-meta-item"><i class="fa-solid fa-flag"></i> Válido para o Brasil</span>
+      </div>
+    </div>
+
+    <!-- 1. Introdução -->
+    <section class="prv-section" id="introducao">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-circle-info"></i></div>
+        1. Introdução e Identificação do Controlador
+      </h2>
+      <p class="prv-text">
+        O <strong>BarberBlack</strong> é uma plataforma de gestão e agendamento online voltada para barbearias, salões de beleza e estabelecimentos do setor de estética. Ao utilizar nossos serviços, você confia seus dados pessoais a nós — e nós levamos essa responsabilidade muito a sério.
+      </p>
+      <p class="prv-text">
+        O controlador dos dados pessoais é a empresa responsável pela plataforma BarberBlack, doravante denominada simplesmente "<strong>BarberBlack</strong>", "<strong>nós</strong>" ou "<strong>nossa plataforma</strong>".
+      </p>
+      <div class="prv-highlight">
+        <p class="prv-highlight-text">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Esta Política de Privacidade aplica-se a todos os usuários da plataforma, incluindo donos de estabelecimentos, barbeiros e clientes que realizam agendamentos.
+        </p>
+      </div>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 2. Dados coletados -->
+    <section class="prv-section" id="dados">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-database"></i></div>
+        2. Dados Pessoais Coletados
+      </h2>
+      <p class="prv-text">Coletamos apenas os dados necessários para o funcionamento do serviço. Veja o que coletamos de cada tipo de usuário:</p>
+
+      <div class="prv-card">
+        <div class="prv-card-title"><i class="fa-solid fa-store" style="color:var(--accent-bright);margin-right:7px;"></i>Donos de estabelecimento e barbeiros</div>
+        <div class="prv-list">
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Nome completo</strong> — para identificação e exibição no painel</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Endereço de e-mail</strong> — para login, recuperação de senha e comunicações</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Senha criptografada</strong> — armazenada com hash seguro (nunca em texto puro)</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Dados do estabelecimento</strong> — nome, horários de funcionamento, serviços e configurações</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Dados de uso</strong> — registros de sessão, ações no painel (para segurança e suporte)</span></div>
+        </div>
+      </div>
+
+      <div class="prv-card">
+        <div class="prv-card-title"><i class="fa-solid fa-user" style="color:var(--accent-bright);margin-right:7px;"></i>Clientes que realizam agendamentos</div>
+        <div class="prv-list">
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Nome</strong> — para identificação do agendamento</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Telefone</strong> — para contato em caso de necessidade</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Dados do agendamento</strong> — data, horário, serviço escolhido e barbeiro</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Histórico de atendimentos</strong> — registros anteriores no mesmo estabelecimento</span></div>
+        </div>
+      </div>
+
+      <div class="prv-card">
+        <div class="prv-card-title"><i class="fa-solid fa-globe" style="color:var(--accent-bright);margin-right:7px;"></i>Dados coletados automaticamente</div>
+        <div class="prv-list">
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Endereço IP</strong> — para segurança e prevenção de fraudes</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Tipo de dispositivo e navegador</strong> — para otimizar a experiência</span></div>
+          <div class="prv-list-item"><i class="fa-solid fa-dot-circle"></i><span><strong>Páginas acessadas e horários</strong> — para análise de uso e melhoria do produto</span></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 3. Finalidade -->
+    <section class="prv-section" id="finalidade">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-bullseye"></i></div>
+        3. Finalidade do Tratamento
+      </h2>
+      <p class="prv-text">Tratamos seus dados pessoais com base em fundamentos legais da LGPD (art. 7º) para as seguintes finalidades:</p>
+      <div class="prv-list">
+        <div class="prv-list-item"><i class="fa-solid fa-check-circle"></i><span><strong>Execução do contrato</strong> — para fornecer o serviço de agendamento contratado</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-check-circle"></i><span><strong>Legítimo interesse</strong> — para melhorar a plataforma, segurança e suporte técnico</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-check-circle"></i><span><strong>Consentimento</strong> — para envio de comunicações de marketing e novidades (quando você optar por receber)</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-check-circle"></i><span><strong>Obrigação legal</strong> — quando exigido por lei ou autoridade competente</span></div>
+      </div>
+      <p class="prv-text">
+        Seus dados <strong>nunca</strong> serão utilizados para fins diferentes dos declarados acima sem o seu consentimento explícito.
+      </p>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 4. Compartilhamento -->
+    <section class="prv-section" id="compartilhamento">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-share-nodes"></i></div>
+        4. Compartilhamento de Dados
+      </h2>
+      <p class="prv-text">
+        <strong>Não vendemos, alugamos ou comercializamos seus dados pessoais a terceiros.</strong> O compartilhamento ocorre somente nos seguintes casos:
+      </p>
+      <div class="prv-list">
+        <div class="prv-list-item"><i class="fa-solid fa-building"></i><span><strong>Provedores de infraestrutura</strong> — servidores de banco de dados e hospedagem (sob contrato de confidencialidade e conformidade com a LGPD)</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-scale-balanced"></i><span><strong>Autoridades competentes</strong> — quando exigido por ordem judicial, lei ou regulamentação aplicável</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-store"></i><span><strong>Estabelecimento contratante</strong> — os dados de agendamento dos clientes são visíveis ao dono do estabelecimento para gestão da agenda</span></div>
+      </div>
+      <div class="prv-highlight">
+        <p class="prv-highlight-text">
+          <i class="fa-solid fa-shield-halved"></i>
+          Todos os parceiros e prestadores de serviço que têm acesso a dados pessoais são contratualmente obrigados a adotar medidas de proteção equivalentes às nossas.
+        </p>
+      </div>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 5. Retenção -->
+    <section class="prv-section" id="retencao">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-clock"></i></div>
+        5. Retenção e Descarte de Dados
+      </h2>
+      <p class="prv-text">Mantemos seus dados pelo tempo necessário para as finalidades descritas acima:</p>
+      <div class="prv-list">
+        <div class="prv-list-item"><i class="fa-solid fa-user-clock"></i><span><strong>Conta ativa</strong> — enquanto sua conta existir na plataforma</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-calendar-xmark"></i><span><strong>Conta encerrada</strong> — até 90 dias após o encerramento, para fins de suporte e conformidade</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-receipt"></i><span><strong>Dados financeiros e de faturamento</strong> — até 5 anos, conforme exigência fiscal brasileira</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-history"></i><span><strong>Histórico de agendamentos</strong> — pelo período contratado, sujeito à sua solicitação de exclusão</span></div>
+      </div>
+      <p class="prv-text">
+        Após o período de retenção, os dados são eliminados de forma segura ou anonimizados de modo irreversível.
+      </p>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 6. Direitos LGPD -->
+    <section class="prv-section" id="direitos">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        6. Seus Direitos como Titular de Dados (LGPD)
+      </h2>
+      <p class="prv-text">
+        Nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018), você tem os seguintes direitos em relação aos seus dados pessoais:
+      </p>
+      <div class="prv-rights-grid">
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-eye"></i> Acesso</div>
+          <div class="prv-right-card-text">Solicitar uma cópia dos dados pessoais que temos sobre você.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-pen"></i> Correção</div>
+          <div class="prv-right-card-text">Solicitar a correção de dados incompletos, inexatos ou desatualizados.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-trash"></i> Eliminação</div>
+          <div class="prv-right-card-text">Solicitar a exclusão dos seus dados, salvo obrigações legais de retenção.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-circle-xmark"></i> Revogação</div>
+          <div class="prv-right-card-text">Revogar o consentimento para tratamentos baseados nesse fundamento.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-ban"></i> Oposição</div>
+          <div class="prv-right-card-text">Opor-se ao tratamento realizado com base em legítimo interesse.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-file-export"></i> Portabilidade</div>
+          <div class="prv-right-card-text">Solicitar que seus dados sejam enviados a outro controlador.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-circle-info"></i> Informação</div>
+          <div class="prv-right-card-text">Ser informado sobre as entidades com quem compartilhamos seus dados.</div>
+        </div>
+        <div class="prv-right-card">
+          <div class="prv-right-card-title"><i class="fa-solid fa-gavel"></i> Reclamação</div>
+          <div class="prv-right-card-text">Reclamar perante a Autoridade Nacional de Proteção de Dados (ANPD).</div>
+        </div>
+      </div>
+      <p class="prv-text" style="margin-top:16px;">
+        Para exercer qualquer um desses direitos, entre em contato com nosso Encarregado de Proteção de Dados (DPO) pelo e-mail indicado na seção de contato abaixo. Responderemos em até <strong>15 dias úteis</strong>.
+      </p>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 7. Segurança -->
+    <section class="prv-section" id="seguranca">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-lock"></i></div>
+        7. Segurança dos Dados
+      </h2>
+      <p class="prv-text">
+        Adotamos medidas técnicas e organizacionais para proteger seus dados contra acesso não autorizado, alteração, divulgação ou destruição. Entre as medidas implementadas:
+      </p>
+      <div class="prv-list">
+        <div class="prv-list-item"><i class="fa-solid fa-shield-halved"></i><span><strong>Criptografia em trânsito</strong> — toda comunicação utiliza HTTPS/TLS</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-key"></i><span><strong>Senhas protegidas</strong> — armazenadas com algoritmos de hash seguros (bcrypt/PBKDF2)</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-user-shield"></i><span><strong>Controle de acesso</strong> — autenticação e autorização por perfil de usuário</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-server"></i><span><strong>Banco de dados seguro</strong> — hospedado em ambiente com SSL obrigatório e backups regulares</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-file-shield"></i><span><strong>Auditoria</strong> — logs de acesso e ações críticas são registrados e monitorados</span></div>
+      </div>
+      <div class="prv-highlight">
+        <p class="prv-highlight-text">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Em caso de incidente de segurança que possa afetar seus direitos, notificaremos a ANPD e os titulares afetados nos prazos legais previstos pela LGPD.
+        </p>
+      </div>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 8. Cookies -->
+    <section class="prv-section" id="cookies">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-cookie-bite"></i></div>
+        8. Política de Cookies
+      </h2>
+      <p class="prv-text">
+        Utilizamos cookies e tecnologias similares para garantir o funcionamento da plataforma e melhorar sua experiência. Os cookies utilizados são:
+      </p>
+      <div class="prv-card">
+        <div class="prv-card-title">🔒 Cookies essenciais (não opcionais)</div>
+        <div class="prv-card-text">
+          Necessários para o funcionamento básico da plataforma. Incluem o cookie de sessão (<code style="background:var(--bg-4);padding:1px 5px;border-radius:3px;font-size:12px;">sessionid</code>) e o token de segurança CSRF (<code style="background:var(--bg-4);padding:1px 5px;border-radius:3px;font-size:12px;">csrftoken</code>). Sem eles, o login e as funcionalidades da plataforma não funcionam.
+        </div>
+      </div>
+      <div class="prv-card">
+        <div class="prv-card-title">📊 Cookies de análise (opcionais)</div>
+        <div class="prv-card-text">
+          Usados para entender como os usuários interagem com a plataforma, permitindo melhorias contínuas. Você pode optar por não aceitá-los sem perda de funcionalidade.
+        </div>
+      </div>
+      <p class="prv-text">
+        Você pode gerenciar ou desativar cookies nas configurações do seu navegador. Note que desativar cookies essenciais pode impedir o funcionamento correto da plataforma.
+      </p>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 9. Termos de Uso -->
+    <section class="prv-section" id="termos">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-file-contract"></i></div>
+        9. Termos de Uso
+      </h2>
+      <p class="prv-text">
+        Ao usar o BarberBlack, você concorda com os seguintes termos:
+      </p>
+      <div class="prv-list">
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Uso permitido</strong> — A plataforma destina-se exclusivamente à gestão profissional de agendamentos. É proibido o uso para fins ilegais, fraudulentos ou contrários à boa-fé.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Responsabilidade pelo conteúdo</strong> — O usuário é responsável pelas informações cadastradas (dados do estabelecimento, serviços, preços, etc.) e garante que são verídicas.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Disponibilidade</strong> — Nos esforçamos para manter a plataforma disponível 24/7, mas não garantimos disponibilidade ininterrupta. Atualizações e manutenções podem ocorrer.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Propriedade intelectual</strong> — Todo o conteúdo, código e design da plataforma são propriedade do BarberBlack e protegidos por direitos autorais.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Rescisão</strong> — O BarberBlack reserva-se o direito de suspender contas que violem estes termos, mediante notificação prévia sempre que possível.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Limitação de responsabilidade</strong> — O BarberBlack não se responsabiliza por perdas decorrentes de uso inadequado da plataforma pelo usuário.</span></div>
+        <div class="prv-list-item"><i class="fa-solid fa-circle-check"></i><span><strong>Foro</strong> — Fica eleito o foro da comarca de São Paulo/SP para dirimir quaisquer disputas, com aplicação da lei brasileira.</span></div>
+      </div>
+      <p class="prv-text">
+        A continuidade do uso da plataforma após eventuais alterações nestes termos implica aceitação das novas condições. Alterações significativas serão comunicadas por e-mail com antecedência de 15 dias.
+      </p>
+    </section>
+
+    <hr class="prv-divider">
+
+    <!-- 10. Contato / DPO -->
+    <section class="prv-section" id="contato">
+      <h2 class="prv-section-title">
+        <div class="prv-section-icon"><i class="fa-solid fa-envelope"></i></div>
+        10. Contato e Encarregado de Proteção de Dados (DPO)
+      </h2>
+      <p class="prv-text">
+        Caso tenha dúvidas sobre esta política, queira exercer seus direitos como titular ou precisar contatar nosso Encarregado de Proteção de Dados:
+      </p>
+      <div class="prv-contact-box">
+        <div class="prv-contact-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="prv-contact-title">Encarregado de Proteção de Dados (DPO)</div>
+        <div class="prv-contact-text">
+          Disponível para atender solicitações relacionadas aos seus dados pessoais.<br>
+          Prazo de resposta: até <strong style="color:var(--text-2);">15 dias úteis</strong>.
+        </div>
+        <a href="mailto:privacidade@barberblack.com.br" class="prv-contact-email">
+          <i class="fa-solid fa-envelope"></i>
+          privacidade@barberblack.com.br
+        </a>
+      </div>
+      <p class="prv-text" style="margin-top:20px;">
+        Você também pode registrar reclamações diretamente à <strong style="color:var(--text-2);">Autoridade Nacional de Proteção de Dados (ANPD)</strong> pelo site <a href="https://www.gov.br/anpd" target="_blank" rel="noopener" style="color:var(--text-2);">www.gov.br/anpd</a>.
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<!-- Footer -->
+<footer style="background:var(--bg-2);">
+  <div class="prv-footer">
+    <span class="prv-footer-copy">© 2026 BarberBlack. Todos os direitos reservados.</span>
+    <a href="{% url 'landing' %}" class="prv-footer-back">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao início
+    </a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  // Highlight ativo na sidebar conforme scroll
+  const sections = document.querySelectorAll('.prv-section');
+  const links = document.querySelectorAll('#prv-toc .prv-sidebar-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector('#prv-toc a[href="#' + entry.target.id + '"]');
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4, rootMargin: '-60px 0px -40% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

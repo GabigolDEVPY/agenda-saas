@@ -1,0 +1,1044 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BarberBlack — Sistema de Agendamento Online</title>
+  <meta name="description" content="Plataforma completa de agendamento online. Gerencie clientes, equipe, serviços e finanças em um só lugar. Experimente grátis."/>
+  <meta name="keywords" content="agendamento online, sistema de agendamento, agenda online, software de agendamento, gestão de clientes"/>
+  <meta property="og:title" content="BarberBlack — Sistema de Agendamento Online"/>
+  <meta property="og:description" content="Plataforma completa de agendamento online para estabelecimentos de serviços."/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'styles.css' %}?v=landing-v1">
+  <style>
+    /* ═══════════════════════════════════════════
+       LANDING — estilos específicos
+    ═══════════════════════════════════════════ */
+
+    /* Navbar da landing */
+    .lp-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 60px); height: 64px;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s;
+    }
+    .lp-nav-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .lp-nav-logo-box {
+      width: 34px; height: 34px; background: var(--bg-4);
+      border: 1px solid var(--border-dark); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--text-2);
+    }
+    .lp-nav-brand { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
+    .lp-nav-brand span { color: var(--accent-bright); }
+    .lp-nav-links {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .lp-nav-link {
+      font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none;
+      padding: 7px 14px; border-radius: 6px; transition: all .15s;
+    }
+    .lp-nav-link:hover { color: var(--text); background: var(--accent-pale); }
+    .lp-nav-cta {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .lp-btn-outline {
+      font-family: var(--font); font-size: 13px; font-weight: 600;
+      color: var(--text-2); background: none;
+      border: 1px solid var(--border-dark); border-radius: 6px;
+      padding: 8px 18px; cursor: pointer; text-decoration: none;
+      transition: all .15s; display: inline-flex; align-items: center; gap: 7px;
+    }
+    .lp-btn-outline:hover { border-color: var(--border-strong); color: var(--text); background: var(--accent-pale); }
+    .lp-btn-solid {
+      font-family: var(--font); font-size: 13px; font-weight: 700;
+      color: var(--bg); background: var(--text);
+      border: none; border-radius: 6px;
+      padding: 9px 20px; cursor: pointer; text-decoration: none;
+      transition: all .15s; display: inline-flex; align-items: center; gap: 7px;
+    }
+    .lp-btn-solid:hover { background: var(--text-2); color: var(--bg); }
+
+    /* Mobile nav toggle */
+    .lp-nav-mobile-btn {
+      display: none; background: var(--bg-3);
+      border: 1px solid var(--border-dark); border-radius: 6px;
+      width: 38px; height: 38px; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--text-2); cursor: pointer;
+    }
+    .lp-mobile-menu {
+      display: none; flex-direction: column; gap: 6px;
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
+      background: var(--bg-2); border-bottom: 1px solid var(--border);
+      padding: 16px clamp(20px, 5vw, 60px);
+    }
+    .lp-mobile-menu.open { display: flex; }
+    @media (max-width: 768px) {
+      .lp-nav-links { display: none; }
+      .lp-nav-cta { display: none; }
+      .lp-nav-mobile-btn { display: flex; }
+    }
+
+    /* Seção base */
+    .lp-section {
+      padding: clamp(60px, 10vw, 100px) clamp(20px, 5vw, 60px);
+      max-width: 1200px; margin: 0 auto;
+    }
+    .lp-section-alt {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .lp-section-alt .lp-section { max-width: 1200px; margin: 0 auto; }
+    .lp-section-dark {
+      background: var(--bg-3);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .lp-section-dark .lp-section { max-width: 1200px; margin: 0 auto; }
+
+    .lp-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent-bright);
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      padding: 5px 14px; border-radius: 999px; margin-bottom: 18px;
+    }
+    .lp-section-title {
+      font-size: clamp(26px, 5vw, 42px); font-weight: 800;
+      letter-spacing: -.5px; color: var(--text); line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .lp-section-sub {
+      font-size: 16px; color: var(--muted); line-height: 1.7;
+      max-width: 560px; margin-bottom: 0;
+    }
+    .lp-section-header { margin-bottom: clamp(40px, 6vw, 60px); }
+    .lp-section-header.center { text-align: center; }
+    .lp-section-header.center .lp-section-sub { margin-left: auto; margin-right: auto; }
+
+    /* ── HERO ── */
+    .lp-hero {
+      padding-top: calc(64px + clamp(60px, 12vw, 120px));
+      padding-bottom: clamp(60px, 10vw, 100px);
+      padding-left: clamp(20px, 5vw, 60px);
+      padding-right: clamp(20px, 5vw, 60px);
+      max-width: 1200px; margin: 0 auto;
+      text-align: center;
+      position: relative;
+    }
+    .lp-hero-glow {
+      position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
+      width: min(800px, 100%); height: 400px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(139,143,163,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lp-hero-title {
+      font-size: clamp(36px, 8vw, 72px);
+      font-weight: 800; line-height: 1.08; letter-spacing: -1.5px;
+      color: var(--text); margin-bottom: 22px;
+    }
+    .lp-hero-title .accent { color: var(--accent-bright); }
+    .lp-hero-title .muted { color: var(--muted); }
+    .lp-hero-desc {
+      font-size: clamp(15px, 2vw, 18px); color: var(--muted);
+      line-height: 1.7; max-width: 600px; margin: 0 auto 40px;
+    }
+    .lp-hero-actions {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      flex-wrap: wrap; margin-bottom: 0;
+    }
+    .lp-cta-primary {
+      font-family: var(--font); font-size: 15px; font-weight: 700;
+      color: var(--bg); background: var(--text);
+      border: none; border-radius: 8px;
+      padding: 14px 28px; cursor: pointer; text-decoration: none;
+      transition: all .2s; display: inline-flex; align-items: center; gap: 9px;
+      letter-spacing: -.1px;
+    }
+    .lp-cta-primary:hover { background: var(--text-2); transform: translateY(-1px); }
+    .lp-cta-secondary {
+      font-family: var(--font); font-size: 15px; font-weight: 600;
+      color: var(--text-2); background: none;
+      border: 1px solid var(--border-strong); border-radius: 8px;
+      padding: 13px 28px; cursor: pointer; text-decoration: none;
+      transition: all .2s; display: inline-flex; align-items: center; gap: 9px;
+    }
+    .lp-cta-secondary:hover { color: var(--text); border-color: var(--text-2); background: var(--accent-pale); }
+
+    /* Preview card */
+    .lp-preview {
+      max-width: 900px; margin: 0 auto;
+      background: var(--bg-2); border: 1px solid var(--border-dark);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.5);
+    }
+    .lp-preview-bar {
+      background: var(--bg-3); border-bottom: 1px solid var(--border);
+      padding: 12px 18px; display: flex; align-items: center; gap: 8px;
+    }
+    .lp-preview-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .lp-preview-body {
+      padding: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 600px) { .lp-preview-body { grid-template-columns: 1fr; padding: 16px; } }
+    .lp-preview-card {
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px;
+    }
+    .lp-preview-card-label {
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; margin-bottom: 8px;
+    }
+    .lp-preview-card-val {
+      font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -1px;
+    }
+    .lp-preview-card-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .lp-preview-card-bar {
+      height: 4px; background: var(--border); border-radius: 2px; margin-top: 12px; overflow: hidden;
+    }
+    .lp-preview-card-bar-fill {
+      height: 100%; border-radius: 2px; background: var(--text-2);
+    }
+
+    /* ── COMO FUNCIONA ── */
+    .lp-steps { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 700px) { .lp-steps { grid-template-columns: repeat(3, 1fr); } }
+    .lp-step {
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 28px;
+      display: flex; flex-direction: column; gap: 14px;
+      transition: border-color .2s, transform .2s;
+      position: relative; overflow: hidden;
+    }
+    .lp-step:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+    .lp-step-num {
+      font-size: 56px; font-weight: 800; color: var(--border-strong);
+      letter-spacing: -2px; line-height: 1;
+      position: absolute; top: 12px; right: 18px;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .lp-step-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--accent-bright);
+    }
+    .lp-step-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .lp-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── FEATURES GRID ── */
+    .lp-features-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    }
+    @media (min-width: 900px) { .lp-features-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 500px) { .lp-features-grid { grid-template-columns: 1fr; } }
+    .lp-feature {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 22px 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      transition: border-color .2s;
+    }
+    .lp-feature:hover { border-color: var(--border-strong); }
+    .lp-feature-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--accent-bright);
+    }
+    .lp-feature-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .lp-feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── PARA QUEM É ── */
+    .lp-for-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 700px) { .lp-for-grid { grid-template-columns: repeat(3, 1fr); } }
+    .lp-for-card {
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      background: var(--bg-3); transition: border-color .2s, transform .2s;
+    }
+    .lp-for-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+    .lp-for-card-top {
+      padding: 28px 24px 20px; border-bottom: 1px solid var(--border);
+    }
+    .lp-for-card-icon {
+      width: 48px; height: 48px; border-radius: 10px;
+      background: var(--accent-pale); border: 1px solid var(--accent-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: var(--accent-bright); margin-bottom: 14px;
+    }
+    .lp-for-card-title { font-size: 18px; font-weight: 700; color: var(--text); }
+    .lp-for-card-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .lp-for-card-list { padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; }
+    .lp-for-card-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text-2);
+    }
+    .lp-for-card-item i { color: var(--success); font-size: 11px; flex-shrink: 0; }
+
+    /* ── PREÇO ── */
+    .lp-pricing-wrapper {
+      max-width: 520px; margin: 0 auto;
+    }
+    .lp-pricing-card {
+      background: var(--bg-2); border: 1px solid var(--border-strong);
+      border-radius: 14px; padding: 40px 36px;
+      display: flex; flex-direction: column; gap: 28px;
+      position: relative; overflow: hidden;
+    }
+    .lp-pricing-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--text);
+    }
+    .lp-pricing-header { text-align: center; }
+    .lp-pricing-price {
+      display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+      margin-bottom: 8px;
+    }
+    .lp-pricing-currency { font-size: 22px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; }
+    .lp-pricing-amount { font-size: 56px; font-weight: 800; color: var(--text); letter-spacing: -2px; line-height: 1; }
+    .lp-pricing-period { font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+    .lp-pricing-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .lp-pricing-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+    .lp-pricing-features { display: flex; flex-direction: column; gap: 12px; }
+    .lp-pricing-feature {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; color: var(--text-2);
+    }
+    .lp-pricing-feature i {
+      font-size: 12px; color: var(--success); flex-shrink: 0;
+      width: 18px; text-align: center;
+    }
+    .lp-pricing-btn {
+      font-family: var(--font); font-size: 15px; font-weight: 700;
+      color: var(--bg); background: var(--text);
+      border: none; border-radius: 8px;
+      padding: 14px 28px; cursor: pointer; text-decoration: none;
+      transition: all .2s; display: flex; align-items: center;
+      justify-content: center; gap: 9px; text-align: center;
+    }
+    .lp-pricing-btn:hover { background: var(--text-2); transform: translateY(-1px); }
+
+    /* ── DEPOIMENTOS ── */
+    .lp-testimonials-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 700px) { .lp-testimonials-grid { grid-template-columns: repeat(3, 1fr); } }
+    .lp-testimonial {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .lp-testimonial-stars { color: var(--warn); font-size: 13px; letter-spacing: 2px; }
+    .lp-testimonial-text { font-size: 14px; color: var(--text-2); line-height: 1.7; flex: 1; }
+    .lp-testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .lp-testimonial-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-4); border: 1px solid var(--border-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--muted);
+    }
+    .lp-testimonial-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .lp-testimonial-role { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    /* ── FAQ ── */
+    .lp-faq { display: flex; flex-direction: column; gap: 8px; max-width: 760px; margin: 0 auto; }
+    .lp-faq-item {
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; transition: border-color .2s;
+    }
+    .lp-faq-item.open { border-color: var(--border-strong); }
+    .lp-faq-trigger {
+      width: 100%; background: none; border: none; padding: 18px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      cursor: pointer; text-align: left;
+      font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--text);
+      transition: color .15s;
+    }
+    .lp-faq-trigger:hover { color: var(--text-2); }
+    .lp-faq-icon { flex-shrink: 0; font-size: 12px; color: var(--muted); transition: transform .25s; }
+    .lp-faq-item.open .lp-faq-icon { transform: rotate(45deg); color: var(--text-2); }
+    .lp-faq-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height .3s cubic-bezier(.4,0,.2,1);
+    }
+    .lp-faq-item.open .lp-faq-body { max-height: 400px; }
+    .lp-faq-answer {
+      padding: 0 20px 18px;
+      font-size: 13px; color: var(--muted); line-height: 1.7;
+    }
+
+    /* ── CTA FINAL ── */
+    .lp-cta-section {
+      padding: clamp(60px, 10vw, 100px) clamp(20px, 5vw, 60px);
+      text-align: center; max-width: 800px; margin: 0 auto;
+    }
+    .lp-cta-title {
+      font-size: clamp(28px, 5vw, 48px); font-weight: 800;
+      letter-spacing: -1px; color: var(--text); margin-bottom: 16px; line-height: 1.1;
+    }
+    .lp-cta-sub {
+      font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 36px;
+    }
+    .lp-cta-actions {
+      display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    .lp-footer {
+      border-top: 1px solid var(--border);
+      padding: clamp(40px, 6vw, 60px) clamp(20px, 5vw, 60px) clamp(28px, 4vw, 40px);
+      max-width: 1200px; margin: 0 auto;
+    }
+    .lp-footer-grid {
+      display: grid; grid-template-columns: 1fr; gap: 36px; margin-bottom: 40px;
+    }
+    @media (min-width: 700px) { .lp-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 24px; } }
+    .lp-footer-brand { display: flex; flex-direction: column; gap: 14px; }
+    .lp-footer-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .lp-footer-logo-box {
+      width: 32px; height: 32px; background: var(--bg-4);
+      border: 1px solid var(--border-dark); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-2);
+    }
+    .lp-footer-brand-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .lp-footer-brand-desc { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 280px; }
+    .lp-footer-col-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text-2); margin-bottom: 14px;
+    }
+    .lp-footer-links { display: flex; flex-direction: column; gap: 8px; }
+    .lp-footer-link {
+      font-size: 13px; color: var(--muted); text-decoration: none; transition: color .15s;
+    }
+    .lp-footer-link:hover { color: var(--text-2); }
+    .lp-footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .lp-footer-copy { font-size: 12px; color: var(--muted); }
+    .lp-footer-legal {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .lp-footer-legal a {
+      font-size: 12px; color: var(--muted); text-decoration: none; transition: color .15s;
+    }
+    .lp-footer-legal a:hover { color: var(--text-2); }
+
+    /* ── UTILS / ANIMAÇÕES ── */
+    .lp-divider {
+      border: none; border-top: 1px solid var(--border);
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* scroll top */
+    #lp-scroll-top {
+      position: fixed; bottom: 28px; right: 24px; z-index: 200;
+      width: 40px; height: 40px; border-radius: 8px;
+      background: var(--bg-3); border: 1px solid var(--border-dark);
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    #lp-scroll-top.show { display: flex; }
+    #lp-scroll-top:hover { color: var(--text); border-color: var(--border-strong); background: var(--bg-4); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="lp-nav" id="lp-nav">
+  <a href="{% url 'landing' %}" class="lp-nav-logo">
+    <div class="lp-nav-logo-box"><i class="fa-solid fa-scissors"></i></div>
+    <span class="lp-nav-brand">Barber<span>Black</span></span>
+  </a>
+
+  <div class="lp-nav-links">
+    <a href="#funcionalidades" class="lp-nav-link">Funcionalidades</a>
+    <a href="#para-quem" class="lp-nav-link">Para quem</a>
+    <a href="#preco" class="lp-nav-link">Preço</a>
+    <a href="#faq" class="lp-nav-link">FAQ</a>
+  </div>
+
+  <div class="lp-nav-cta">
+    <a href="{% url 'user:login' %}" class="lp-btn-outline">
+      <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
+    </a>
+    <a href="{% url 'user:register' %}" class="lp-btn-solid">
+      Criar conta grátis <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <button class="lp-nav-mobile-btn" id="lp-mobile-btn" onclick="lpToggleMenu()">
+    <i class="fa-solid fa-bars" id="lp-mobile-icon"></i>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="lp-mobile-menu" id="lp-mobile-menu">
+  <a href="#funcionalidades" class="lp-footer-link" onclick="lpToggleMenu()">Funcionalidades</a>
+  <a href="#para-quem" class="lp-footer-link" onclick="lpToggleMenu()">Para quem</a>
+  <a href="#preco" class="lp-footer-link" onclick="lpToggleMenu()">Preço</a>
+  <a href="#faq" class="lp-footer-link" onclick="lpToggleMenu()">FAQ</a>
+  <hr style="border-color: var(--border); margin: 6px 0;">
+  <a href="{% url 'user:login' %}" class="lp-btn-outline" style="justify-content:center;">Entrar</a>
+  <a href="{% url 'user:register' %}" class="lp-btn-solid" style="justify-content:center;">Criar conta grátis</a>
+</div>
+
+<!-- ── HERO ── -->
+<section>
+  <div class="lp-hero">
+    <div class="lp-hero-glow"></div>
+
+    <h1 class="lp-hero-title reveal">
+      Sua agenda cheia,<br>
+      <span class="accent">sem complicação</span>
+    </h1>
+
+    <p class="lp-hero-desc reveal">
+      A forma mais simples de organizar seus agendamentos. Gerencie clientes, equipe, serviços e finanças — tudo em um só lugar.
+    </p>
+
+    <div class="lp-hero-actions reveal">
+      <a href="{% url 'user:register' %}" class="lp-cta-primary" id="hero-cta-register">
+        Começar agora <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a href="{% url 'user:login' %}" class="lp-cta-secondary" id="hero-cta-login">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Já tenho conta
+      </a>
+    </div>
+  </div>
+
+  <!-- Preview UI mockup -->
+  <div style="max-width:1200px; margin:0 auto; padding: 0 clamp(20px, 5vw, 60px) clamp(60px, 8vw, 80px);">
+    <div class="lp-preview reveal">
+      <div class="lp-preview-bar">
+        <div class="lp-preview-dot" style="background:#ef4444;"></div>
+        <div class="lp-preview-dot" style="background:#eab308;"></div>
+        <div class="lp-preview-dot" style="background:#22c55e;"></div>
+      </div>
+      <div class="lp-preview-body">
+        <div class="lp-preview-card">
+          <div class="lp-preview-card-label">Agendamentos hoje</div>
+          <div class="lp-preview-card-val">24</div>
+          <div class="lp-preview-card-sub">↑ 3 novos esta manhã</div>
+          <div class="lp-preview-card-bar"><div class="lp-preview-card-bar-fill" style="width:75%;"></div></div>
+        </div>
+        <div class="lp-preview-card">
+          <div class="lp-preview-card-label">Receita do mês</div>
+          <div class="lp-preview-card-val">R$4.2k</div>
+          <div class="lp-preview-card-sub">↑ 18% vs. mês anterior</div>
+          <div class="lp-preview-card-bar"><div class="lp-preview-card-bar-fill" style="width:62%; background:var(--success);opacity:.7;"></div></div>
+        </div>
+        <div class="lp-preview-card">
+          <div class="lp-preview-card-label">Clientes ativos</div>
+          <div class="lp-preview-card-val">187</div>
+          <div class="lp-preview-card-sub">+12 novos este mês</div>
+          <div class="lp-preview-card-bar"><div class="lp-preview-card-bar-fill" style="width:88%; background:var(--warn);opacity:.7;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="lp-divider">
+
+<!-- ── COMO FUNCIONA ── -->
+<section id="como-funciona">
+  <div class="lp-section">
+    <div class="lp-section-header center">
+      <div class="lp-eyebrow reveal"><i class="fa-solid fa-circle-play"></i> Como funciona</div>
+      <h2 class="lp-section-title reveal">Do cadastro ao primeiro<br>agendamento em minutos</h2>
+      <p class="lp-section-sub reveal">Sem complicação, sem instalação. Tudo pelo navegador.</p>
+    </div>
+    <div class="lp-steps">
+      <div class="lp-step reveal">
+        <div class="lp-step-num">01</div>
+        <div class="lp-step-icon"><i class="fa-solid fa-user-plus"></i></div>
+        <div class="lp-step-title">Crie sua conta</div>
+        <div class="lp-step-desc">Cadastre-se gratuitamente em menos de 2 minutos. Preencha o nome do seu estabelecimento e pronto.</div>
+      </div>
+      <div class="lp-step reveal">
+        <div class="lp-step-num">02</div>
+        <div class="lp-step-icon"><i class="fa-solid fa-sliders"></i></div>
+        <div class="lp-step-title">Configure seu negócio</div>
+        <div class="lp-step-desc">Adicione seus colaboradores, serviços com preços e duração, e defina os horários de funcionamento.</div>
+      </div>
+      <div class="lp-step reveal">
+        <div class="lp-step-num">03</div>
+        <div class="lp-step-icon"><i class="fa-solid fa-share-nodes"></i></div>
+        <div class="lp-step-title">Compartilhe e receba</div>
+        <div class="lp-step-desc">Envie o link da sua agenda para seus clientes. Eles agendam 24h por dia, direto pelo celular.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="lp-divider">
+
+<!-- ── FUNCIONALIDADES ── -->
+<div class="lp-section-alt">
+  <section id="funcionalidades">
+    <div class="lp-section">
+      <div class="lp-section-header center">
+        <div class="lp-eyebrow reveal"><i class="fa-solid fa-star"></i> Funcionalidades</div>
+        <h2 class="lp-section-title reveal">Tudo que você precisa<br>para gerir seu negócio</h2>
+        <p class="lp-section-sub reveal">Uma plataforma completa, pensada para profissionais que trabalham com agendamento.</p>
+      </div>
+      <div class="lp-features-grid">
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="lp-feature-title">Agendamento Online 24/7</div>
+          <div class="lp-feature-desc">Seus clientes agendam a qualquer hora, pelo celular, sem precisar ligar ou mandar mensagem.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="lp-feature-title">Gestão de Equipe</div>
+          <div class="lp-feature-desc">Cadastre múltiplos colaboradores, cada um com sua agenda, serviços e disponibilidade.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-list"></i></div>
+          <div class="lp-feature-title">Catálogo de Serviços</div>
+          <div class="lp-feature-desc">Crie serviços com nome, descrição, preço e duração. Ative ou desative quando quiser.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="lp-feature-title">Relatórios Financeiros</div>
+          <div class="lp-feature-desc">Acompanhe receita por mês, por serviço e por profissional. Visão clara do seu negócio.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="lp-feature-title">Horários Flexíveis</div>
+          <div class="lp-feature-desc">Configure horários por dia da semana, folgas individuais e bloqueios de horário.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-list-check"></i></div>
+          <div class="lp-feature-title">Confirmação Manual</div>
+          <div class="lp-feature-desc">Opção de confirmar cada agendamento manualmente antes de registrar no sistema.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <div class="lp-feature-title">100% Responsivo</div>
+          <div class="lp-feature-desc">Interface perfeita em celular, tablet e desktop — para você e para seus clientes.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-history"></i></div>
+          <div class="lp-feature-title">Histórico de Clientes</div>
+          <div class="lp-feature-desc">Veja o histórico completo de agendamentos de cada cliente por mês e por período.</div>
+        </div>
+        <div class="lp-feature reveal">
+          <div class="lp-feature-icon"><i class="fa-solid fa-link"></i></div>
+          <div class="lp-feature-title">Link Personalizado</div>
+          <div class="lp-feature-desc">Cada estabelecimento tem sua própria URL de agendamento para compartilhar onde quiser.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<hr class="lp-divider">
+
+<!-- ── PARA QUEM É ── -->
+<section id="para-quem">
+  <div class="lp-section">
+    <div class="lp-section-header center">
+      <div class="lp-eyebrow reveal"><i class="fa-solid fa-bullseye"></i> Para quem é</div>
+      <h2 class="lp-section-title reveal">Feito para profissionais<br>que valorizam seu tempo</h2>
+      <p class="lp-section-sub reveal">Se você trabalha com agendamento, o BarberBlack é pra você.</p>
+    </div>
+    <div class="lp-for-grid">
+      <div class="lp-for-card reveal">
+        <div class="lp-for-card-top">
+          <div class="lp-for-card-icon"><i class="fa-solid fa-scissors"></i></div>
+          <div class="lp-for-card-title">Salões e Barbearias</div>
+          <div class="lp-for-card-sub">De 1 a N cadeiras, tradicionais ou modernos</div>
+        </div>
+        <div class="lp-for-card-list">
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Múltiplos profissionais</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Serviços por colaborador</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Fila digital de espera</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Controle financeiro</div>
+        </div>
+      </div>
+      <div class="lp-for-card reveal">
+        <div class="lp-for-card-top">
+          <div class="lp-for-card-icon"><i class="fa-solid fa-spa"></i></div>
+          <div class="lp-for-card-title">Clínicas e Estética</div>
+          <div class="lp-for-card-sub">Estúdios de tatuagem, clínicas, spas</div>
+        </div>
+        <div class="lp-for-card-list">
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Catálogo de serviços</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Agendas independentes</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Histórico de clientes</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Relatórios por período</div>
+        </div>
+      </div>
+      <div class="lp-for-card reveal">
+        <div class="lp-for-card-top">
+          <div class="lp-for-card-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="lp-for-card-title">Profissionais Autônomos</div>
+          <div class="lp-for-card-sub">Freelancers, consultores, terapeutas</div>
+        </div>
+        <div class="lp-for-card-list">
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Horários personalizados</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Link de agendamento</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Confirmação manual</div>
+          <div class="lp-for-card-item"><i class="fa-solid fa-check"></i> Gestão simplificada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="lp-divider">
+
+<!-- ── PREÇO ── -->
+<div class="lp-section-dark">
+  <section id="preco">
+    <div class="lp-section">
+      <div class="lp-section-header center">
+        <div class="lp-eyebrow reveal"><i class="fa-solid fa-tag"></i> Preço</div>
+        <h2 class="lp-section-title reveal">Preço justo, sem surpresa</h2>
+        <p class="lp-section-sub reveal">Tudo incluso por um valor acessível.</p>
+      </div>
+      <div class="lp-pricing-wrapper reveal">
+        <div class="lp-pricing-card">
+          <div class="lp-pricing-header">
+            <div class="lp-pricing-price">
+              <span class="lp-pricing-currency">R$</span>
+              <span class="lp-pricing-amount">49</span>
+              <span class="lp-pricing-period">/mês</span>
+            </div>
+            <div class="lp-pricing-desc">Plano completo com tudo que você precisa para gerenciar seus agendamentos.</div>
+          </div>
+          <hr class="lp-pricing-divider">
+          <div class="lp-pricing-features">
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Agendamentos ilimitados</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Agenda online pública</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Catálogo de serviços</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Até 4 colaboradores</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Até 30 serviços por colaborador</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Link personalizado de agendamento</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Histórico completo de clientes</div>
+            <div class="lp-pricing-feature"><i class="fa-solid fa-check"></i> Suporte em português</div>
+          </div>
+          <a href="{% url 'user:register' %}" class="lp-pricing-btn" id="pricing-cta">
+            Começar agora <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<hr class="lp-divider">
+
+<!-- ── DEPOIMENTOS ── -->
+<section id="depoimentos">
+  <div class="lp-section">
+    <div class="lp-section-header center">
+      <div class="lp-eyebrow reveal"><i class="fa-solid fa-heart"></i> Depoimentos</div>
+      <h2 class="lp-section-title reveal">Quem já usa, aprova</h2>
+      <p class="lp-section-sub reveal">Centenas de estabelecimentos já gerenciam sua agenda com o BarberBlack.</p>
+    </div>
+    <div class="lp-testimonials-grid">
+      <div class="lp-testimonial reveal">
+        <div class="lp-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="lp-testimonial-text">"Antes eu perdia agendamento por não atender o telefone. Hoje o cliente agenda sozinho e eu não perco mais nenhum. Minha receita aumentou 30% em 3 meses."</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <div class="lp-testimonial-name">Lucas Ferreira</div>
+            <div class="lp-testimonial-role">Studio Lucas — São Paulo, SP</div>
+          </div>
+        </div>
+      </div>
+      <div class="lp-testimonial reveal">
+        <div class="lp-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="lp-testimonial-text">"Simples de configurar, fácil pro cliente usar. Meus clientes amaram poder escolher o profissional e o horário pelo celular. Recomendo demais!"</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <div class="lp-testimonial-name">Rafael Souza</div>
+            <div class="lp-testimonial-role">Beleza & Estilo — Rio de Janeiro, RJ</div>
+          </div>
+        </div>
+      </div>
+      <div class="lp-testimonial reveal">
+        <div class="lp-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="lp-testimonial-text">"O painel de relatórios me ajuda a entender qual serviço dá mais lucro e quais horários são mais movimentados. Decisões muito melhores agora."</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <div class="lp-testimonial-name">Marcos Oliveira</div>
+            <div class="lp-testimonial-role">Prime Estética — Belo Horizonte, MG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="lp-divider">
+
+<!-- ── FAQ ── -->
+<div class="lp-section-alt">
+  <section id="faq">
+    <div class="lp-section">
+      <div class="lp-section-header center">
+        <div class="lp-eyebrow reveal"><i class="fa-solid fa-circle-question"></i> Perguntas frequentes</div>
+        <h2 class="lp-section-title reveal">Dúvidas? A gente responde</h2>
+      </div>
+      <div class="lp-faq" id="lp-faq">
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Preciso instalar algum programa para usar?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Não! O BarberBlack é 100% online. Funciona direto no navegador do seu computador, celular ou tablet — sem instalação alguma. Seus clientes também agendam pelo navegador, sem baixar nenhum aplicativo.
+            </div>
+          </div>
+        </div>
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Meus clientes precisam criar uma conta para agendar?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Não necessariamente. A agenda pública do seu estabelecimento é acessível por qualquer pessoa com o link. O cliente pode informar seus dados básicos (nome e telefone) diretamente no agendamento, sem precisar criar uma conta.
+            </div>
+          </div>
+        </div>
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Posso ter mais de um colaborador na minha conta?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Sim! O plano permite até 4 colaboradores. Cada um tem sua própria agenda, serviços e disponibilidade configuráveis de forma independente.
+            </div>
+          </div>
+        </div>
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Posso controlar quais agendamentos aceitar?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Sim! Você pode ativar a "confirmação manual" no painel administrativo. Com ela, cada agendamento precisa da sua aprovação antes de ser confirmado, dando mais controle sobre a sua agenda.
+            </div>
+          </div>
+        </div>
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Os dados dos meus clientes ficam seguros?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Absolutamente. Seguimos rigorosamente a Lei Geral de Proteção de Dados (LGPD). Os dados dos seus clientes são armazenados com segurança, jamais compartilhados com terceiros, e você pode solicitar a exclusão a qualquer momento. Consulte nossa <a href="{% url 'privacy' %}" style="color:var(--text-2);">Política de Privacidade</a> completa.
+            </div>
+          </div>
+        </div>
+        <div class="lp-faq-item">
+          <button class="lp-faq-trigger" onclick="lpFaq(this)">
+            Posso cancelar a qualquer momento?
+            <i class="fa-solid fa-plus lp-faq-icon"></i>
+          </button>
+          <div class="lp-faq-body">
+            <div class="lp-faq-answer">
+              Sim, sem multa e sem burocracia. Você pode cancelar quando quiser, diretamente pelo painel. Não há fidelidade mínima ou taxa de cancelamento.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<hr class="lp-divider">
+
+<!-- ── CTA FINAL ── -->
+<section>
+  <div class="lp-cta-section">
+    <div class="lp-eyebrow reveal" style="margin-bottom:20px;"><i class="fa-solid fa-rocket"></i> Comece agora</div>
+    <h2 class="lp-cta-title reveal">
+      Pronto para lotar<br>sua agenda?
+    </h2>
+    <p class="lp-cta-sub reveal">
+      Crie sua conta e comece a receber agendamentos em minutos. Sem burocracia.
+    </p>
+    <div class="lp-cta-actions reveal">
+      <a href="{% url 'user:register' %}" class="lp-cta-primary" id="final-cta-register">
+        Criar conta grátis <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a href="{% url 'user:login' %}" class="lp-cta-secondary" id="final-cta-login">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Já tenho conta
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer style="background:var(--bg-2); border-top: 1px solid var(--border);">
+  <div class="lp-footer">
+    <div class="lp-footer-grid">
+      <div class="lp-footer-brand">
+        <a href="{% url 'landing' %}" class="lp-footer-logo">
+          <div class="lp-footer-logo-box"><i class="fa-solid fa-scissors"></i></div>
+          <span class="lp-footer-brand-name">BarberBlack</span>
+        </a>
+        <p class="lp-footer-brand-desc">
+          Plataforma completa de agendamento online para estabelecimentos de serviços. Feita no Brasil, para o Brasil.
+        </p>
+        <div style="display:flex;gap:10px;">
+          <a href="#" class="lp-btn-outline" style="padding:7px 12px;font-size:12px;">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="#" class="lp-btn-outline" style="padding:7px 12px;font-size:12px;">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="lp-footer-col-title">Produto</div>
+        <div class="lp-footer-links">
+          <a href="#funcionalidades" class="lp-footer-link">Funcionalidades</a>
+          <a href="#preco" class="lp-footer-link">Preço</a>
+          <a href="#faq" class="lp-footer-link">FAQ</a>
+          <a href="#depoimentos" class="lp-footer-link">Depoimentos</a>
+        </div>
+      </div>
+      <div>
+        <div class="lp-footer-col-title">Conta</div>
+        <div class="lp-footer-links">
+          <a href="{% url 'user:login' %}" class="lp-footer-link">Entrar</a>
+          <a href="{% url 'user:register' %}" class="lp-footer-link">Criar conta</a>
+          <a href="{% url 'user:register' %}" class="lp-footer-link">Começar grátis</a>
+        </div>
+      </div>
+      <div>
+        <div class="lp-footer-col-title">Legal</div>
+        <div class="lp-footer-links">
+          <a href="{% url 'privacy' %}" class="lp-footer-link">Política de Privacidade</a>
+          <a href="{% url 'privacy' %}#termos" class="lp-footer-link">Termos de Uso</a>
+          <a href="{% url 'privacy' %}#cookies" class="lp-footer-link">Política de Cookies</a>
+          <a href="{% url 'privacy' %}#lgpd" class="lp-footer-link">LGPD</a>
+        </div>
+      </div>
+    </div>
+    <div class="lp-footer-bottom">
+      <span class="lp-footer-copy">&copy; 2026 BarberBlack. Todos os direitos reservados.</span>
+      <div class="lp-footer-legal">
+        <a href="{% url 'privacy' %}">Privacidade</a>
+        <a href="{% url 'privacy' %}#termos">Termos</a>
+        <a href="{% url 'privacy' %}#cookies">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to top -->
+<button id="lp-scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Voltar ao topo">
+  <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  // ── Mobile menu ──
+  function lpToggleMenu() {
+    const menu = document.getElementById('lp-mobile-menu');
+    const icon = document.getElementById('lp-mobile-icon');
+    menu.classList.toggle('open');
+    icon.className = menu.classList.contains('open')
+      ? 'fa-solid fa-xmark'
+      : 'fa-solid fa-bars';
+  }
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('lp-mobile-menu');
+    const btn  = document.getElementById('lp-mobile-btn');
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.remove('open');
+      document.getElementById('lp-mobile-icon').className = 'fa-solid fa-bars';
+    }
+  });
+
+  // ── Smooth scroll para âncoras ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+      const id = this.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ── FAQ accordion ──
+  function lpFaq(trigger) {
+    const item = trigger.closest('.lp-faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.lp-faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ── Scroll reveal ──
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 60 * (Array.from(entry.target.parentElement?.children || []).indexOf(entry.target)));
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    revealObserver.observe(el);
+  });
+
+  // ── Scroll to top ──
+  const scrollTopBtn = document.getElementById('lp-scroll-top');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+  });
+
+  // ── Navbar glassmorphism ao scroll ──
+  const nav = document.getElementById('lp-nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 40
+      ? 'rgba(9,9,11,0.95)'
+      : 'rgba(9,9,11,0.85)';
+  });
+</script>
+</body>
+</html>

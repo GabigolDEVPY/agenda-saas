@@ -2,9 +2,12 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
+from .views import LandingView, PrivacyView
 
 
 urlpatterns = [
+    path('', LandingView.as_view(), name='landing'),
+    path('privacidade/', PrivacyView.as_view(), name='privacy'),
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
     path('establishment/', include('establishment.urls')),
