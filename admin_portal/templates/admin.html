@@ -150,7 +150,7 @@
   <div class="section-header">
     <div>
       <div class="section-title">Minha Conta</div>
-      <div class="section-sub">Configurações de plano, pagamentos e segurança da conta</div>
+      <div class="section-sub">Seguran?a da conta</div>
     </div>
   </div>
 
@@ -435,32 +435,6 @@
           <button type="button" class="btn-ghost" onclick="closeModal('modal-delete-employee')">Cancelar</button>
           <button type="submit" class="btn-primary" style="background:var(--red);box-shadow:0 2px 8px rgba(224,82,82,.3);">
             <i class="fa-solid fa-user-minus"></i> Remover
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     MODAL: CANCELAR ASSINATURA
-══════════════════════════════════════ -->
-<div class="overlay" id="modal-cancel-subscription" onclick="closeOnBg(event,'modal-cancel-subscription')">
-  <div class="modal-sheet" style="max-width:440px;">
-    <div class="modal-handle"></div>
-    <form method="POST" action="{% url 'billing:cancel_subscription' %}">
-      {% csrf_token %}
-      <div class="modal-body" style="text-align:center;padding:32px 24px;">
-        <div style="font-size:44px;color:var(--warn);margin-bottom:14px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div style="font-size:24px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;">Cancelar Assinatura?</div>
-        <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:22px;">
-          Sua agenda pública será bloqueada e seus clientes não conseguirão realizar novos agendamentos.<br>
-          Deseja prosseguir com o cancelamento?
-        </p>
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <button type="button" class="btn-ghost" onclick="closeModal('modal-cancel-subscription')">Voltar</button>
-          <button type="submit" class="btn-primary" style="background:var(--warn);color:var(--bg);box-shadow:0 2px 8px rgba(234,179,8,.3);">
-            Confirmar Cancelamento
           </button>
         </div>
       </div>

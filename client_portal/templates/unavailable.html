@@ -6,11 +6,6 @@
   <p class="page-unavailable-msg">
     {{ msg }}
     {% if request.user.is_authenticated %}
-      {% if payment %}
-        <a href="{% url 'admin_portal:home' %}?tab=plano" class="btn-admin">
-          <i class="fa-solid fa-credit-card"></i>Fazer pagamento
-        </a>
-      {% endif %}
       {% if config_incomplete %}
         <a href="{% url 'admin_portal:home' %}?tab=estabelecimento" class="btn-admin">
           <i class="fa-solid fa-store"></i>Concluir configuracao

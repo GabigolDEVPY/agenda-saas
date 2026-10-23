@@ -1,7 +1,5 @@
-from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
-from django.utils import timezone
 
 from billing.models import Plan, Subscription
 from services.models import Service
@@ -15,7 +13,6 @@ class LimitsService:
         "name": "Plano Inicial",
         "max_services_per_user": 30,
         "max_users_per_establishment": 5,
-        "price": 0,
         "is_active": True,
     }
 
@@ -26,7 +23,6 @@ class LimitsService:
             defaults={
                 "max_services_per_user": cls.DEFAULT_PLAN["max_services_per_user"],
                 "max_users_per_establishment": cls.DEFAULT_PLAN["max_users_per_establishment"],
-                "price": cls.DEFAULT_PLAN["price"],
                 "is_active": cls.DEFAULT_PLAN["is_active"],
             },
         )
@@ -64,9 +60,6 @@ class LimitsService:
             user=owner,
             defaults={
                 "plan": cls.get_default_plan(),
-                "expires_at": timezone.now() + timedelta(days=30),
-                "status": Subscription.Status.ACTIVE,
-                "is_active": True,
             },
         )
         return subscription
@@ -150,8 +143,8 @@ class LimitsService:
         owner = cls.get_owner(establishment)
         subscription = cls.get_subscription(owner) if owner else None
 
-        if not subscription or not subscription.can_use_public_agenda:
-            return False, "Agenda indisponivel. O plano do estabelecimento nao esta ativo."
+        if not subscription or not subscription.plan.is_active:
+            return False, "Agenda indisponivel no momento."
 
         if cls.has_exceeded_limits(establishment):
             return False, "Agenda indisponivel. O estabelecimento excedeu os limites do plano."
@@ -163,58 +156,6 @@ class LimitsService:
         subscription = cls.get_subscription(user)
         return {
             "subscription": subscription,
-            "billing": cls.billing_summary(subscription),
             "services": cls.services_summary(user),
             "users": cls.users_summary(user, establishment),
-        }
-
-    @classmethod
-    def billing_summary(cls, subscription):
-        if not subscription:
-            return {
-                "subscription": None,
-                "plan": None,
-                "is_expired": True,
-                "needs_payment": True,
-                "started_at": None,
-                "renews_at": None,
-                "expires_in_label": "Sem plano ativo",
-                "payment_method": None,
-            }
-
-        now = timezone.now()
-        expires_at = subscription.expires_at
-        is_expired = (
-            subscription.status == Subscription.Status.EXPIRED
-            or not subscription.is_active
-            or (expires_at is not None and expires_at <= now)
-        )
-
-        if expires_at is None:
-            expires_in_label = "Sem expiracao"
-        elif expires_at <= now:
-            expires_in_label = "Expirado"
-        else:
-            delta = expires_at - now
-            days = delta.days + (1 if delta.seconds or delta.microseconds else 0)
-            if days == 1:
-                expires_in_label = "1 dia"
-            else:
-                expires_in_label = f"{days} dias"
-
-        # Fetch payment method details from Stripe if customer exists
-        payment_method = None
-        if subscription and subscription.stripe_customer_id:
-            from billing.services.stripe_service import StripeService
-            payment_method = StripeService.get_payment_method_details(subscription.stripe_customer_id)
-
-        return {
-            "subscription": subscription,
-            "plan": subscription.plan,
-            "is_expired": is_expired,
-            "needs_payment": not subscription.can_use_public_agenda,
-            "started_at": subscription.start_date,
-            "renews_at": expires_at,
-            "expires_in_label": expires_in_label,
-            "payment_method": payment_method,
         }

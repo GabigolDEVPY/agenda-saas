@@ -167,11 +167,9 @@ class HomeService:
 
         can_use_agenda, billing_message = LimitsService.public_agenda_status(establishment)
         if not can_use_agenda:
-            subscription = LimitsService.get_subscription(establishment.user)
             return {
                 "msg": billing_message,
                 "incomplete": True,
-                "payment": bool(subscription and not subscription.can_use_public_agenda),
                 "uid": uid,
             }
 
