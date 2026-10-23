@@ -75,17 +75,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('SB_NAME'),
-        'USER': os.getenv('SB_USER'),
-        'PASSWORD': os.getenv('SB_PASSWORD'),
-        'HOST': os.getenv('SB_HOST'),
-        'PORT': os.getenv('SB_PORT'),
-        'OPTIONS': {'sslmode': 'require'}
+DB_SQLITE = os.getenv("DB_SQLITE", "False").strip().lower() in {"1", "true", "yes", "on"}
+
+if DB_SQLITE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("SB_NAME"),
+            "USER": os.getenv("SB_USER"),
+            "PASSWORD": os.getenv("SB_PASSWORD"),
+            "HOST": os.getenv("SB_HOST"),
+            "PORT": os.getenv("SB_PORT"),
+            "OPTIONS": {"sslmode": "require"},
+        }
+    }
 
 AUTH_USER_MODEL = 'user.User'
 
