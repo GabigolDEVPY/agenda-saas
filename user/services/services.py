@@ -1,6 +1,7 @@
 from establishment.models import OperatingHours, GeneralPreference, Address
-from datetime import time
+from datetime import time, timedelta
 from django.db import transaction
+from django.utils import timezone
 from billing.models import Subscription
 from billing.services import LimitsService
 
@@ -35,7 +36,12 @@ class UserServices:
 
         Subscription.objects.get_or_create(
             user=user,
-            defaults={"plan": LimitsService.get_default_plan()},
+            defaults={
+                "plan": LimitsService.get_default_plan(),
+                "expires_at": timezone.now() + timedelta(days=30),
+                "status": Subscription.Status.ACTIVE,
+                "is_active": True,
+            },
         )
 
         return

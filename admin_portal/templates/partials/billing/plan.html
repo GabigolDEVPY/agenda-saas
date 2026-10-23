@@ -34,6 +34,8 @@
         <span class="badge" style="background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.15);color:var(--warn);">Pendente</span>
       {% elif billing.subscription.status == "expired" %}
         <span class="badge badge-alert">Expirado</span>
+      {% elif billing.subscription.status == "past_due" %}
+        <span class="badge badge-alert">Recusado</span>
       {% elif billing.subscription.status == "canceled" %}
         <span class="badge badge-gray">Cancelado</span>
       {% else %}

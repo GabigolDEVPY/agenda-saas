@@ -24,6 +24,7 @@ class Subscription(models.Model):
         PENDING = "pending", "Pendente"
         CANCELED = "canceled", "Cancelada"
         EXPIRED = "expired", "Expirada"
+        PAST_DUE = "past_due", "Pagamento Recusado"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -52,7 +53,10 @@ class Subscription(models.Model):
 
     @property
     def can_use_public_agenda(self):
-        if not self.is_active or self.status != self.Status.ACTIVE:
+        if not self.is_active:
+            return False
+
+        if self.status in [self.Status.EXPIRED, self.Status.PAST_DUE]:
             return False
 
         if self.expires_at and self.expires_at <= timezone.now():

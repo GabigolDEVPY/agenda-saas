@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 import os   
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
-STRIPE_TOKEN = os.getenv("STRIPE_TOKEN")
-print(f"Stripe Token: {STRIPE_TOKEN}")  # Adicione esta linha para depuração
+STRIPE_SECRET_KEY = os.getenv("STRIPE_TOKEN")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_TOKEN = STRIPE_SECRET_KEY
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 90  # 90 dias
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False

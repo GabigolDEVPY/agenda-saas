@@ -12,8 +12,31 @@ from .models import Plan, Subscription
 class CheckoutView(LoginRequiredMixin, OwnerRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         plan = Plan.objects.filter(name="Plano Inicial").first()
-        url = StripeService.create_checkout_session(request, plan=plan)
-        return redirect(url.url)
+        if not plan or not plan.stripe_price_id:
+            messages.error(request, "O plano de pagamento não está configurado corretamente no banco de dados. Entre em contato com o suporte.")
+            return redirect(f"{reverse('admin_portal:home')}?tab=conta")
+            
+        try:
+            session = StripeService.create_checkout_session(request, plan=plan)
+            return redirect(session.url)
+        except Exception as e:
+            messages.error(request, f"Erro ao iniciar o pagamento com a Stripe: {str(e)}")
+            return redirect(f"{reverse('admin_portal:home')}?tab=conta")
+
+
+class StripePortalView(LoginRequiredMixin, OwnerRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        subscription = getattr(request.user, 'subscription', None)
+        if subscription and subscription.stripe_customer_id:
+            try:
+                portal_session = StripeService.create_portal_session(request, subscription.stripe_customer_id)
+                return redirect(portal_session.url)
+            except Exception as e:
+                messages.error(request, f"Erro ao abrir o portal de faturamento: {str(e)}")
+        else:
+            messages.warning(request, "Nenhuma assinatura com cliente Stripe cadastrado foi encontrada.")
+            
+        return redirect(f"{reverse('admin_portal:home')}?tab=conta")
 
 
 class CancelSubscriptionView(LoginRequiredMixin, OwnerRequiredMixin, View):

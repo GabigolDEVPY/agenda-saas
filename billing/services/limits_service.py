@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.utils import timezone
@@ -61,7 +62,12 @@ class LimitsService:
 
         subscription, _ = Subscription.objects.get_or_create(
             user=owner,
-            defaults={"plan": cls.get_default_plan()},
+            defaults={
+                "plan": cls.get_default_plan(),
+                "expires_at": timezone.now() + timedelta(days=30),
+                "status": Subscription.Status.ACTIVE,
+                "is_active": True,
+            },
         )
         return subscription
 
@@ -173,6 +179,7 @@ class LimitsService:
                 "started_at": None,
                 "renews_at": None,
                 "expires_in_label": "Sem plano ativo",
+                "payment_method": None,
             }
 
         now = timezone.now()
@@ -195,6 +202,12 @@ class LimitsService:
             else:
                 expires_in_label = f"{days} dias"
 
+        # Fetch payment method details from Stripe if customer exists
+        payment_method = None
+        if subscription and subscription.stripe_customer_id:
+            from billing.services.stripe_service import StripeService
+            payment_method = StripeService.get_payment_method_details(subscription.stripe_customer_id)
+
         return {
             "subscription": subscription,
             "plan": subscription.plan,
@@ -203,4 +216,5 @@ class LimitsService:
             "started_at": subscription.start_date,
             "renews_at": expires_at,
             "expires_in_label": expires_in_label,
+            "payment_method": payment_method,
         }
